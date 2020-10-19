@@ -1,4 +1,4 @@
-package net.waring.java4ftc.ops;
+package org.firstinspires.ftc.teamcode.Utilities;
 
 public interface SyncTask {
     void execute();

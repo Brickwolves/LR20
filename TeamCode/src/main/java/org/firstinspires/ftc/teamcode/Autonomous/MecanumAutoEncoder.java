@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Autonomous;
 
 /* Copyright (c) 2017 FIRST. All rights reserved.
  *
@@ -34,9 +34,10 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
-import net.waring.java4ftc.ops.IMU;
-import net.waring.java4ftc.ops.SyncTask;
-import net.waring.java4ftc.utilities.Utils;
+
+import org.firstinspires.ftc.teamcode.Utilities.IMU;
+import org.firstinspires.ftc.teamcode.Utilities.SyncTask;
+import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
 
 @Autonomous(name="Mecanum Encoder", group="Autonomous Linear Opmode")

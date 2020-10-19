@@ -1,9 +1,8 @@
+package org.firstinspires.ftc.teamcode.Utilities;
+
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.Utilities.Utils;
-import org.firstinspires.ftc.teamcode.Utilities.SyncTask;
-import org.firstinspires.ftc.teamcode.Utilities.IMU;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
