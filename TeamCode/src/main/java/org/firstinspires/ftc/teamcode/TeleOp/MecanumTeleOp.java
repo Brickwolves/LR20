@@ -100,12 +100,13 @@ public class MecanumTeleOp extends OpMode {
         else if (gamepad1.dpad_down) turn = turn2(180, 0.5);
 
 
+
+
         // Setting driver power
         fr.setPower((drive - strafe - turn) * velocity);
         fl.setPower((drive + strafe + turn) * velocity);
         br.setPower((drive + strafe - turn) * velocity);
         bl.setPower((drive - strafe + turn) * velocity);
-
 
 
 
