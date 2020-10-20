@@ -78,15 +78,17 @@ public class MecanumAutoEncoder extends LinearOpMode {
 
         initialize();
         waitForStart();
-        if (opModeIsActive()) {
-            for (int i = 1; i < 2 + 1; i++) {
+        for (int i = 1; i < 2 + 1; i++) {
+            if (opModeIsActive()){
                 turn(i * 180, 0.5);
             }
+        }
 
-            for (int i = 0; i < 8; i++) {
-                strafe(i * 45, 5000, 0.0, null);
-                strafe(i * 45 + 180, 5000, 0.0, null);
-            }
+        for (int i = 0; i < 8; i++) {
+           if (opModeIsActive()){
+               strafe(i * 45, 5000, 0.0, null);
+               strafe(i * 45 + 180, 5000, 0.0, null);
+           }
         }
     }
     /**
@@ -175,41 +177,41 @@ public class MecanumAutoEncoder extends LinearOpMode {
      * @param MOE
      */
     public void turn(double targetAngle, double MOE) {
-            System.out.println("Turning to " + targetAngle + " degrees");
+        System.out.println("Turning to " + targetAngle + " degrees");
 
-            double currentAngle = imu.getAngle();
-            double deltaAngle = Math.abs(targetAngle - currentAngle);
-            double power = (targetAngle > currentAngle) ? 1 : -1;
-
-
-            // Retrieve angle and MOE
-            double upperBound = targetAngle + MOE;
-            double lowerBound = targetAngle - MOE;
-            while (lowerBound >= currentAngle || currentAngle >= upperBound) {
-
-                // Power Ramping based off a logistic piecewise
-                double currentDeltaAngle = targetAngle - currentAngle;
-                double anglePosition = deltaAngle - currentDeltaAngle + 0.01; // Added the 0.01 so that it doesn't get stuck at 0
+        double currentAngle = imu.getAngle();
+        double deltaAngle = Math.abs(targetAngle - currentAngle);
+        double power = (targetAngle > currentAngle) ? 1 : -1;
 
 
-                // Modeling a piece wise of power as a function of distance
-                power = powerRamp(anglePosition, deltaAngle, 0.3);
-                telemetry.addData("Power", power);
-                telemetry.update();
+        // Retrieve angle and MOE
+        double upperBound = targetAngle + MOE;
+        double lowerBound = targetAngle - MOE;
+        while ((lowerBound >= currentAngle || currentAngle >= upperBound) && opModeIsActive()) {
 
-                // Handle clockwise (+) and counterclockwise (-) motion
-                fl.setPower(-power);
-                fr.setPower(power);
-                bl.setPower(-power);
-                br.setPower(power);
-                //System.out.println("Power: " + power);
+            // Power Ramping based off a logistic piecewise
+            double currentDeltaAngle = targetAngle - currentAngle;
+            double anglePosition = deltaAngle - currentDeltaAngle + 0.01; // Added the 0.01 so that it doesn't get stuck at 0
 
-                currentAngle = imu.getAngle();
-            }
 
-            // Stop power
-            setAllPower(0);
+            // Modeling a piece wise of power as a function of distance
+            power = powerRamp(anglePosition, deltaAngle, 0.3);
+            telemetry.addData("Power", power);
+            telemetry.update();
+
+            // Handle clockwise (+) and counterclockwise (-) motion
+            fl.setPower(-power);
+            fr.setPower(power);
+            bl.setPower(-power);
+            br.setPower(power);
+            //System.out.println("Power: " + power);
+
+            currentAngle = imu.getAngle();
         }
+
+        // Stop power
+        setAllPower(0);
+    }
 
     /**
      * @return average encoder position
