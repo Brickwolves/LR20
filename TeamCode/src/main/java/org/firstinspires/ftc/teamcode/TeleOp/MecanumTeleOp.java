@@ -117,6 +117,10 @@ public class MecanumTeleOp extends OpMode {
         telemetry.addData("Turn", turn);
         telemetry.addData("IMU", imu.getAngle());
         telemetry.addData("Error", startHeading - imu.getAngle());
+        telemetry.addData("Fl", fl.getCurrentPosition());
+        telemetry.addData("FR", fr.getCurrentPosition());
+        telemetry.addData("BL", bl.getCurrentPosition());
+        telemetry.addData("BR", br.getCurrentPosition());
         telemetry.addData("Position", (fl.getCurrentPosition() + fr.getCurrentPosition() + bl.getCurrentPosition() + br.getCurrentPosition()) / 4.0);
 
     }
@@ -139,7 +143,6 @@ public class MecanumTeleOp extends OpMode {
         }
         else return 0;
     }
-
     /**
      * @param angle
      * @return coTermAngle

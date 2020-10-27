@@ -78,16 +78,17 @@ public class MecanumAutoEncoder extends LinearOpMode {
 
         initialize();
         waitForStart();
+        telemetry.addData("started", true);
         for (int i = 1; i < 2 + 1; i++) {
             if (opModeIsActive()){
                 turn(i * 180, 0.5);
             }
         }
-
+        telemetry.addData("started strafe", true);
         for (int i = 0; i < 8; i++) {
            if (opModeIsActive()){
-               strafe(i * 45, 5000, 0.0, null);
-               strafe(i * 45 + 180, 5000, 0.0, null);
+               strafe(i * 45, 500, 0.0, null);
+               strafe(i * 45 + 180, 500, 0.0, null);
            }
         }
     }
@@ -126,7 +127,7 @@ public class MecanumAutoEncoder extends LinearOpMode {
             if (task != null) task.execute();
 
             // Power ramping
-            double power = powerRamp(position, distance, 0.3);
+            double power = powerRamp(position, distance, 0.1);
 
 
             // PID Controller
@@ -145,6 +146,10 @@ public class MecanumAutoEncoder extends LinearOpMode {
             telemetry.addData("Power", power);
             telemetry.addData("Position", position);
             telemetry.addData("Distance", distance);
+            telemetry.addData("Fl", fl.getCurrentPosition());
+            telemetry.addData("FR", fr.getCurrentPosition());
+            telemetry.addData("BL", bl.getCurrentPosition());
+            telemetry.addData("BR", br.getCurrentPosition());
             telemetry.update();
         }
         setDrivePower(0, 0, 0);
@@ -164,9 +169,13 @@ public class MecanumAutoEncoder extends LinearOpMode {
         // Modeling a piece wise of power as a function of distance
         double p1 = normFactor * Math.sqrt(acceleration * position);
         double p2 = 1;
-        double p3 = normFactor * Math.sqrt(acceleration * (distance - position));
-
-        return Math.min(Math.min(p1, p2), p3);
+        double p3 = normFactor * Math.abs(Math.sqrt(acceleration * (distance - position)));
+        telemetry.addData("p3", p3);
+        telemetry.addData("normFactor", normFactor);
+        telemetry.addData("acceleration", acceleration);
+        telemetry.addData("distance", distance);
+        telemetry.addData("position", position);
+        return Math.min(Math.min(p1, p2), p3)+0.1;
     }
 
 
@@ -181,7 +190,8 @@ public class MecanumAutoEncoder extends LinearOpMode {
 
         double currentAngle = imu.getAngle();
         double deltaAngle = Math.abs(targetAngle - currentAngle);
-        double power = (targetAngle > currentAngle) ? 1 : -1;
+        double power;
+        double position = getPosition();
 
 
         // Retrieve angle and MOE
@@ -195,8 +205,16 @@ public class MecanumAutoEncoder extends LinearOpMode {
 
 
             // Modeling a piece wise of power as a function of distance
-            power = powerRamp(anglePosition, deltaAngle, 0.3);
+            power = powerRamp(anglePosition, deltaAngle, 0.1);
             telemetry.addData("Power", power);
+            telemetry.addData("Position", position);
+            telemetry.addData("deltaAngle", deltaAngle);
+            telemetry.addData("anglePosition", anglePosition);
+            telemetry.addData("currentDeltaAngle", currentDeltaAngle);
+            telemetry.addData("Fl", fl.getCurrentPosition());
+            telemetry.addData("FR", fr.getCurrentPosition());
+            telemetry.addData("BL", bl.getCurrentPosition());
+            telemetry.addData("BR", br.getCurrentPosition());
             telemetry.update();
 
             // Handle clockwise (+) and counterclockwise (-) motion
@@ -207,6 +225,8 @@ public class MecanumAutoEncoder extends LinearOpMode {
             //System.out.println("Power: " + power);
 
             currentAngle = imu.getAngle();
+
+            telemetry.addData("imu", currentAngle);
         }
 
         // Stop power
