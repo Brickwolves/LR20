@@ -46,6 +46,7 @@ public class MecanumAutoEncoder extends LinearOpMode {
 
     private DcMotor fl, fr, bl, br;
     private IMU imu;
+    private double currentPosition, currentAngle;
 
 
     public void initialize(){
@@ -120,14 +121,14 @@ public class MecanumAutoEncoder extends LinearOpMode {
         double turn = 0;
 
 
-        double position = getPosition();
-        while (position < distance && opModeIsActive()){
+        currentPosition = getPosition();
+        while (currentPosition < distance && opModeIsActive()){
 
             // Execute task synchronously
             if (task != null) task.execute();
 
             // Power ramping
-            double power = powerRamp(position, distance, 0.1);
+            double power = powerRamp(currentPosition, distance, 0.1);
 
 
             // PID Controller
@@ -137,14 +138,14 @@ public class MecanumAutoEncoder extends LinearOpMode {
 
 
             // Retrieve new position
-            position = getPosition();
+            currentPosition = getPosition();
 
 
             // Telemetry
             telemetry.addData("Drive", drive);
             telemetry.addData("Strafe", strafe);
             telemetry.addData("Power", power);
-            telemetry.addData("Position", position);
+            telemetry.addData("Position", currentPosition);
             telemetry.addData("Distance", distance);
             telemetry.addData("Fl", fl.getCurrentPosition());
             telemetry.addData("FR", fr.getCurrentPosition());
@@ -188,7 +189,7 @@ public class MecanumAutoEncoder extends LinearOpMode {
     public void turn(double targetAngle, double MOE) {
         System.out.println("Turning to " + targetAngle + " degrees");
 
-        double currentAngle = imu.getAngle();
+        currentAngle = imu.getAngle();
         double deltaAngle = Math.abs(targetAngle - currentAngle);
         double power;
         double position = getPosition();
