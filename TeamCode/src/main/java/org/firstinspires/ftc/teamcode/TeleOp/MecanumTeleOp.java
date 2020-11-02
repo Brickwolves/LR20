@@ -139,7 +139,7 @@ public class MecanumTeleOp extends OpMode {
         double lowerBound = targetAngle - MOE;
         if (lowerBound >= currentAngle || currentAngle >= upperBound){
             double coTermAngle = coTerminal(targetAngle - currentAngle);
-            return (coTermAngle <= 0) ? 0.6 : -0.6;
+            return (coTermAngle <= 0) ? 0.3 : -0.3;
         }
         else return 0;
     }
