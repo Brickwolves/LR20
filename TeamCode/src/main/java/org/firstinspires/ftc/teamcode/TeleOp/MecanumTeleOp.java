@@ -1,9 +1,14 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
+import com.qualcomm.hardware.hitechnic.HiTechnicNxtColorSensor;
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.ColorRangeSensor;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.teamcode.Utilities.IMU;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
@@ -16,6 +21,8 @@ public class MecanumTeleOp extends OpMode {
 
     private DcMotor fr, fl, br, bl;
     private IMU imu;
+    private TouchSensor touch;
+    private ColorRangeSensor color;
 
     private double startHeading;
     private boolean DPAD_Toggle;
@@ -31,6 +38,8 @@ public class MecanumTeleOp extends OpMode {
         fl = hardwareMap.get(DcMotor.class, "front_left_motor");
         br = hardwareMap.get(DcMotor.class, "back_right_motor");
         bl = hardwareMap.get(DcMotor.class, "back_left_motor");
+        touch = hardwareMap.get(TouchSensor.class, "touch_sensor");
+        color = hardwareMap.get(ColorRangeSensor.class, "color_sensor");
 
         fr.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         fl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -100,6 +109,15 @@ public class MecanumTeleOp extends OpMode {
         else if (gamepad1.dpad_down) turn = turn2(180, 0.5);
 
 
+        //touch sensor concept
+       if(touch.isPressed()){
+           turn = 5;
+       }
+       //color sensor concept
+        color.enableLed(false);
+
+
+
 
 
         // Setting driver power
@@ -117,11 +135,21 @@ public class MecanumTeleOp extends OpMode {
         telemetry.addData("Turn", turn);
         telemetry.addData("IMU", imu.getAngle());
         telemetry.addData("Error", startHeading - imu.getAngle());
+        /*
         telemetry.addData("Fl", fl.getCurrentPosition());
         telemetry.addData("FR", fr.getCurrentPosition());
         telemetry.addData("BL", bl.getCurrentPosition());
         telemetry.addData("BR", br.getCurrentPosition());
         telemetry.addData("Position", (fl.getCurrentPosition() + fr.getCurrentPosition() + bl.getCurrentPosition() + br.getCurrentPosition()) / 4.0);
+        */
+        telemetry.addData("touch", touch.isPressed());
+        telemetry.addData("red", color.red());
+        telemetry.addData("green", color.green());
+        telemetry.addData("blue", color.blue());
+        telemetry.addData("led", gamepad1.b);
+        telemetry.addData("colorType", color.getClass().getName());
+
+
 
     }
 
