@@ -114,7 +114,6 @@ public class MecanumTeleOp extends OpMode {
            turn = 5;
        }
        //color sensor concept
-        color.enableLed(false);
 
 
 
@@ -143,11 +142,10 @@ public class MecanumTeleOp extends OpMode {
         telemetry.addData("Position", (fl.getCurrentPosition() + fr.getCurrentPosition() + bl.getCurrentPosition() + br.getCurrentPosition()) / 4.0);
         */
         telemetry.addData("touch", touch.isPressed());
-        telemetry.addData("red", color.red());
-        telemetry.addData("green", color.green());
-        telemetry.addData("blue", color.blue());
-        telemetry.addData("led", gamepad1.b);
-        telemetry.addData("colorType", color.getClass().getName());
+        telemetry.addData("red", color.red() * 256/8192);
+        telemetry.addData("green", color.green() * 256/8192);
+        telemetry.addData("blue", color.blue() * 256/8192);
+        //telemetry.addData("colorType", color.getClass().getName());
 
 
 
