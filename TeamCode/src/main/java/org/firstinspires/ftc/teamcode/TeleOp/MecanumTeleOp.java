@@ -24,6 +24,7 @@ public class MecanumTeleOp extends OpMode {
     private TouchSensor touch;
     private ColorRangeSensor color;
 
+    private double[] orangeRGB;
     private double startHeading;
     private boolean DPAD_Toggle;
     private boolean RB_Toggle;
@@ -54,6 +55,8 @@ public class MecanumTeleOp extends OpMode {
         // Init IMU
         Utils.setHardwareMap(hardwareMap);
         imu = new IMU("imu");
+
+        orangeRGB = new double[]{239.0, 164.0, 70.0};
 
         startHeading = imu.getAngle();
         DPAD_Toggle = false;
@@ -118,6 +121,15 @@ public class MecanumTeleOp extends OpMode {
 
 
 
+       double[] currentRGB = {color.red(), color.green(), color.blue()};
+       double colorMargin = 10;
+       if (Utils.distance2Color(orangeRGB, currentRGB) < colorMargin){
+            telemetry.addData("Detecting Ring", true);
+       }
+       else telemetry.addData("Detecting Ring", false);
+
+
+
 
 
         // Setting driver power
@@ -153,6 +165,8 @@ public class MecanumTeleOp extends OpMode {
 
     }
 
+
+
     /**
      * @param targetAngle
      * @param MOE
@@ -181,6 +195,9 @@ public class MecanumTeleOp extends OpMode {
         coTermAngle -= 180;
         return coTermAngle;
    }
+
+
+
 }
 
 
