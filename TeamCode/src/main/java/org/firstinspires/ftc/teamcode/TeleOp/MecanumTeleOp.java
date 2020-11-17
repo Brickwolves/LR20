@@ -1,32 +1,41 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
-import com.qualcomm.hardware.hitechnic.HiTechnicNxtColorSensor;
-import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.ColorRangeSensor;
-import com.qualcomm.robotcore.hardware.ColorSensor;
+
+// Motors
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.TouchSensor;
+
+// Vision
 import org.firstinspires.ftc.teamcode.Utilities.Vuforia;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+
+// IMU  MISC Utilities
 import org.firstinspires.ftc.teamcode.Utilities.IMU;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
 
 @TeleOp(name = "Mecanum Drive", group="TeleOp")
-//@Disabled
 public class MecanumTeleOp extends OpMode {
 
-
+    // Motors
     private DcMotor fr, fl, br, bl;
+
+    // IMU Gyroscope
     private IMU imu;
+    private double startHeading;
+
+    // Sensors
     private TouchSensor touch;
     private ColorRangeSensor color;
     private WebcamName webcam;
     private double[] orangeRGB;
-    private double startHeading;
+
+    // Toggle Variables
     private boolean DPAD_Toggle;
     private boolean RB_Toggle;
     private boolean RBLastCycle;
@@ -129,6 +138,9 @@ public class MecanumTeleOp extends OpMode {
        }
        else telemetry.addData("Detecting Ring", false);
 
+
+
+       // Ring Detector with Webcam
 
 
 
