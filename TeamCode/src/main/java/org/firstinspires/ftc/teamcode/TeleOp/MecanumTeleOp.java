@@ -58,7 +58,7 @@ public class MecanumTeleOp extends OpMode {
         Utils.setHardwareMap(hardwareMap);
         imu = new IMU("imu");
 
-        orangeRGB = new double[]{239.0, 164.0, 70.0};
+        orangeRGB = new double[]{250.0, 175.0, 60.0};
 
         startHeading = imu.getAngle();
         DPAD_Toggle = false;
