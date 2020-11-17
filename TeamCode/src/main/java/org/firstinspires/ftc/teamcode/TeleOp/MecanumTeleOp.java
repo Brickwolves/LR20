@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.TouchSensor;
-
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Utilities.IMU;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
@@ -23,6 +23,7 @@ public class MecanumTeleOp extends OpMode {
     private IMU imu;
     private TouchSensor touch;
     private ColorRangeSensor color;
+    private WebcamName webcam;
 
     private double[] orangeRGB;
     private double startHeading;
@@ -41,6 +42,7 @@ public class MecanumTeleOp extends OpMode {
         bl = hardwareMap.get(DcMotor.class, "back_left_motor");
         touch = hardwareMap.get(TouchSensor.class, "touch_sensor");
         color = hardwareMap.get(ColorRangeSensor.class, "color_sensor");
+        webcam = hardwareMap.get(WebcamName.class, "webcam");
 
         fr.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         fl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -157,6 +159,7 @@ public class MecanumTeleOp extends OpMode {
         telemetry.addData("red", color.red() * 256/8192);
         telemetry.addData("green", color.green() * 256/8192);
         telemetry.addData("blue", color.blue() * 256/8192);
+        telemetry.addData("webcam", webcam.getConnectionInfo());
         //telemetry.addData("colorType", color.getClass().getName());
 
 
