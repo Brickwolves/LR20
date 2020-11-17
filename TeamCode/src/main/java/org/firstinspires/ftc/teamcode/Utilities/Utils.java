@@ -23,6 +23,5 @@ public class Utils {
         return Math.sqrt(Math.pow(baseRGB[0] - currentRGB[0], 2) + Math.pow(baseRGB[1] - currentRGB[1], 2) + Math.pow(baseRGB[2] - currentRGB[2], 2));
     }
 
-    public static double withinRange()
 
 }

@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.TouchSensor;
+import org.firstinspires.ftc.teamcode.Utilities.Vuforia;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Utilities.IMU;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
@@ -24,7 +25,6 @@ public class MecanumTeleOp extends OpMode {
     private TouchSensor touch;
     private ColorRangeSensor color;
     private WebcamName webcam;
-
     private double[] orangeRGB;
     private double startHeading;
     private boolean DPAD_Toggle;
