@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Utilities;
+package org.firstinspires.ftc.teamcode.Hardware.Sensors;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -7,19 +7,21 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
 public class IMU {
     private BNO055IMU imu;
     private Double previousAngle;
     private double deltaAngle;
+    private double startAngle;
 
     public IMU(String deviceName) {
-        HardwareMap hardwareMap = Utils.getHardwareMap();
 
-        imu = hardwareMap.get(BNO055IMU.class, deviceName);
+        imu = Utils.hardwareMap.get(BNO055IMU.class, deviceName);
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         imu.initialize(parameters);
 
+        startAngle = this.getAngle();
         previousAngle = null;
         deltaAngle = 0;
     }
@@ -71,5 +73,9 @@ public class IMU {
 
     public double getDeltaAngle(){
         return deltaAngle;
+    }
+
+    public double getStartAngle(){
+        return startAngle;
     }
 }

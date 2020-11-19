@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Utilities;
+package org.firstinspires.ftc.teamcode.Vision;
 
 import android.graphics.Bitmap;
 
@@ -16,7 +16,7 @@ public class Vuforia {
 
 
     public Vuforia() {
-        HardwareMap hardwareMap = Utils.getHardwareMap();
+        HardwareMap hardwareMap = Utils.hardwareMap;
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId"," id", hardwareMap.appContext.getPackageName());
         VuforiaLocalizer.Parameters params = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
         params.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
