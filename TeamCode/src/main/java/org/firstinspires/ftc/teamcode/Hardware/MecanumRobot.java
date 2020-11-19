@@ -21,6 +21,12 @@ public class MecanumRobot implements Robot {
       initRobot();
    }
 
+   public enum Direction {
+      NORTH,
+      WEST,
+      EAST,
+      SOUTH
+   }
 
    public void initRobot() {
       Utils.telemetry.addData("Status", "Initialized");
@@ -84,22 +90,66 @@ public class MecanumRobot implements Robot {
       bl.setPower((drive - strafe + turn) * velocity);
    }
 
-   /**
-    * @param targetAngle
-    * @param MOE
-    */
-   public double autoTurn(double targetAngle, double MOE) {
+   public void turn(Direction direction, double MOE) {
+      System.out.println("Turning to " + direction + " degrees");
 
-      System.out.println("Turning to " + targetAngle + " degrees");
+      double targetAngle = 0;
+      switch (direction) {
+         case NORTH:
+            targetAngle = 0;
+         case WEST:
+            targetAngle = -90;
+         case EAST:
+            targetAngle = 90;
+         case SOUTH:
+            targetAngle = 180;
+      }
 
       targetAngle += imu.getDeltaAngle();
       double currentAngle = imu.getAngle();
+      double totalDistanceAngle = Math.abs(targetAngle - currentAngle);
       double upperBound = targetAngle + MOE;
       double lowerBound = targetAngle - MOE;
-      if (lowerBound >= currentAngle || currentAngle >= upperBound){
+      if (lowerBound >= currentAngle || currentAngle >= upperBound) {
          double coTermAngle = Utils.coTerminal(targetAngle - currentAngle);
-         return (coTermAngle <= 0) ? 0.3 : -0.3;
+         double turn = (coTermAngle <= 0) ? 1 : -1;
+         setDrivePower(0, 0, turn, 0.3);
       }
-      else return 0;
    }
+
+   /**
+      * @param targetAngle
+      * @param MOE
+   */
+   public void turn(double targetAngle, double MOE) {
+         System.out.println("Turning to " + targetAngle + " degrees");
+
+         double currentAngle = imu.getAngle();
+         double deltaAngle = Math.abs(targetAngle - currentAngle);
+         double power;
+         double position = getPosition();
+
+
+         // Retrieve angle and MOE
+         double upperBound = targetAngle + MOE;
+         double lowerBound = targetAngle - MOE;
+         while (lowerBound >= currentAngle || currentAngle >= upperBound) {
+
+            // Power Ramping based off a logistic piecewise
+            double currentDeltaAngle = targetAngle - currentAngle;
+            double anglePosition = deltaAngle - currentDeltaAngle + 0.01; // Added the 0.01 so that it doesn't get stuck at 0
+
+
+            // Modeling a piece wise of power as a function of distance
+            power = Utils.powerRamp(anglePosition, deltaAngle, 0.1);
+
+            // Handle clockwise (+) and counterclockwise (-) motion
+            setDrivePower(0, 0, 1, power);
+
+            currentAngle = imu.getAngle();
+         }
+
+         // Stop power
+         setAllPower(0);
+      }
 }

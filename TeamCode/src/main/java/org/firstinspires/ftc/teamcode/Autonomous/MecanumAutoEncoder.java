@@ -35,6 +35,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 
+import org.firstinspires.ftc.teamcode.Hardware.Controller;
+import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
 import org.firstinspires.ftc.teamcode.Hardware.Sensors.IMU;
 import org.firstinspires.ftc.teamcode.Utilities.SyncTask;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
@@ -44,33 +46,14 @@ import org.firstinspires.ftc.teamcode.Utilities.Utils;
 //@Disabled
 public class MecanumAutoEncoder extends LinearOpMode {
 
-    private DcMotor fl, fr, bl, br;
-    private IMU imu;
+    private MecanumRobot mecanumRobot;
+    private Controller controller;
+
     private double currentPosition, currentAngle;
 
-
     public void initialize(){
-        // Motors
-        fl = hardwareMap.get(DcMotor.class, "front_left_motor");
-        fr = hardwareMap.get(DcMotor.class, "front_right_motor");
-        bl = hardwareMap.get(DcMotor.class, "back_left_motor");
-        br = hardwareMap.get(DcMotor.class, "back_right_motor");
-
-        fl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        fr.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        bl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        br.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        fl.setDirection(DcMotorSimple.Direction.REVERSE);
-        fr.setDirection(DcMotorSimple.Direction.FORWARD);
-        bl.setDirection(DcMotorSimple.Direction.REVERSE);
-        br.setDirection(DcMotorSimple.Direction.FORWARD);
-
-
-
-        // IMU (Inertial Measurement Unit)
         Utils.setHardwareMap(hardwareMap);
-        imu = new IMU("imu");
+        mecanumRobot = new MecanumRobot();
     }
 
 
@@ -82,7 +65,7 @@ public class MecanumAutoEncoder extends LinearOpMode {
         telemetry.addData("started", true);
         for (int i = 1; i < 2 + 1; i++) {
             if (opModeIsActive()){
-                turn(i * 180, 1.5);
+                mecanumRobot.turn(i * 180, 1.5);
             }
         }
         telemetry.addData("started strafe", true);
@@ -104,7 +87,7 @@ public class MecanumAutoEncoder extends LinearOpMode {
         System.out.println(angle + " " + ticks);
 
 
-        resetMotors();                                              // Reset Motor Encoders
+        mecanumRobot.initMotors();                                              // Reset Motor Encoders
 
         double learning_rate = 0.000001;
         double radians = angle * Math.PI / 180;                     // Convert to radians
@@ -122,162 +105,35 @@ public class MecanumAutoEncoder extends LinearOpMode {
         double turn = 0;
 
 
-        currentPosition = getPosition();
-        while (currentPosition < distance && opModeIsActive()){
+        currentPosition = mecanumRobot.getPosition();
+        while (mecanumRobot.getPosition() < distance && opModeIsActive()){
 
             // Execute task synchronously
             if (task != null) task.execute();
 
             // Power ramping
-            double power = powerRamp(currentPosition, distance, 0.075);
-
+            double power = Utils.powerRamp(currentPosition, distance, 0.075);
 
             // PID Controller
-            double error = startAngle - imu.getAngle();
+            double error = startAngle - mecanumRobot.imu.getAngle();
             turn += error * learning_rate;
-            setDrivePower(drive * power, strafe * power, turn);
-            // Retrieve new position
-            currentPosition = getPosition();
+            mecanumRobot.setDrivePower(drive * power, strafe * power, turn, 1);
 
-            // Telemetry
-            telemetry.addData("Drive", drive);
-            telemetry.addData("Strafe", strafe);
-            telemetry.addData("Power", power);
-            telemetry.addData("Position", currentPosition);
-            telemetry.addData("Distance", distance);
-            /*
-            telemetry.addData("Fl", fl.getCurrentPosition());
-            telemetry.addData("FR", fr.getCurrentPosition());
-            telemetry.addData("BL", bl.getCurrentPosition());
-            telemetry.addData("BR", br.getCurrentPosition());
-            */
-            telemetry.addData("imu", imu.getAngle());
-            telemetry.addData("error", error);
-            telemetry.addData("turn", turn);
-            telemetry.update();
-  }
-        setDrivePower(0, 0, 0);
-    }
-
-    /**
-     * @param position
-     * @param distance
-     * @param acceleration
-     * @return
-     */
-    public double powerRamp(double position, double distance, double acceleration){
-
-        position += 0.01;           // Necessary otherwise we're stuck at position 0 (sqrt(0) = 0)
-        double normFactor = 1 / Math.sqrt(0.1 * distance);
-
-        // Modeling a piece wise of power as a function of distance
-        double p1 = normFactor * Math.sqrt(acceleration * position);
-        double p2 = 1;
-        double p3 = normFactor * (Math.cbrt(acceleration * (distance - position)));
-        telemetry.addData("p3", p3);
-        telemetry.addData("normFactor", normFactor);
-        telemetry.addData("acceleration", acceleration);
-        telemetry.addData("distance", distance);
-        telemetry.addData("position", position);
-        return Math.min(Math.min(p1, p2), p3)+0.1;
-    }
-
-
-
-
-    /**
-     * @param targetAngle
-     * @param MOE
-     */
-    public void turn(double targetAngle, double MOE) {
-        System.out.println("Turning to " + targetAngle + " degrees");
-
-        currentAngle = imu.getAngle();
-        double deltaAngle = Math.abs(targetAngle - currentAngle);
-        double power;
-        double position = getPosition();
-
-
-        // Retrieve angle and MOE
-        double upperBound = targetAngle + MOE;
-        double lowerBound = targetAngle - MOE;
-        while ((lowerBound >= currentAngle || currentAngle >= upperBound) && opModeIsActive()) {
-
-            // Power Ramping based off a logistic piecewise
-            double currentDeltaAngle = targetAngle - currentAngle;
-            double anglePosition = deltaAngle - currentDeltaAngle + 0.01; // Added the 0.01 so that it doesn't get stuck at 0
-
-
-            // Modeling a piece wise of power as a function of distance
-            power = powerRamp(anglePosition, deltaAngle, 0.1);
-            telemetry.addData("Power", power);
-            telemetry.addData("Position", position);
-            telemetry.addData("deltaAngle", deltaAngle);
-            telemetry.addData("anglePosition", anglePosition);
-            telemetry.addData("currentDeltaAngle", currentDeltaAngle);
-            telemetry.addData("Fl", fl.getCurrentPosition());
-            telemetry.addData("FR", fr.getCurrentPosition());
-            telemetry.addData("BL", bl.getCurrentPosition());
-            telemetry.addData("BR", br.getCurrentPosition());
-            telemetry.update();
-
-            // Handle clockwise (+) and counterclockwise (-) motion
-            fl.setPower(-power);
-            fr.setPower(power);
-            bl.setPower(-power);
-            br.setPower(power);
-            //System.out.println("Power: " + power);
-
-            currentAngle = imu.getAngle();
-
-            telemetry.addData("imu", currentAngle);
+            // Log and get new position
+            currentPosition = mecanumRobot.getPosition();
+            log();
         }
-
-        // Stop power
-        setAllPower(0);
+        mecanumRobot.setAllPower(0);
     }
 
     /**
-     * @return average encoder position
+     * Logs out Telemetry Data
      */
-    double getPosition(){
-        return (Math.abs(fl.getCurrentPosition()) + Math.abs(fr.getCurrentPosition()) + Math.abs(bl.getCurrentPosition()) + Math.abs(br.getCurrentPosition())) / 4.0;
-    }
-
-
-    /**
-     * @param power
-     */
-    private void setAllPower(double power){
-        fl.setPower(power);
-        fr.setPower(power);
-        bl.setPower(power);
-        br.setPower(power);
-    }
-
-    /**
-     * @param drive
-     * @param strafe
-     * @param turn
-     */
-    public void setDrivePower(double drive, double strafe, double turn){
-        fr.setPower(drive - strafe - turn);
-        fl.setPower(drive + strafe + turn);
-        br.setPower(drive + strafe - turn);
-        bl.setPower(drive - strafe + turn);
-    }
-
-    /**
-     * Resets Motors
-     */
-    private void resetMotors(){
-        fl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        fr.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        bl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        br.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        fl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        fr.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        bl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        br.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    public void log(){
+        telemetry.addData("IMU", mecanumRobot.imu.getAngle());
+        telemetry.addData("RGB", "(${mecanumRobot.colorSensor.red()}, ${mecanumRobot.colorSensor.green()}, ${mecanumRobot.colorSensor.blue()}");
+        telemetry.addData("Error", mecanumRobot.imu.getStartAngle() - mecanumRobot.imu.getAngle());
+        telemetry.addData("touch", mecanumRobot.touchSensor.isPressed());
+        telemetry.addData("webcam", mecanumRobot.webCam.getConnectionInfo());
     }
 }

@@ -64,24 +64,23 @@ public class MecanumTeleOp extends OpMode {
         double velocity = (velocityToggle) ? 0.5 : 1;
 
         /*if (controller.right_bumper && !RBLastCycle ){
-            velocityToggle = !velocityToggle;
-            RBLastCycle = true;
+            velocityToggle = !velocityToggle; RBLastCycle = true;
         }
         else if (!controller.right_bumper) RBLastCycle = false;*/
 
 
-        // Auto Turn
-        if (controller.dpad_up) turn = mecanumRobot.autoTurn(0, 1);
-        else if (controller.dpad_right) turn = mecanumRobot.autoTurn(-90, 1);
-        else if (controller.dpad_left) turn = mecanumRobot.autoTurn(90, 1);
-        else if (controller.dpad_down) turn = mecanumRobot.autoTurn(180, 1);
+        // DPAD Auto Turn
+        if (controller.DPADPress()){
+            if (controller.dpad_up) mecanumRobot.turn(MecanumRobot.Direction.NORTH, 1);
+            else if (controller.dpad_right) mecanumRobot.turn(MecanumRobot.Direction.EAST, 1);
+            else if (controller.dpad_left) mecanumRobot.turn(MecanumRobot.Direction.WEST, 1);
+            else if (controller.dpad_down) mecanumRobot.turn(MecanumRobot.Direction.SOUTH, 1);
+        }
+        else mecanumRobot.setDrivePower(drive, strafe, turn, velocity);
 
 
        // Ring Detector with Webcam
 
-
-        // Set Drive Power and toggle
-        mecanumRobot.setDrivePower(drive, strafe, turn, velocity);
         log();
     }
 
@@ -95,6 +94,7 @@ public class MecanumTeleOp extends OpMode {
         telemetry.addData("Error", mecanumRobot.imu.getStartAngle() - mecanumRobot.imu.getAngle());
         telemetry.addData("touch", mecanumRobot.touchSensor.isPressed());
         telemetry.addData("webcam", mecanumRobot.webCam.getConnectionInfo());
+        telemetry.update();
     }
 
 

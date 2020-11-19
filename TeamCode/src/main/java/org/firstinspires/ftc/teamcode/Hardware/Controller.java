@@ -87,4 +87,7 @@ public class Controller extends Gamepad{
             return -this.getShiftedX();
         }
     }
+
+   public boolean DPADPress() {return dpad_down || dpad_left || dpad_right || dpad_up;}
+
 }
