@@ -106,7 +106,6 @@ public class MecanumRobot implements Robot {
       System.out.println("Turning to " + direction + " degrees");
 
       double targetAngle = 0;
-      // SOMETHING WRONG WITH THIS SWITCH CLAUSE, yields 180 / -180
       switch (direction) {
          case NORTH:
             targetAngle = 0;
