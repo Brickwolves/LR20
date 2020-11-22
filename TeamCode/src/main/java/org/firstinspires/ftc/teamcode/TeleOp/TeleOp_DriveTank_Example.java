@@ -46,10 +46,10 @@ import org.firstinspires.ftc.teamcode.HardwareMap.HardwareMap_Example;
 @TeleOp(name="Name This TeleOp Mode here", group="A Group needs a Name")
 // CHAWKS: What does @Disabled mean? what happens if we remove it?
 @Disabled
-public class TeleOp_DriveTank_Example extends HardwareMap_Example {
+public class TeleOp_DriveTank_Example extends LinearOpMode {
 
     /* CHAWKS: Call and declare the robot here */
-    //HardwareMap_Example robot   = new HardwareMap_Example();    // Use the Example hardware map
+    HardwareMap_Example robot   = new HardwareMap_Example();    // Use the Example hardware map
 
     // MUST HAVE
     @Override
@@ -74,7 +74,7 @@ public class TeleOp_DriveTank_Example extends HardwareMap_Example {
             CHAWKS: Step 0. Initialize OUR ROBOT
         */
         // MUST HAVE THIS LINE BELOW
-        init(hardwareMap);
+        robot.init(hardwareMap);
 
 
         // Send telemetry message to "Driver Station" signify robot waiting;
@@ -124,11 +124,8 @@ public class TeleOp_DriveTank_Example extends HardwareMap_Example {
                         Which motors are we missing?
                         What would happen if you apply power to half the wheels?
              */
-
-            leftBack.setPower(left);
-            rightBack.setPower(right);
-
-
+            robot.leftBack.setPower(left);
+            robot.rightBack.setPower(right);
 
             // Use gamepad left & right Bumpers to open and close the claw
             //if (gamepad1.right_bumper)
