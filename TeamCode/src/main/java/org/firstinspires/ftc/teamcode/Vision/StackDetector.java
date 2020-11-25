@@ -59,15 +59,15 @@ public class StackDetector extends OpMode {
         Mat upperCrop = new Mat();
         Mat lowerCrop = new Mat();
 
-        // Rectangles starting coordinates
-        int rectTopX1; int rectTopX2;
-        int rectTopY1; int rectTopY2;
+        // Rectangles starting coordinates      // Rectangles starting percentages
+        int rectTopX1; int rectTopX2;           double rectTopX1Percent = 0; double rectTopX2Percent = 0;
+        int rectTopY1; int rectTopY2;           double rectTopY1Percent = 0; double rectTopY2Percent = 0;
 
-        // Rectangles starting coordinates
-        int rectBottomX1; int rectBottomX2;
-        int rectBottomY1; int rectBottomY2;
+        // Rectangles starting coordinates      // Rectangles starting percentages
+        int rectBottomX1; int rectBottomX2;     double rectBottomX1Percent = 0; double rectBottomX2Percent = 0;
+        int rectBottomY1; int rectBottomY2;     double rectBottomY1Percent = 0; double rectBottomY2Percent = 0;
 
-        final double[] ORANGE = {};
+        final double[] ORANGE = {  };
 
         @Override
         public Mat processFrame(Mat input) {
@@ -77,20 +77,19 @@ public class StackDetector extends OpMode {
 
             input.copyTo(outPut);
 
-
             // Dimensions for top rectangle
-            rectTopX1 = (int) Math.round(YCbCr.rows() * .18);
-            rectTopX2 = (int) Math.round(YCbCr.cols() * );
-            rectTopY1 = (int) Math.round(YCbCr.cols() * );
-            rectTopY2 = (int) Math.round(YCbCr.cols() * );
+            rectTopX1 = (int) Math.round(YCbCr.rows() * rectTopX1Percent);
+            rectTopX2 = (int) Math.round(YCbCr.rows() * rectTopX2Percent);
+            rectTopY1 = (int) Math.round(YCbCr.cols() * rectTopY1Percent);
+            rectTopY2 = (int) Math.round(YCbCr.cols() * rectTopY2Percent);
 
             // Dimensions for bottom rectangle
-            rectBottomX1 = (int) Math.round(YCbCr.rows() * .18);
-            rectBottomX2 = (int) Math.round(YCbCr.cols() * );
-            rectBottomY1 = (int) Math.round(YCbCr.cols() * );
-            rectBottomY2 = (int) Math.round(YCbCr.cols() * );
+            rectBottomX1 = (int) Math.round(YCbCr.rows() * rectBottomX1Percent);
+            rectBottomX2 = (int) Math.round(YCbCr.rows() * rectBottomX2Percent);
+            rectBottomY1 = (int) Math.round(YCbCr.cols() * rectBottomY1Percent);
+            rectBottomY2 = (int) Math.round(YCbCr.cols() * rectBottomY2Percent);
 
-            // VISUALIZATION: Create rectangles and scalars
+            // VISUALIZATION: Create rectangles and scalars, then draw them onto outPut
             Scalar rectangleColor = new Scalar(0, 0, 255);
             Rect rectTop = new Rect(rectTopX1, rectTopY2, rectTopX2, rectTopY2);
             Rect rectBottom = new Rect(rectBottomX1, rectBottomY1, rectBottomX2, rectBottomY2);
@@ -123,18 +122,22 @@ public class StackDetector extends OpMode {
 
             // Check bounds
             if (
+
                     finalLowerAve > 15 &&
                     finalLowerAve < 130 &&
                     finalUpperAve < 130
 
             ) ringCount = 4.0;
             else if (
+
                     finalLowerAve > 10 &&
                     finalUpperAve < 15 &&
                     finalLowerAve > 10 &&
                     finalUpperAve < 15
+
             ) ringCount = 0.0;
             else ringCount = 1.0;
+
 
             // Return altered image
             return outPut;
