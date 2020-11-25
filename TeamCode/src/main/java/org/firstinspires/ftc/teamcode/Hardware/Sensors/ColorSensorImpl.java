@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode.Hardware.Sensors;
 
-import com.qualcomm.hardware.ams.AMSColorSensorImpl;
 import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.I2cAddr;
 
 /**
  * Had to create this wrapper class because I can't simply extend every possible implementation such as BroadCom, Lynx, or AMS.
@@ -11,7 +9,7 @@ import com.qualcomm.robotcore.hardware.I2cAddr;
  */
 public class ColorSensorImpl {
 
-    ColorSensor src;
+    public ColorSensor src;
     public ColorSensorImpl(ColorSensor src) {
        this.src = src;
     }

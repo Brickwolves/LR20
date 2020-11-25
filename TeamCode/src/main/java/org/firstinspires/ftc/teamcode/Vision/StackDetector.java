@@ -60,8 +60,12 @@ public class StackDetector extends OpMode {
         Mat lowerCrop = new Mat();
 
         // Rectangles starting coordinates
-        int rect1X = 0; int rect2X = 0;
-        int rect1Y = 0; int rect2Y = 0;
+        int rectTopX1; int rectTopX2;
+        int rectTopY1; int rectTopY2;
+
+        // Rectangles starting coordinates
+        int rectBottomX1; int rectBottomX2;
+        int rectBottomY1; int rectBottomY2;
 
         final double[] ORANGE = {};
 
@@ -73,12 +77,23 @@ public class StackDetector extends OpMode {
 
             input.copyTo(outPut);
 
-            rect1X = (int) Math.round(YCbCr.rows() * .18);
+
+            // Dimensions for top rectangle
+            rectTopX1 = (int) Math.round(YCbCr.rows() * .18);
+            rectTopX2 = (int) Math.round(YCbCr.cols() * );
+            rectTopY1 = (int) Math.round(YCbCr.cols() * );
+            rectTopY2 = (int) Math.round(YCbCr.cols() * );
+
+            // Dimensions for bottom rectangle
+            rectBottomX1 = (int) Math.round(YCbCr.rows() * .18);
+            rectBottomX2 = (int) Math.round(YCbCr.cols() * );
+            rectBottomY1 = (int) Math.round(YCbCr.cols() * );
+            rectBottomY2 = (int) Math.round(YCbCr.cols() * );
 
             // VISUALIZATION: Create rectangles and scalars
             Scalar rectangleColor = new Scalar(0, 0, 255);
-            Rect rectTop = new Rect(rect1X, rect1Y, 119, 69);
-            Rect rectBottom = new Rect(rect2X, rect2Y, 119, 20);
+            Rect rectTop = new Rect(rectTopX1, rectTopY2, rectTopX2, rectTopY2);
+            Rect rectBottom = new Rect(rectBottomX1, rectBottomY1, rectBottomX2, rectBottomY2);
             Imgproc.rectangle(outPut, rectTop, rectangleColor, 2);
             Imgproc.rectangle(outPut, rectBottom, rectangleColor, 2);
 

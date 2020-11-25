@@ -34,6 +34,7 @@ public class ObjectDetector {
 
             // step through the list of recognitions and display boundary info.
             // Retrieve recognition with max confidence
+            // CHECK 0 OBJECTS, 0.8 min confidence
             int i = 0;
             int alphaIndex = -1;
             double alphaConfidence = -1.0;

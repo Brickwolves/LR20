@@ -6,7 +6,6 @@ import org.firstinspires.ftc.teamcode.Hardware.Sensors.ColorSensorImpl;
 import org.firstinspires.ftc.teamcode.Hardware.Sensors.IMU;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
-import java.util.ArrayList;
 
 import static org.firstinspires.ftc.teamcode.Utilities.Utils.telemetry;
 
