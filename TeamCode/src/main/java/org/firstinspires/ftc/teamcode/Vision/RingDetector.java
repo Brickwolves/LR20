@@ -1,30 +1,41 @@
 package org.firstinspires.ftc.teamcode.Vision;
 
 // Vision Hardware
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
 public class RingDetector {
 
    private Vuforia vuforia;
-   private WebcamName webcam;
-   private double[] orangeRGB;
+   private ObjectDetector od;
+
+   public enum Config {
+      NONE,
+      SINGLE,
+      QUAD
+   }
 
    public RingDetector(){
-      orangeRGB = new double[]{250.0, 175.0, 60.0};
+      vuforia = new Vuforia();
+      ObjectDetector od = new ObjectDetector();
    }
 
-   public int getRingConfig(){
+   public Config getRingConfig(){
 
-      /*double[] currentRGB = mecanumRobot.colorSensor.red();
-      double colorMargin = 10;
-      if (Utils.distance2Color(orangeRGB, currentRGB) < colorMargin){
-         telemetry.addData("Detecting Ring", true);
+      Recognition recog = od.getPrimaryObject();
+      if (recog == null) throw new Error("No object detected");
+
+      switch (recog.getLabel()){
+
+         case "Single":
+            return Config.SINGLE;
+         case "Quad":
+             return Config.QUAD;
       }
-      else telemetry.addData("Detecting Ring", false);
-      */
-
-     return 0;
+     return Config.NONE;
    }
-
 }

@@ -2,17 +2,21 @@ package org.firstinspires.ftc.teamcode.Hardware;
 
 import com.qualcomm.robotcore.hardware.*;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.Hardware.Sensors.ColorSensorImpl;
 import org.firstinspires.ftc.teamcode.Hardware.Sensors.IMU;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
 import java.util.ArrayList;
+
+import static org.firstinspires.ftc.teamcode.Utilities.Utils.telemetry;
 
 public class MecanumRobot implements Robot {
 
    private HardwareMap hardwareMap;
    private DcMotor fr, fl, br, bl;
    public TouchSensor touchSensor;
-   public ColorSensor colorSensor;
+   public ColorSensorImpl colorSensor;
+   public ColorSensor colorSensorBase;
    public WebcamName webCam;
    public IMU imu;
 
@@ -40,7 +44,8 @@ public class MecanumRobot implements Robot {
 
       // Sensors
       touchSensor = Utils.hardwareMap.get(TouchSensor.class, "touch_sensor");
-      colorSensor = Utils.hardwareMap.get(ColorRangeSensor.class, "color_sensor");
+      colorSensorBase = Utils.hardwareMap.get(ColorSensor.class, "color_sensor");
+      colorSensor = new ColorSensorImpl(colorSensorBase);
       webCam = Utils.hardwareMap.get(WebcamName.class, "webcam");
       imu = new IMU("imu");
    }
@@ -49,15 +54,22 @@ public class MecanumRobot implements Robot {
     * (Re)Init Motors
     */
    public void initMotors(){
+      fr.setDirection(DcMotorSimple.Direction.FORWARD);
+      fl.setDirection(DcMotorSimple.Direction.REVERSE);
+      br.setDirection(DcMotorSimple.Direction.FORWARD);
+      bl.setDirection(DcMotorSimple.Direction.REVERSE);
+
       fl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
       fr.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
       bl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
       br.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
       fl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
       fr.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
       bl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
       br.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
    }
+
 
 
    /**
@@ -94,28 +106,33 @@ public class MecanumRobot implements Robot {
       System.out.println("Turning to " + direction + " degrees");
 
       double targetAngle = 0;
+      // SOMETHING WRONG WITH THIS SWITCH CLAUSE, yields 180 / -180
       switch (direction) {
          case NORTH:
             targetAngle = 0;
+            break;
          case WEST:
-            targetAngle = -90;
-         case EAST:
             targetAngle = 90;
+            break;
+         case EAST:
+            targetAngle = -90;
+            break;
          case SOUTH:
             targetAngle = 180;
+            break;
       }
-
       targetAngle += imu.getDeltaAngle();
       double currentAngle = imu.getAngle();
-      double totalDistanceAngle = Math.abs(targetAngle - currentAngle);
       double upperBound = targetAngle + MOE;
       double lowerBound = targetAngle - MOE;
-      if (lowerBound >= currentAngle || currentAngle >= upperBound) {
+      if (lowerBound >= currentAngle || currentAngle >= upperBound){
          double coTermAngle = Utils.coTerminal(targetAngle - currentAngle);
          double turn = (coTermAngle <= 0) ? 1 : -1;
          setDrivePower(0, 0, turn, 0.3);
       }
+      telemetry.addData("TargetAngle", targetAngle);
    }
+
 
    /**
       * @param targetAngle

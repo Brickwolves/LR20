@@ -11,6 +11,13 @@ public class Utils {
     public static void setHardwareMap(HardwareMap hardwareMap){ Utils.hardwareMap = hardwareMap; }
     public static void setTelemetry(Telemetry telemetry) { Utils.telemetry = telemetry; }
 
+    /**
+     * I'm lazy
+     * @param str
+     */
+    public static void print(String str){
+        System.out.println(str);
+    }
 
     /**
      * @param position

@@ -53,6 +53,7 @@ public class MecanumAutoEncoder extends LinearOpMode {
 
     public void initialize(){
         Utils.setHardwareMap(hardwareMap);
+        Utils.setTelemetry(telemetry);
         mecanumRobot = new MecanumRobot();
     }
 

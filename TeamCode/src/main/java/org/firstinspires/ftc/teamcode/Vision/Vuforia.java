@@ -11,14 +11,16 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.util.Warning;
 
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
+import static org.firstinspires.ftc.teamcode.Utilities.Utils.hardwareMap;
+
 public class Vuforia {
     private VuforiaLocalizer vuforiaLocalizer;
 
 
     public Vuforia() {
-        HardwareMap hardwareMap = Utils.hardwareMap;
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId"," id", hardwareMap.appContext.getPackageName());
-        VuforiaLocalizer.Parameters params = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+        //int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId"," id", Utils.hardwareMap.appContext.getPackageName());
+        //VuforiaLocalizer.Parameters params = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+        VuforiaLocalizer.Parameters params = new VuforiaLocalizer.Parameters();
         params.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
         params.vuforiaLicenseKey = "AbuxcJX/////AAABmXadAYnA80uwmb4Rhy4YmvIh7qg/f2yrRu1Nd8O7sSufbUWHSv1jDhunwDBItvFchrvkc8EjTzjh97m2kAPy8YOjBclQbEBtuR8qcIfrGofASCZh2M6vQ0/Au+YbhYh0MLLdNrond+3YjkLswv6+Se3eVGw9y9fPGamiABzIrosjUdanAOWemf8BtuQUW7EqXa4mNPtQ+2jpZQO2sqtqxGu1anHQCD0S/PvdZdB7dRkyWaH6XTZCat5gZ0fpFH/aLWMFP4yiknlgYbjT7gklUAqyDX81pNrQhWWY4dOFnz2WiWhkCt+MNZMLKH5SdsyC7gwKI/r3h51pTwgXZfyYymB60eYAFqEUpeTrL+4LmltN";
 
@@ -45,4 +47,10 @@ public class Vuforia {
         return bitmap;
     }
 
+    /**
+     * @return {VuforiaLocalizer} vuforiaLocalizer
+     */
+    public VuforiaLocalizer getVuforiaLocalizer() {
+        return vuforiaLocalizer;
+    }
 }
