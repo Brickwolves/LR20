@@ -41,12 +41,15 @@ public class StackDetector extends OpMode {
 
         if (ringCount == 1.0){
             // drive somewhere
+            telemetry.addData("RingCount", 1.0);
         }
         else if (ringCount == 4.0){
             // drive somewhere else
+            telemetry.addData("RingCount", 4.0);
         }
         else {
             // drive somewhere other than else
+            telemetry.addData("RingCount", 0.0);
         }
 
     }
