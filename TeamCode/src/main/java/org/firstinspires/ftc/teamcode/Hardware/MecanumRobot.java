@@ -42,9 +42,9 @@ public class MecanumRobot implements Robot {
       initMotors();
 
       // Sensors
-      touchSensor = Utils.hardwareMap.get(TouchSensor.class, "touch_sensor");
-      colorSensorBase = Utils.hardwareMap.get(ColorSensor.class, "color_sensor");
-      colorSensor = new ColorSensorImpl(colorSensorBase);
+      //touchSensor = Utils.hardwareMap.get(TouchSensor.class, "touch_sensor");
+      //colorSensorBase = Utils.hardwareMap.get(ColorSensor.class, "color_sensor");
+      //colorSensor = new ColorSensorImpl(colorSensorBase);
       webCam = Utils.hardwareMap.get(WebcamName.class, "webcam");
       imu = new IMU("imu");
    }
