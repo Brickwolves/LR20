@@ -1,25 +1,24 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
-import com.qualcomm.robotcore.hardware.TouchSensor;
-import com.qualcomm.robotcore.hardware.ColorRangeSensor;
-
-// Motors
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-// Vision
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-
-// IMU  MISC Utilities
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Utilities.IMU;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
+// Motors
+// Vision
+// IMU  MISC Utilities
 
-@TeleOp(name = "Mecanum Drive", group="TeleOp")
-public class MecanumTeleOp extends OpMode {
+@Config
+@TeleOp(name = "Dash Mecanum Drive", group="TeleOp")
+public class DashMecanumTeleOp extends OpMode {
 
     // Motors
     private DcMotor fr, fl, br, bl;
@@ -28,17 +27,15 @@ public class MecanumTeleOp extends OpMode {
     private IMU imu;
     private double startHeading;
 
-    // Sensors
-    private TouchSensor touch;
-    private ColorRangeSensor color;
-    private WebcamName webcam;
-    private double[] orangeRGB;
-
     // Toggle Variables
     private boolean DPAD_Toggle;
     private boolean RB_Toggle;
     private boolean RBLastCycle;
     private boolean velocityToggle;
+
+    private FtcDashboard dashboard = FtcDashboard.getInstance();
+    private Telemetry dashboardTelemetry = dashboard.getTelemetry();
+    private MultipleTelemetry multTelemetry = new MultipleTelemetry(telemetry, dashboardTelemetry);
 
     @Override
     public void init() {
@@ -48,9 +45,6 @@ public class MecanumTeleOp extends OpMode {
         fl = hardwareMap.get(DcMotor.class, "front_left_motor");
         br = hardwareMap.get(DcMotor.class, "back_right_motor");
         bl = hardwareMap.get(DcMotor.class, "back_left_motor");
-        touch = hardwareMap.get(TouchSensor.class, "touch_sensor");
-        color = hardwareMap.get(ColorRangeSensor.class, "color_sensor");
-        webcam = hardwareMap.get(WebcamName.class, "webcam");
 
         fr.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         fl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -62,11 +56,10 @@ public class MecanumTeleOp extends OpMode {
         br.setDirection(DcMotorSimple.Direction.FORWARD);
         bl.setDirection(DcMotorSimple.Direction.REVERSE);
 
+
         // Init IMU
         Utils.setHardwareMap(hardwareMap);
         imu = new IMU("imu");
-
-        orangeRGB = new double[]{250.0, 175.0, 60.0};
 
         startHeading = imu.getAngle();
         DPAD_Toggle = false;
@@ -105,7 +98,6 @@ public class MecanumTeleOp extends OpMode {
         double velocity = 1;
 
 
-
         // Gamepad Toggles
         if (gamepad1.right_bumper && !RBLastCycle ){
             velocityToggle = !velocityToggle;
@@ -122,28 +114,6 @@ public class MecanumTeleOp extends OpMode {
         else if (gamepad1.dpad_down) turn = turn2(180, 0.5);
 
 
-        //touch sensor concept
-       if(touch.isPressed()){
-           turn = 5;
-       }
-       //color sensor concept
-
-
-
-       double[] currentRGB = {color.red(), color.green(), color.blue()};
-       double colorMargin = 10;
-       if (Utils.distance2Color(orangeRGB, currentRGB) < colorMargin){
-            telemetry.addData("Detecting Ring", true);
-       }
-       else telemetry.addData("Detecting Ring", false);
-
-
-
-       // Ring Detector with Webcam
-
-
-
-
         // Setting driver power
         fr.setPower((drive - strafe - turn) * velocity);
         fl.setPower((drive + strafe + turn) * velocity);
@@ -151,26 +121,24 @@ public class MecanumTeleOp extends OpMode {
         bl.setPower((drive - strafe + turn) * velocity);
 
 
+        multTelemetry.addData("Velocity Toggle", velocityToggle);
+
 
         // Telemetry
+        /*
         telemetry.addData("Velocity Toggle", velocityToggle);
         telemetry.addData("Strafe", strafe);
         telemetry.addData("Drive", drive);
         telemetry.addData("Turn", turn);
         telemetry.addData("IMU", imu.getAngle());
         telemetry.addData("Error", startHeading - imu.getAngle());
-        /*
+
         telemetry.addData("Fl", fl.getCurrentPosition());
         telemetry.addData("FR", fr.getCurrentPosition());
         telemetry.addData("BL", bl.getCurrentPosition());
         telemetry.addData("BR", br.getCurrentPosition());
         telemetry.addData("Position", (fl.getCurrentPosition() + fr.getCurrentPosition() + bl.getCurrentPosition() + br.getCurrentPosition()) / 4.0);
         */
-        telemetry.addData("touch", touch.isPressed());
-        telemetry.addData("red", color.red() * 256/8192);
-        telemetry.addData("green", color.green() * 256/8192);
-        telemetry.addData("blue", color.blue() * 256/8192);
-        telemetry.addData("webcam", webcam.getConnectionInfo());
         //telemetry.addData("colorType", color.getClass().getName());
 
 
