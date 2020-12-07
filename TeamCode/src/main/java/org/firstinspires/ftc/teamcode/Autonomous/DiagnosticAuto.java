@@ -40,9 +40,9 @@ import org.firstinspires.ftc.teamcode.Utilities.SyncTask;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
 
-@Autonomous(name="Mecanum Encoder", group="Autonomous Linear Opmode")
+@Autonomous(name="Diagnostic Mecanum Encoder", group="Autonomous Linear Opmode")
 //@Disabled
-public class MecanumAutoEncoder extends LinearOpMode {
+public class DiagnosticAuto extends LinearOpMode {
 
     private DcMotor fl, fr, bl, br;
     private IMU imu;

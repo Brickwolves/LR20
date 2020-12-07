@@ -27,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.Utilities.sampleVIS;
+package org.firstinspires.ftc.teamcode.Vision.sampleVIS;
 
 import android.graphics.Bitmap;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
