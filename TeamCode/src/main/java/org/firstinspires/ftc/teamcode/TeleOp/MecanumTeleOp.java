@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 
@@ -33,6 +34,7 @@ public class MecanumTeleOp extends OpMode {
     private TouchSensor touch;
     private ColorRangeSensor color;
     private WebcamName webcam;
+    private Servo servo1;
     private double[] orangeRGB;
 
     // Toggle Variables
@@ -52,6 +54,7 @@ public class MecanumTeleOp extends OpMode {
         touch = hardwareMap.get(TouchSensor.class, "touch_sensor");
         color = hardwareMap.get(ColorRangeSensor.class, "color_sensor");
         webcam = hardwareMap.get(WebcamName.class, "webcam");
+        servo1 = hardwareMap.get(Servo.class, "servo1");
 
         fr.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         fl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -128,6 +131,8 @@ public class MecanumTeleOp extends OpMode {
            turn = 5;
        }
        //color sensor concept
+        //servo concept
+
 
 
 
