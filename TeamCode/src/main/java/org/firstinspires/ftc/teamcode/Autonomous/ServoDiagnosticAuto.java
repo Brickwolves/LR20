@@ -68,7 +68,7 @@ public class ServoDiagnosticAuto extends LinearOpMode {
         br.setDirection(DcMotorSimple.Direction.FORWARD);
 
         servo = hardwareMap.get(Servo.class, "servoTest");
-
+        servo.setDirection(Servo.Direction.FORWARD);
         // IMU (Inertial Measurement Unit)
         Utils.setHardwareMap(hardwareMap);
         imu = new IMU("imu");
@@ -87,6 +87,7 @@ public class ServoDiagnosticAuto extends LinearOpMode {
             servoPosition = servo.getPosition();
             if (servoPosition == 1 || servoPosition == -1) power *= -1;
             servo.setPosition(power);
+
 
             telemetry.addData("Servo Pos", servoPosition);
             telemetry.addData("Power", power);
