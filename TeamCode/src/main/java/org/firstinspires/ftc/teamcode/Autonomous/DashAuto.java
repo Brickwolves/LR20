@@ -29,25 +29,32 @@ package org.firstinspires.ftc.teamcode.Autonomous;
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Utilities.DashConstants;
 import org.firstinspires.ftc.teamcode.Utilities.IMU;
-import org.firstinspires.ftc.teamcode.Utilities.SyncTask;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
+import org.firstinspires.ftc.teamcode.Utilities.SyncTask;
 
-
-@Autonomous(name="Mecanum Encoder", group="Autonomous Linear Opmode")
+@Config
+@Autonomous(name="Dash Mecanum Encoder", group="Autonomous Linear Opmode")
 //@Disabled
-public class MecanumAutoEncoder extends LinearOpMode {
+public class DashAuto extends LinearOpMode {
 
     private DcMotor fl, fr, bl, br;
     private IMU imu;
     private double currentPosition, currentAngle;
 
+    private FtcDashboard dashboard = FtcDashboard.getInstance();
+    private Telemetry dashboardTelemetry = dashboard.getTelemetry();
+    private MultipleTelemetry multTelemetry = new MultipleTelemetry(telemetry, dashboardTelemetry);
 
     public void initialize(){
         // Motors
@@ -139,7 +146,16 @@ public class MecanumAutoEncoder extends LinearOpMode {
             // Retrieve new position
             currentPosition = getPosition();
 
-            // Telemetry
+
+            multTelemetry.addData("Testing FTC Dashboard MultipleTelemetry", true);
+
+            multTelemetry.addData("P", DashConstants.p);
+            multTelemetry.addData("I", DashConstants.i);
+            multTelemetry.addData("D", DashConstants.d);
+
+            multTelemetry.addData("Drive", drive);
+
+            /* Telemetry
             telemetry.addData("Drive", drive);
             telemetry.addData("Strafe", strafe);
             telemetry.addData("Power", power);
@@ -151,10 +167,13 @@ public class MecanumAutoEncoder extends LinearOpMode {
             telemetry.addData("BL", bl.getCurrentPosition());
             telemetry.addData("BR", br.getCurrentPosition());
             */
+            /*
             telemetry.addData("imu", imu.getAngle());
             telemetry.addData("error", error);
             telemetry.addData("turn", turn);
             telemetry.update();
+            */
+
   }
         setDrivePower(0, 0, 0);
     }

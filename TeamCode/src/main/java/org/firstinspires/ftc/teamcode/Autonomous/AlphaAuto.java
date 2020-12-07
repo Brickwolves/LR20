@@ -29,34 +29,48 @@ package org.firstinspires.ftc.teamcode.Autonomous;
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.Utilities.DashConstants;
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.teamcode.Utilities.IMU;
-import org.firstinspires.ftc.teamcode.Utilities.Utils;
 import org.firstinspires.ftc.teamcode.Utilities.SyncTask;
+import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
-@Config
-@Autonomous(name="Dash Mecanum Encoder", group="Autonomous Linear Opmode")
+import java.util.List;
+
+
+@Autonomous(name="Alpha Mecanum Encoder", group="Autonomous Linear Opmode")
 //@Disabled
-public class DashMecanumAutoEncoder extends LinearOpMode {
+public class AlphaAuto extends LinearOpMode {
 
     private DcMotor fl, fr, bl, br;
     private IMU imu;
     private double currentPosition, currentAngle;
 
-    private FtcDashboard dashboard = FtcDashboard.getInstance();
-    private Telemetry dashboardTelemetry = dashboard.getTelemetry();
-    private MultipleTelemetry multTelemetry = new MultipleTelemetry(telemetry, dashboardTelemetry);
 
-    public void initialize(){
+    private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
+    private static final String LABEL_FIRST_ELEMENT = "Quad";
+    private static final String LABEL_SECOND_ELEMENT = "Single";
+    private static final String VUFORIA_KEY =
+            "AbuxcJX/////AAABmXadAYnA80uwmb4Rhy4YmvIh7qg/f2yrRu1Nd8O7sSufbUWHSv1jDhunwDBItvFchrvkc8EjTzjh97m2kAPy8YOjBclQbEBtuR8qcIfrGofASCZh2M6vQ0/Au+YbhYh0MLLdNrond+3YjkLswv6+Se3eVGw9y9fPGamiABzIrosjUdanAOWemf8BtuQUW7EqXa4mNPtQ+2jpZQO2sqtqxGu1anHQCD0S/PvdZdB7dRkyWaH6XTZCat5gZ0fpFH/aLWMFP4yiknlgYbjT7gklUAqyDX81pNrQhWWY4dOFnz2WiWhkCt+MNZMLKH5SdsyC7gwKI/r3h51pTwgXZfyYymB60eYAFqEUpeTrL+4LmltN";
+    private VuforiaLocalizer vuforia;
+    private TFObjectDetector tfod;
+
+
+    public enum Config {
+        NONE,
+        SINGLE,
+        QUAD
+    }
+
+
+    public void initialize() {
         // Motors
         fl = hardwareMap.get(DcMotor.class, "front_left_motor");
         fr = hardwareMap.get(DcMotor.class, "front_right_motor");
@@ -73,11 +87,15 @@ public class DashMecanumAutoEncoder extends LinearOpMode {
         bl.setDirection(DcMotorSimple.Direction.REVERSE);
         br.setDirection(DcMotorSimple.Direction.FORWARD);
 
-
-
         // IMU (Inertial Measurement Unit)
         Utils.setHardwareMap(hardwareMap);
         imu = new IMU("imu");
+
+
+        initVuforia();
+        initTfod();
+
+
     }
 
 
@@ -87,21 +105,100 @@ public class DashMecanumAutoEncoder extends LinearOpMode {
         initialize();
         waitForStart();
         telemetry.addData("started", true);
-        for (int i = 1; i < 2 + 1; i++) {
-            if (opModeIsActive()){
-                turn(i * 180, 1.5);
-            }
+
+        int rings = getRingConfig();
+        for (int i=0; i < rings; i++){
+            turn(180, 0.5);
         }
-        telemetry.addData("started strafe", true);
-        for (int i = 0; i < 8; i++) {
-           if (opModeIsActive()){
-               strafe(i * 45, 500, 0.0, null);
-               sleep(100);
-               strafe(i * 45 + 180, 500, 0.0, null);
-               sleep(100);
-           }
-        }
+
+
+
     }
+
+
+    /**
+     * Get current ring config
+     */
+    public int getRingConfig(){
+
+        Recognition recog = getPrimaryObject();
+        if (recog == null) throw new Error("No object detected");
+
+        switch (recog.getLabel()){
+
+            case "Single":
+                //return Config.SINGLE;
+                return 1;
+            case "Quad":
+                //return Config.QUAD;
+                return 4;
+        }
+        //return Config.NONE;
+        return 0;
+    }
+
+    public Recognition getPrimaryObject(){
+
+        List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+        if (updatedRecognitions != null) {
+            telemetry.addData("# Object Detected", updatedRecognitions.size());
+
+            // step through the list of recognitions and display boundary info.
+            // Retrieve recognition with max confidence
+            // CHECK 0 OBJECTS, 0.8 min confidence
+            int i = 0;
+            int alphaIndex = -1;
+            double alphaConfidence = -1.0;
+            for (Recognition recognition : updatedRecognitions) {
+
+                if (recognition.getConfidence() > alphaConfidence) alphaIndex = i;
+
+                /*
+                Utils.telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
+                Utils.telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
+                        recognition.getLeft(), recognition.getTop());
+                Utils.telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
+                        recognition.getRight(), recognition.getBottom());
+                 */
+            }
+            return updatedRecognitions.get(alphaIndex);
+        }
+
+        return null;
+    }
+
+
+    /**
+     * Initialize the Vuforia localization engine.
+     */
+    private void initVuforia() {
+        /*
+         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
+         */
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+
+        parameters.vuforiaLicenseKey = VUFORIA_KEY;
+        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
+
+        //  Instantiate the Vuforia engine
+        vuforia = ClassFactory.getInstance().createVuforia(parameters);
+
+        // Loading trackables is not necessary for the TensorFlow Object Detection engine.
+    }
+
+    /**
+     * Initialize the TensorFlow Object Detection engine.
+     */
+    private void initTfod() {
+        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
+                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
+        tfodParameters.minResultConfidence = 0.8f;
+        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
+        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
+    }
+
+
     /**
      * @param angle
      * @param ticks
@@ -146,16 +243,7 @@ public class DashMecanumAutoEncoder extends LinearOpMode {
             // Retrieve new position
             currentPosition = getPosition();
 
-
-            multTelemetry.addData("Testing FTC Dashboard MultipleTelemetry", true);
-
-            multTelemetry.addData("P", DashConstants.p);
-            multTelemetry.addData("I", DashConstants.i);
-            multTelemetry.addData("D", DashConstants.d);
-
-            multTelemetry.addData("Drive", drive);
-
-            /* Telemetry
+            // Telemetry
             telemetry.addData("Drive", drive);
             telemetry.addData("Strafe", strafe);
             telemetry.addData("Power", power);
@@ -167,13 +255,10 @@ public class DashMecanumAutoEncoder extends LinearOpMode {
             telemetry.addData("BL", bl.getCurrentPosition());
             telemetry.addData("BR", br.getCurrentPosition());
             */
-            /*
             telemetry.addData("imu", imu.getAngle());
             telemetry.addData("error", error);
             telemetry.addData("turn", turn);
             telemetry.update();
-            */
-
   }
         setDrivePower(0, 0, 0);
     }
