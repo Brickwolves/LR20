@@ -1,0 +1,259 @@
+[33mcommit 01eb4bfe9adb384d3f73bce78f8020a2c7e7e1a8[m[33m ([m[1;36mHEAD -> [m[1;32mrestruct[m[33m)[m
+Author: Peter <iamlemur1@gmail.com>
+Date:   Tue Dec 8 15:26:15 2020 -0500
+
+    gradle files
+
+[33mcommit d45ccf56c4ee390596e3a22e02795a3fa414ec79[m
+Author: Cain Smith <xlqgik@gmail.com>
+Date:   Mon Nov 30 16:43:33 2020 -0500
+
+    Removed issues
+
+[33mcommit 35ea7befa8c264784a352e28d827fa8d633060bb[m
+Author: Cain Smith <xlqgik@gmail.com>
+Date:   Mon Nov 30 15:42:50 2020 -0500
+
+    Added FTC Dashboard through Gradle Config
+
+[33mcommit 3b3ae89070dde45f0e212540801d68f22cd17a56[m
+Author: Cain Smith <xlqgik@gmail.com>
+Date:   Sun Nov 29 10:50:03 2020 -0500
+
+    for collin and owen
+
+[33mcommit 18b441e3b2406d22ef665dcafdb4d2a0f9cac3c6[m
+Author: Cain Smith <xlqgik@gmail.com>
+Date:   Wed Nov 25 18:05:08 2020 -0500
+
+    Finished percentages, need to implement FTCDashboard
+
+[33mcommit c5a48dadd8f0e0b18aa6acfcac7a5e92983cb9e6[m
+Author: Cain Smith <xlqgik@gmail.com>
+Date:   Wed Nov 25 17:36:53 2020 -0500
+
+    Fixing StackDetector: Need to init percentage for rectangle corners and need to initialize YCbCr Orange reference
+
+[33mcommit b5872e6dc8e3180cdf04ffb073a09df6f1c5c53c[m
+Author: Cain Smith <xlqgik@gmail.com>
+Date:   Wed Nov 25 15:44:25 2020 -0500
+
+    Created StackDetector {Quantum Leap Course}
+
+[33mcommit c2d3b4a562b588d8565a1cdb7ab2ab570c4ef425[m
+Author: Cain Smith <xlqgik@gmail.com>
+Date:   Wed Nov 25 14:04:14 2020 -0500
+
+    Changed imports
+
+[33mcommit 8f61c633f3263dab9b14392d130aa02bb244bfd3[m
+Author: Cain Smith <xlqgik@gmail.com>
+Date:   Wed Nov 25 13:58:47 2020 -0500
+
+    Restructured Everything
+
+[33mcommit 88feedfa3ac6a59ea0f826eb09496794e54573ff[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m
+Author: Gordon Gabbay <GGabbay@Gordons-NEW-MacBook-Air.local>
+Date:   Thu Nov 19 17:01:40 2020 -0500
+
+    Overloaded turn methods, need to work on logging features
+
+[33mcommit 9ef3309b21cbdbdf2812fee5237c636cf74be2df[m
+Author: Cain Smith <xlqgik@gmail.com>
+Date:   Thu Nov 19 01:30:35 2020 -0500
+
+    UPGRADED EVERYTHING: Now we have a MecanumRobot instance w/ access to Sensors & Motors, Improved Collin's Controller, Added new methods to Utils, Created ColorSensorImpl wrapper class, updated IMU wrapper class, REPACKAGED A LOT, REQUIRES TESTING
+
+[33mcommit 04ad8e25ae7f162a443f6a0118dab601bedcb77c[m
+Author: Cain Smith <xlqgik@gmail.com>
+Date:   Tue Nov 17 16:40:13 2020 -0500
+
+    ConceptTensorFlowObjectDetection is the way 2 go. Changed the conditional to output whether or not we see 0 rings
+
+[33mcommit f045975c6bfcef7eff03f8cb707be0237b3dbb7c[m
+Author: Peter <iamlemur1@gmail.com>
+Date:   Tue Nov 17 16:19:33 2020 -0500
+
+    webcam intialsation
+
+[33mcommit a20df6b73c59f28d1284bbfc2e553493b4b73a26[m
+Merge: f4ae6fc a9eb617
+Author: Peter <iamlemur1@gmail.com>
+Date:   Tue Nov 17 15:58:00 2020 -0500
+
+    Merge branch 'main' of https://github.com/Brickwolves/LR20 into main
+
+[33mcommit f4ae6fc8ee53fdd26ebbd6bbc1611387e366f25d[m
+Author: Peter <iamlemur1@gmail.com>
+Date:   Tue Nov 17 15:57:55 2020 -0500
+
+    webcam intialsation
+
+[33mcommit a9eb617f2e7c30d206f1ef030921c9a4a35eb33a[m
+Author: Cain Smith <xlqgik@gmail.com>
+Date:   Tue Nov 17 15:55:48 2020 -0500
+
+    Vision Testing
+
+[33mcommit 3aee20765ca3250e1688957f714c79fc8d06792f[m
+Merge: b92e0c4 b8f7fe8
+Author: Cain Smith <xlqgik@gmail.com>
+Date:   Tue Nov 10 17:05:04 2020 -0500
+
+    Merge branch 'main' of https://github.com/Brickwolves/LR20 into main
+
+[33mcommit b92e0c49961cb0d2ce34c415bde77b778f250080[m
+Author: Cain Smith <xlqgik@gmail.com>
+Date:   Tue Nov 10 17:04:40 2020 -0500
+
+    Added Color Detection, distance2Color in Utils
+
+[33mcommit b8f7fe862b4ae2aca90d3f5cc9fe4fe7fca9125c[m
+Author: Peter <iamlemur1@gmail.com>
+Date:   Tue Nov 10 16:58:56 2020 -0500
+
+    normalized color values
+
+[33mcommit a74ffc6900b1239ca8763d48c4fc7ac936acfae9[m
+Author: Peter <iamlemur1@gmail.com>
+Date:   Mon Nov 9 17:01:21 2020 -0500
+
+    added color and touch
+
+[33mcommit 1898a39de1b9811fb3de315c909fa52c8a7c0044[m
+Author: Peter <iamlemur1@gmail.com>
+Date:   Mon Nov 2 16:59:14 2020 -0500
+
+    fixed power ramp
+
+[33mcommit d09f6b35cfcd791a303de006f1d428b30af2d214[m
+Author: Gordon Gabbay <GGabbay@Gordons-NEW-MacBook-Air.local>
+Date:   Mon Nov 2 15:09:47 2020 -0500
+
+    Made private variables currentAngle & currentPosition
+
+[33mcommit fed79f3601850e42adb9c2b2a01a49cff51a27f2[m
+Author: Peter <iamlemur1@gmail.com>
+Date:   Tue Oct 27 16:58:41 2020 -0400
+
+    Fixed NaN errors - kinda
+
+[33mcommit 85f2ee035784c87c327315b833debf334314d68a[m
+Author: Cain Smith <xlqgik@gmail.com>
+Date:   Tue Oct 20 17:36:15 2020 -0400
+
+    Jamie: Added opModeIsActive() to all loops
+
+[33mcommit 02ba0939e7eb1cd27de2e83d6ebf283f5f3971d1[m
+Author: Peter <iamlemur1@gmail.com>
+Date:   Tue Oct 20 17:01:14 2020 -0400
+
+    changes op mode to break loops
+
+[33mcommit bd3ae27df3dadc7a744e0f3f5f76f398ddfdd5c2[m
+Author: Cain Smith <xlqgik@gmail.com>
+Date:   Mon Oct 19 17:39:16 2020 -0400
+
+    Updated Autonomous Code for power ramping on Strafe and Turn methods
+
+[33mcommit d29e4d4bb89aa2214daac517c3b8e44e0bba0f71[m
+Author: Peter <iamlemur1@gmail.com>
+Date:   Mon Oct 19 16:13:09 2020 -0400
+
+    fixed package statements
+
+[33mcommit 82ab48c787f75649489269af3b8f86a766cb94ad[m
+Author: Cain Smith <xlqgik@gmail.com>
+Date:   Tue Oct 13 17:41:04 2020 -0400
+
+    2nd Commit
+
+[33mcommit df6798cb29ac4f7caf3d4645f397b2eb6229bc3f[m
+Author: Coach Cassie <>
+Date:   Thu Oct 8 19:52:50 2020 -0400
+
+    MiniMax has two motors LB and RB changed autoname
+    
+    This is my first commit! The Robot (MiniMax) has two motors in the back.
+    The motor names are leftBack and rightBack.
+    Enabled autonomus mode for testing on RedZone.
+
+[33mcommit cf1c79febfb44967a9e1b23338305b58ae84aa5c[m
+Author: Coach Cassie <>
+Date:   Wed Sep 30 21:20:28 2020 -0400
+
+    Examples have CHAWKS Lessons within
+    
+    Each example has some Lessons to go over.
+    The "CHAWKS" in the comments are meant to review that line of code.
+
+[33mcommit dba4d7c355587a23ef0c4726ea7fd8bf351fc02e[m
+Author: Coach Cassie <>
+Date:   Wed Sep 30 19:44:44 2020 -0400
+
+    Setup Team Dirs with Examples
+    
+    To get organized, set-up subdirectories in the TeamCode for our Robot!
+    - Autonomous: 30-sec period of the game
+    - TeleOp: 2:00min period driving period of the game
+    - HardwareMap: Initialize all common hardware on the robot.
+
+[33mcommit 09359bbaaf0dbe3c1511aa452883472a4af81ccc[m
+Merge: 7ab3861 314c650
+Author: Cal Kestis <51927529+CalKestis@users.noreply.github.com>
+Date:   Fri Sep 25 09:47:41 2020 -0700
+
+    Merge pull request #7 from FIRST-Tech-Challenge/missing-gradlew
+    
+    Missing gradle wrappers
+
+[33mcommit 314c6500d988a435c44849aefab76eabc6b33902[m
+Author: CalKestis <cmacfarlane@firstinspires.org>
+Date:   Fri Sep 25 08:38:16 2020 -0700
+
+    Missing gradle wrappers
+
+[33mcommit 7ab38611f7ff48d3d841288a92fcb1cf1e6f459e[m
+Merge: 8b8b098 00cbf34
+Author: Craig MacFarlane <camacfarl@gmail.com>
+Date:   Wed Sep 23 13:40:39 2020 -0700
+
+    Merge pull request #1 from FIRST-Tech-Challenge/20200921-085816-release-candidate
+    
+    FtcRobotController v6.0
+
+[33mcommit 00cbf344526d991ce33452437018af9f119d22d1[m
+Author: Cal Kestis <cmacfarlane@firstinspires.org>
+Date:   Mon Sep 21 09:09:43 2020 -0700
+
+    FtcRobotController v6.0
+
+[33mcommit 8b8b0988d4c91854f4ca3c3cab720aa320168bb5[m
+Author: Craig MacFarlane <camacfarl@gmail.com>
+Date:   Fri Sep 18 09:05:37 2020 -0700
+
+    Update .gitignore
+
+[33mcommit 47c58724fed44d539ca1ed135f82a9df16459fd6[m
+Author: Craig MacFarlane <camacfarl@gmail.com>
+Date:   Thu Sep 17 22:18:13 2020 -0700
+
+    Update .gitignore
+
+[33mcommit 7682f4487e9210141177460fdbabe3620b8a2116[m
+Author: Craig MacFarlane <camacfarl@gmail.com>
+Date:   Thu Sep 17 22:06:19 2020 -0700
+
+    Update .gitignore
+
+[33mcommit ebb3ce841960e9e10314758be9cd7f97c1018cb2[m
+Author: Craig MacFarlane <camacfarl@gmail.com>
+Date:   Thu Sep 17 22:05:59 2020 -0700
+
+    Update .gitignore
+
+[33mcommit e77eeda89f53b5f7f3ee68b4e6e8a73673bacb29[m
+Author: Craig MacFarlane <camacfarl@gmail.com>
+Date:   Thu Sep 17 17:24:06 2020 -0700
+
+    Initial commit
