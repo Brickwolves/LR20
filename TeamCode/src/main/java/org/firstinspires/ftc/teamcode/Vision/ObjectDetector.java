@@ -26,6 +26,10 @@ public class ObjectDetector {
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
     }
 
+    public void shutdown(){
+        tfod.shutdown();
+    }
+
     public Recognition getPrimaryObject(){
 
         List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
@@ -55,4 +59,20 @@ public class ObjectDetector {
 
         return null;
     }
+
+    public int getRingConfig(){
+
+        Recognition recog = getPrimaryObject();
+        if (recog == null) throw new Error("No object detected");
+
+        switch (recog.getLabel()){
+
+            case "Single":
+                return 1;
+            case "Quad":
+                return 4;
+        }
+        return 0;
+    }
+
 }

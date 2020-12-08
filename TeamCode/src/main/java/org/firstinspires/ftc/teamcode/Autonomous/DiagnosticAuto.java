@@ -31,9 +31,6 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-
 
 import org.firstinspires.ftc.teamcode.Hardware.Controller;
 import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
@@ -42,9 +39,9 @@ import org.firstinspires.ftc.teamcode.Utilities.SyncTask;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
 
-@Autonomous(name="Mecanum Encoder", group="Autonomous Linear Opmode")
+@Autonomous(name="DiagnosticAuto", group="Autonomous Linear Opmode")
 //@Disabled
-public class MecanumAutoEncoder extends LinearOpMode {
+public class DiagnosticAuto extends LinearOpMode {
 
     private MecanumRobot mecanumRobot;
     private Controller controller;
