@@ -41,7 +41,7 @@ import org.firstinspires.ftc.teamcode.Vision.ObjectDetector;
 
 @Autonomous(name="AlphaAuto", group="Autonomous Linear Opmode")
 //@Disabled
-public class AlphaAuto extends LinearOpMode {
+public class Muffins extends LinearOpMode {
 
     private MecanumRobot mecanumRobot;
     private ObjectDetector od;
@@ -66,7 +66,7 @@ public class AlphaAuto extends LinearOpMode {
         //  Ring identifier
         int rings = od.getRingConfig();
         for (int i = 0; i < rings; i++) {
-            mecanumRobot.turn(180, 0.5);
+            mecanumRobot.turn(360, 0.5);
         }
 
 
