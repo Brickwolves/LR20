@@ -41,7 +41,7 @@ import org.firstinspires.ftc.teamcode.Vision.ObjectDetector;
 
 @Autonomous(name="AlphaAuto", group="Autonomous Linear Opmode")
 //@Disabled
-public class Muffins extends LinearOpMode {
+public class AlphaAuto extends LinearOpMode {
 
     private MecanumRobot mecanumRobot;
     private ObjectDetector od;
