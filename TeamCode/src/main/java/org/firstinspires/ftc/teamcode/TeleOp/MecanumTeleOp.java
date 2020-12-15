@@ -15,12 +15,14 @@ public class MecanumTeleOp extends OpMode {
     private Controller controller;
 
 
+
     // Toggle Variables
     private boolean absoluteControlMode;
     private boolean DPAD_Toggle;
     private boolean LBLastCycle;
     private boolean RBLastCycle;
     private boolean velocityToggle;
+    private boolean wow;
 
     @Override
     public void init() {
@@ -79,9 +81,17 @@ public class MecanumTeleOp extends OpMode {
         }
         else mecanumRobot.setDrivePower(drive, strafe, turn, velocity);
 
+        /* touchpad?*/
+        if (controller.src.touchpad){
+            wow = true;
+
+        }
+
+
         telemetry.addData("Drive", drive);
         telemetry.addData("Strafe", strafe);
         telemetry.addData("Turn", turn);
+        telemetry.addData("wow", wow);
         this.log();
     }
 

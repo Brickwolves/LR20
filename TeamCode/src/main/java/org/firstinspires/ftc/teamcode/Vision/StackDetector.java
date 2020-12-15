@@ -1,10 +1,13 @@
 package org.firstinspires.ftc.teamcode.Vision;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.*;
+@TeleOp(name = "StackDetectorAuto", group = "Autonomous")
 
 public class StackDetector extends OpMode {
 
