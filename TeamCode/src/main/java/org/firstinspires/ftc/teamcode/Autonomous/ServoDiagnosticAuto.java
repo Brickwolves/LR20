@@ -68,6 +68,7 @@ public class ServoDiagnosticAuto extends LinearOpMode {
 
         initialize();
         waitForStart();
+        mecanumRobot.setIsActive(opModeIsActive());
         telemetry.addData("started", true);
 
 
@@ -83,6 +84,7 @@ public class ServoDiagnosticAuto extends LinearOpMode {
             telemetry.addData("Power", power);
             telemetry.update();
         }
+        mecanumRobot.setIsActive(opModeIsActive());
 
 
 

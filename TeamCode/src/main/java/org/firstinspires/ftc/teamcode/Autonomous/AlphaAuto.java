@@ -60,6 +60,7 @@ public class AlphaAuto extends LinearOpMode {
 
         initialize();
         waitForStart();
+        mecanumRobot.setIsActive(opModeIsActive());
         telemetry.addData("started", true);
 
 
@@ -68,6 +69,7 @@ public class AlphaAuto extends LinearOpMode {
         for (int i = 0; i < rings; i++) {
             mecanumRobot.turn(360, 0.5);
         }
+        mecanumRobot.setIsActive(opModeIsActive());
 
 
 
