@@ -142,7 +142,7 @@ public class DashAuto extends LinearOpMode {
         multTelemetry.addData("IMU", mecanumRobot.imu.getAngle());
         //multTelemetry.addData("RGB", "(${mecanumRobot.colorSensor.red()}, ${mecanumRobot.colorSensor.green()}, ${mecanumRobot.colorSensor.blue()}");
         multTelemetry.addData("Error", mecanumRobot.imu.getStartAngle() - mecanumRobot.imu.getAngle());
-        multTelemetry.addData("touch", mecanumRobot.touchSensor.isPressed());
+        //multTelemetry.addData("touch", mecanumRobot.touchSensor.isPressed());
         multTelemetry.addData("webcam", mecanumRobot.webCam.getConnectionInfo());
     }
 }

@@ -13,9 +13,9 @@ public class MecanumRobot implements Robot {
 
    private HardwareMap hardwareMap;
    private DcMotor fr, fl, br, bl;
-   public TouchSensor touchSensor;
-   public ColorSensorImpl colorSensor;
-   public ColorSensor colorSensorBase;
+   //public TouchSensor touchSensor;
+   //public ColorSensorImpl colorSensor;
+   //public ColorSensor colorSensorBase;
    public WebcamName webCam;
    public IMU imu;
 

@@ -92,7 +92,7 @@ public class MecanumTeleOp extends OpMode {
      */
     public void log(){
         telemetry.addData("IMU", mecanumRobot.imu.getAngle());
-        telemetry.addData("RGB", String.format("(%d, %d, %d)", mecanumRobot.colorSensor.red(), mecanumRobot.colorSensor.green(), mecanumRobot.colorSensor.blue()));
+        //telemetry.addData("RGB", String.format("(%d, %d, %d)", mecanumRobot.colorSensor.red(), mecanumRobot.colorSensor.green(), mecanumRobot.colorSensor.blue()));
         telemetry.addData("Velocity Toggle", velocityToggle);
         telemetry.addData("ACM", absoluteControlMode);
         telemetry.addData("Error", mecanumRobot.imu.getStartAngle() - mecanumRobot.imu.getAngle());

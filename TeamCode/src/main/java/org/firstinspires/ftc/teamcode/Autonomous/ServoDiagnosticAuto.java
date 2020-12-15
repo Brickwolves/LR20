@@ -142,7 +142,7 @@ public class ServoDiagnosticAuto extends LinearOpMode {
         telemetry.addData("IMU", mecanumRobot.imu.getAngle());
         telemetry.addData("RGB", "(${mecanumRobot.colorSensor.red()}, ${mecanumRobot.colorSensor.green()}, ${mecanumRobot.colorSensor.blue()}");
         telemetry.addData("Error", mecanumRobot.imu.getStartAngle() - mecanumRobot.imu.getAngle());
-        telemetry.addData("touch", mecanumRobot.touchSensor.isPressed());
+        //telemetry.addData("touch", mecanumRobot.touchSensor.isPressed());
         telemetry.addData("webcam", mecanumRobot.webCam.getConnectionInfo());
     }
 }

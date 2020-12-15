@@ -129,7 +129,7 @@ public class DiagnosticAuto extends LinearOpMode {
     public void log(){
         telemetry.addData("IMU", mecanumRobot.imu.getAngle());
         telemetry.addData("Error", mecanumRobot.imu.getStartAngle() - mecanumRobot.imu.getAngle());
-        telemetry.addData("touch", mecanumRobot.touchSensor.isPressed());
+        //telemetry.addData("touch", mecanumRobot.touchSensor.isPressed());
         telemetry.addData("webcam", mecanumRobot.webCam.getConnectionInfo());
     }
 }
