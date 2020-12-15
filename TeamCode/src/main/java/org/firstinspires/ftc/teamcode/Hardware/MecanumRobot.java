@@ -2,9 +2,11 @@ package org.firstinspires.ftc.teamcode.Hardware;
 
 import com.qualcomm.robotcore.hardware.*;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.Autonomous.DiagnosticAuto;
 import org.firstinspires.ftc.teamcode.Hardware.Sensors.ColorSensorImpl;
 import org.firstinspires.ftc.teamcode.Hardware.Sensors.IMU;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 
 import static org.firstinspires.ftc.teamcode.Utilities.Utils.telemetry;
@@ -19,9 +21,15 @@ public class MecanumRobot implements Robot {
    public WebcamName webCam;
    public IMU imu;
 
+   public boolean isActive;
 
    public MecanumRobot(){
       initRobot();
+   }
+
+
+   public void setIsActive(boolean bool){
+      isActive = bool;
    }
 
    public enum Direction {
@@ -149,7 +157,7 @@ public class MecanumRobot implements Robot {
          // Retrieve angle and MOE
          double upperBound = targetAngle + MOE;
          double lowerBound = targetAngle - MOE;
-         while (lowerBound >= currentAngle || currentAngle >= upperBound) {
+         while ((lowerBound >= currentAngle || currentAngle >= upperBound) && isActive) {
 
             // Power Ramping based off a logistic piecewise
             double currentDeltaAngle = targetAngle - currentAngle;
