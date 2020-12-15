@@ -16,14 +16,15 @@ public class StackDetector extends OpMode {
 
     @Override
     public void init(){
-
+        Utils.setHardwareMap(hardwareMap);
+        Utils.setTelemetry(telemetry);
     }
 
     @Override
     public void init_loop(){
 
         // Init the phone
-        int cameraMonitorViewId = Utils.hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", Utils.hardwareMap.appContext.getPackageName());
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         phoneCam = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
 
         // Pipeline is just a section of code that will be passed the image to then be processed
