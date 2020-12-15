@@ -61,7 +61,6 @@ public class DiagnosticAuto extends LinearOpMode {
 
         initialize();
         waitForStart();
-        mecanumRobot.setIsActive(opModeIsActive());
         telemetry.addData("started", true);
         for (int i = 1; i < 2 + 1; i++) {
             if (opModeIsActive()){
@@ -77,7 +76,6 @@ public class DiagnosticAuto extends LinearOpMode {
                sleep(100);
            }
         }
-        mecanumRobot.setIsActive(opModeIsActive());
     }
     /**
      * @param angle
