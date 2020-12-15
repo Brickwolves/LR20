@@ -38,6 +38,8 @@ import org.firstinspires.ftc.teamcode.Hardware.Sensors.IMU;
 import org.firstinspires.ftc.teamcode.Utilities.SyncTask;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
+import static org.firstinspires.ftc.teamcode.Utilities.Utils.telemetry;
+
 
 @Autonomous(name="DiagnosticAuto", group="Autonomous Linear Opmode")
 //@Disabled
@@ -63,7 +65,7 @@ public class DiagnosticAuto extends LinearOpMode {
         telemetry.addData("started", true);
         for (int i = 1; i < 2 + 1; i++) {
             if (opModeIsActive()){
-                mecanumRobot.turn(i * 180, 1.5);
+                turn(i * 180, 1.5);
             }
         }
         telemetry.addData("started strafe", true);
@@ -124,6 +126,78 @@ public class DiagnosticAuto extends LinearOpMode {
         }
         mecanumRobot.setAllPower(0);
     }
+
+
+
+    public void turn(MecanumRobot.Direction direction, double MOE) {
+        System.out.println("Turning to " + direction + " degrees");
+
+        double targetAngle = 0;
+        switch (direction) {
+            case NORTH:
+                targetAngle = 0;
+                break;
+            case WEST:
+                targetAngle = 90;
+                break;
+            case EAST:
+                targetAngle = -90;
+                break;
+            case SOUTH:
+                targetAngle = 180;
+                break;
+        }
+        targetAngle += mecanumRobot.imu.getDeltaAngle();
+        double currentAngle = mecanumRobot.imu.getAngle();
+        double upperBound = targetAngle + MOE;
+        double lowerBound = targetAngle - MOE;
+        while ((lowerBound >= currentAngle || currentAngle >= upperBound) && opModeIsActive()){
+            double coTermAngle = Utils.coTerminal(targetAngle - currentAngle);
+            double turn = (coTermAngle <= 0) ? 1 : -1;
+            mecanumRobot.setDrivePower(0, 0, turn, 0.3);
+        }
+        telemetry.addData("TargetAngle", targetAngle);
+    }
+
+
+    /**
+     * @param targetAngle
+     * @param MOE
+     */
+    public void turn(double targetAngle, double MOE) {
+        System.out.println("Turning to " + targetAngle + " degrees");
+
+        double currentAngle = mecanumRobot.imu.getAngle();
+        double deltaAngle = Math.abs(targetAngle - currentAngle);
+        double power;
+        double position = mecanumRobot.getPosition();
+
+
+        // Retrieve angle and MOE
+        double upperBound = targetAngle + MOE;
+        double lowerBound = targetAngle - MOE;
+        while ((lowerBound >= currentAngle || currentAngle >= upperBound) && opModeIsActive()) {
+
+            // Power Ramping based off a logistic piecewise
+            double currentDeltaAngle = targetAngle - currentAngle;
+            double anglePosition = deltaAngle - currentDeltaAngle + 0.01; // Added the 0.01 so that it doesn't get stuck at 0
+
+
+            // Modeling a piece wise of power as a function of distance
+            power = Utils.powerRamp(anglePosition, deltaAngle, 0.1);
+
+            // Handle clockwise (+) and counterclockwise (-) motion
+            mecanumRobot.setDrivePower(0, 0, 1, power);
+
+            currentAngle = mecanumRobot.imu.getAngle();
+        }
+
+        // Stop power
+        mecanumRobot.setAllPower(0);
+    }
+
+
+
 
     /**
      * Logs out Telemetry Data

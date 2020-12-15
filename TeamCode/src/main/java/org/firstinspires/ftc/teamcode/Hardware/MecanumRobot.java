@@ -113,7 +113,6 @@ public class MecanumRobot implements Robot {
       System.out.println("Turning to " + direction + " degrees");
 
       double targetAngle = 0;
-      // SOMETHING WRONG WITH THIS SWITCH CLAUSE, yields 180 / -180
       switch (direction) {
          case NORTH:
             targetAngle = 0;
@@ -132,7 +131,7 @@ public class MecanumRobot implements Robot {
       double currentAngle = imu.getAngle();
       double upperBound = targetAngle + MOE;
       double lowerBound = targetAngle - MOE;
-      if (lowerBound >= currentAngle || currentAngle >= upperBound){
+      while ((lowerBound >= currentAngle || currentAngle >= upperBound) && isActive){
          double coTermAngle = Utils.coTerminal(targetAngle - currentAngle);
          double turn = (coTermAngle <= 0) ? 1 : -1;
          setDrivePower(0, 0, turn, 0.3);
