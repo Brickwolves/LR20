@@ -1,17 +1,21 @@
 package org.firstinspires.ftc.teamcode.Vision;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
-import org.opencv.core.*;
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
+import org.opencv.core.Rect;
+import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.*;
-@TeleOp(name = "StackDetectorAuto", group = "Autonomous")
 
-public class StackDetector extends OpMode {
+@Autonomous(name = "WebCamStackDetectorAuto", group = "Autonomous")
+public class WebCamStackDetector extends OpMode {
 
-    OpenCvCamera phoneCam = null;
+    OpenCvCamera webCam = null;
     static double ringCount = 0;
 
     @Override
@@ -25,17 +29,17 @@ public class StackDetector extends OpMode {
 
         // Init the phone
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        phoneCam = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
+        webCam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
 
         // Pipeline is just a section of code that will be passed the image to then be processed
-        phoneCam.setPipeline(new RingDetectingPipeline());
+        webCam.setPipeline(new RingDetectingPipeline());
 
         // Start Streaming
-        phoneCam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+        webCam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
 
-                phoneCam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+                webCam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
             }
         });
     }
