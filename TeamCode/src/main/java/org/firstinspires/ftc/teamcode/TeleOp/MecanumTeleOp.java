@@ -11,6 +11,8 @@ import org.firstinspires.ftc.teamcode.Hardware.Controller;
 import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
+import static android.os.SystemClock.sleep;
+
 
 @TeleOp(name = "Mecanum Drive", group="TeleOp")
 public class MecanumTeleOp extends OpMode {
@@ -18,12 +20,33 @@ public class MecanumTeleOp extends OpMode {
     private MecanumRobot mecanumRobot;
     private Controller controller;
     private Servo servo_1;
-    public final static double SERVO_1_HOME = 0.0;
-    public final static double SERVO_1_MIN_RANGE = 0.0;
-    public final static double SERVO_1_MAX_RANGE = 1.0;
+    public final static double SERVO_1_HOME = .83;
+    public final static double SERVO_1_MIN_RANGE = 0.5;
+    public final static double SERVO_1_MAX_RANGE = .83;
     public double SERVO_1_SPEED = 0.1;
     double servo1Position = SERVO_1_HOME;
     private Servo servo_2;
+    public final static double SERVO_2_HOME = .7;
+    public final static double SERVO_2_MIN_RANGE = 0.3;
+    public final static double SERVO_2_MAX_RANGE = 0.7;
+    public double SERVO_2_SPEED = 0.1;
+    double servo2Position = SERVO_2_HOME;
+    private Servo servo_3;
+    public final static double SERVO_3_HOME = 0.23;
+    public final static double SERVO_3_MIN_RANGE = 0.23;
+    public final static double SERVO_3_MAX_RANGE = 0.34;
+    public double SERVO_3_SPEED = 0.1;
+    double servo3Position = SERVO_3_HOME;
+    private Servo servo_4;
+    public final static double SERVO_4_HOME = 0.0;
+    public final static double SERVO_4_MIN_RANGE = 0.0;
+    public final static double SERVO_4_MAX_RANGE = 1.0;
+    public double SERVO_4_SPEED = 1;
+    double servo4Position = SERVO_4_HOME;
+
+
+
+
 
 
 
@@ -48,6 +71,9 @@ public class MecanumTeleOp extends OpMode {
         servo_1 = Utils.hardwareMap.get(Servo.class, "servo_1");
         servo_1.setDirection(Servo.Direction.FORWARD);
         servo_2 = Utils.hardwareMap.get(Servo.class, "servo_2");
+        servo_3 = Utils.hardwareMap.get(Servo.class, "servo_3");
+        servo_4 = Utils.hardwareMap.get(Servo.class, "servo_4");
+
 
         // Toggles
         absoluteControlMode = false;
@@ -96,6 +122,7 @@ public class MecanumTeleOp extends OpMode {
             else if (controller.src.dpad_left) mecanumRobot.turn(MecanumRobot.Direction.WEST, 1);
             else if (controller.src.dpad_down) mecanumRobot.turn(MecanumRobot.Direction.SOUTH, 1);
         }
+
         else mecanumRobot.setDrivePower(drive, strafe, turn, velocity);
 
         /* touchpad?*/
@@ -103,24 +130,39 @@ public class MecanumTeleOp extends OpMode {
 
         }
         if(gamepad1.cross){
-            wow = true;
-            servo1Position += SERVO_1_SPEED;
+            servo4Position += SERVO_4_SPEED;
         }
         if(gamepad1.square){
-            servo1Position -= SERVO_1_SPEED;
+            servo4Position -= SERVO_4_SPEED;
         }
-        //servo1Position = Range.clip(servo1Position, SERVO_1_MIN_RANGE, SERVO_1_MAX_RANGE);
+        if(gamepad1.triangle){
+            servo2Position = .3;
+            servo2Position = Range.clip(servo2Position, SERVO_2_MIN_RANGE, SERVO_2_MAX_RANGE);
+            servo_2.setPosition(servo2Position);
+            sleep(100);
+            servo2Position = .7;
+        }
+
+
+        servo1Position = Range.clip(servo1Position, SERVO_1_MIN_RANGE, SERVO_1_MAX_RANGE);
         servo_1.setPosition(servo1Position);
+        servo2Position = Range.clip(servo2Position, SERVO_2_MIN_RANGE, SERVO_2_MAX_RANGE);
+        servo_2.setPosition(servo2Position);
+        servo3Position = Range.clip(servo3Position, SERVO_3_MIN_RANGE, SERVO_3_MAX_RANGE);
+        servo_3.setPosition(servo3Position);
+        servo4Position = Range.clip(servo4Position, SERVO_4_MIN_RANGE, SERVO_4_MAX_RANGE);
+        servo_4.setPosition(servo4Position);
+
 
 
         telemetry.addData("Drive", drive);
         telemetry.addData("Strafe", strafe);
         telemetry.addData("Turn", turn);
         telemetry.addData("wow", wow);
-        telemetry.addData("servo_1", "%.2f", servo1Position);
-        telemetry.addData("square", gamepad1.square);
-        telemetry.addData("cross", gamepad1.cross);
-        telemetry.addData("ServoPosition", servo_1.getPosition());
+        telemetry.addData("Servo1Position", servo_1.getPosition());
+        telemetry.addData("Servo2Position", servo_2.getPosition());
+        telemetry.addData("Servo3Position", servo_3.getPosition());
+        telemetry.addData("Servo4Position", servo_4.getPosition());
         this.log();
     }
 
