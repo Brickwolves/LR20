@@ -2,6 +2,10 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoController;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.Hardware.Controller;
 import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
@@ -13,6 +17,13 @@ public class MecanumTeleOp extends OpMode {
 
     private MecanumRobot mecanumRobot;
     private Controller controller;
+    private Servo servo_1;
+    public final static double SERVO_1_HOME = 0.0;
+    public final static double SERVO_1_MIN_RANGE = 0.0;
+    public final static double SERVO_1_MAX_RANGE = 1.0;
+    public double SERVO_1_SPEED = 0.1;
+    double servo1Position = SERVO_1_HOME;
+    private Servo servo_2;
 
 
 
@@ -21,6 +32,8 @@ public class MecanumTeleOp extends OpMode {
     private boolean DPAD_Toggle;
     private boolean LBLastCycle;
     private boolean RBLastCycle;
+    private boolean CrossLastCycle;
+    private boolean SquareLastCycle;
     private boolean velocityToggle;
     private boolean wow;
 
@@ -32,6 +45,9 @@ public class MecanumTeleOp extends OpMode {
         Utils.setTelemetry(telemetry);
         mecanumRobot = new MecanumRobot();
         controller = new Controller(gamepad1);
+        servo_1 = Utils.hardwareMap.get(Servo.class, "servo_1");
+        servo_1.setDirection(Servo.Direction.FORWARD);
+        servo_2 = Utils.hardwareMap.get(Servo.class, "servo_2");
 
         // Toggles
         absoluteControlMode = false;
@@ -52,6 +68,7 @@ public class MecanumTeleOp extends OpMode {
         // Get Thumbsticks
         Controller.Thumbstick rightThumbstick = controller.getRightThumbstick();
         Controller.Thumbstick leftThumbstick = controller.getLeftThumbstick();
+
 
         // ButtonTapped() compares current and previous states to handle single presses of buttons.
         // If we press RB once, toggle velocity shift
@@ -83,15 +100,27 @@ public class MecanumTeleOp extends OpMode {
 
         /* touchpad?*/
         if (controller.src.touchpad){
-            wow = true;
 
         }
+        if(gamepad1.cross){
+            wow = true;
+            servo1Position += SERVO_1_SPEED;
+        }
+        if(gamepad1.square){
+            servo1Position -= SERVO_1_SPEED;
+        }
+        //servo1Position = Range.clip(servo1Position, SERVO_1_MIN_RANGE, SERVO_1_MAX_RANGE);
+        servo_1.setPosition(servo1Position);
 
 
         telemetry.addData("Drive", drive);
         telemetry.addData("Strafe", strafe);
         telemetry.addData("Turn", turn);
         telemetry.addData("wow", wow);
+        telemetry.addData("servo_1", "%.2f", servo1Position);
+        telemetry.addData("square", gamepad1.square);
+        telemetry.addData("cross", gamepad1.cross);
+        telemetry.addData("ServoPosition", servo_1.getPosition());
         this.log();
     }
 

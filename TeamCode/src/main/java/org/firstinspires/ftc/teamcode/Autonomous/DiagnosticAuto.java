@@ -61,6 +61,8 @@ public class DiagnosticAuto extends LinearOpMode {
 
         initialize();
         waitForStart();
+
+
         telemetry.addData("started", true);
         for (int i = 1; i < 2 + 1; i++) {
             if (opModeIsActive()){
