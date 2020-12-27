@@ -64,10 +64,10 @@ public class MecanumTeleOp extends OpMode {
     public void init() {
         telemetry.addData("Status", "Initialized");
 
-        Utils.setHardwareMap(hardwareMap);
-        Utils.setTelemetry(telemetry);
         mecanumRobot = new MecanumRobot();
         controller = new Controller(gamepad1);
+        Utils.setOpMode(this);
+
         servo_1 = Utils.hardwareMap.get(Servo.class, "servo_1");
         servo_1.setDirection(Servo.Direction.FORWARD);
         servo_2 = Utils.hardwareMap.get(Servo.class, "servo_2");

@@ -20,8 +20,7 @@ public class WebCamStackDetector extends OpMode {
 
     @Override
     public void init(){
-        Utils.setHardwareMap(hardwareMap);
-        Utils.setTelemetry(telemetry);
+        Utils.setOpMode(this);
     }
 
     @Override
@@ -49,15 +48,15 @@ public class WebCamStackDetector extends OpMode {
 
         if (ringCount == 1.0){
             // drive somewhere
-            telemetry.addData("RingCount", 1.0);
+            Utils.telemetry.addData("RingCount", 1.0);
         }
         else if (ringCount == 4.0){
             // drive somewhere else
-            telemetry.addData("RingCount", 4.0);
+            Utils.telemetry.addData("RingCount", 4.0);
         }
         else {
             // drive somewhere other than else
-            telemetry.addData("RingCount", 0.0);
+            Utils.telemetry.addData("RingCount", 0.0);
         }
 
     }

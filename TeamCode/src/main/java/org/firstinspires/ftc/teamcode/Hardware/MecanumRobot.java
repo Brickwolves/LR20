@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.Hardware;
 
 import com.qualcomm.robotcore.hardware.*;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.Autonomous.DiagnosticAuto;
 import org.firstinspires.ftc.teamcode.Hardware.Sensors.ColorSensorImpl;
 import org.firstinspires.ftc.teamcode.Hardware.Sensors.IMU;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
@@ -20,6 +19,7 @@ public class MecanumRobot implements Robot {
    //public ColorSensor colorSensorBase;
    public WebcamName webCam;
    public IMU imu;
+   private LinearOpMode opMode;
 
    public boolean isActive;
 
@@ -27,10 +27,6 @@ public class MecanumRobot implements Robot {
       initRobot();
    }
 
-
-   public void setIsActive(boolean bool){
-      isActive = bool;
-   }
 
    public enum Direction {
       NORTH,
@@ -131,7 +127,7 @@ public class MecanumRobot implements Robot {
       double currentAngle = imu.getAngle();
       double upperBound = targetAngle + MOE;
       double lowerBound = targetAngle - MOE;
-      while ((lowerBound >= currentAngle || currentAngle >= upperBound) && isActive){
+      while ((lowerBound >= currentAngle || currentAngle >= upperBound) && Utils.isActive()){
          double coTermAngle = Utils.coTerminal(targetAngle - currentAngle);
          double turn = (coTermAngle <= 0) ? 1 : -1;
          setDrivePower(0, 0, turn, 0.3);
@@ -156,7 +152,7 @@ public class MecanumRobot implements Robot {
          // Retrieve angle and MOE
          double upperBound = targetAngle + MOE;
          double lowerBound = targetAngle - MOE;
-         while ((lowerBound >= currentAngle || currentAngle >= upperBound) && isActive) {
+         while ((lowerBound >= currentAngle || currentAngle >= upperBound) && Utils.isActive()) {
 
             // Power Ramping based off a logistic piecewise
             double currentDeltaAngle = targetAngle - currentAngle;

@@ -51,10 +51,9 @@ public class DiagnosticTeleOp extends OpMode {
     public void init() {
         telemetry.addData("Status", "Initialized");
 
-        Utils.setHardwareMap(hardwareMap);
-        Utils.setTelemetry(telemetry);
         mecanumRobot = new MecanumRobot();
         controller = new Controller(gamepad1);
+        Utils.setOpMode(this);
 
         servo_ring_lock = Utils.hardwareMap.get(Servo.class, "servo_1");
         servo_ring_pusher = Utils.hardwareMap.get(Servo.class, "servo_2");
@@ -123,7 +122,6 @@ public class DiagnosticTeleOp extends OpMode {
             else if (controller.src.dpad_left) mecanumRobot.turn(MecanumRobot.Direction.WEST, 1);
             else if (controller.src.dpad_down) mecanumRobot.turn(MecanumRobot.Direction.SOUTH, 1);
         }
-
         else mecanumRobot.setDrivePower(drive, strafe, turn, velocity);
 
 

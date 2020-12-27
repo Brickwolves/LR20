@@ -16,8 +16,7 @@ public class PhoneStackDetector extends OpMode {
 
     @Override
     public void init(){
-        Utils.setHardwareMap(hardwareMap);
-        Utils.setTelemetry(telemetry);
+        Utils.setOpMode(this);
     }
 
     @Override
