@@ -12,16 +12,12 @@ import static org.firstinspires.ftc.teamcode.Utilities.Utils.telemetry;
 
 public class MecanumRobot implements Robot {
 
-   private HardwareMap hardwareMap;
    private DcMotor fr, fl, br, bl;
    //public TouchSensor touchSensor;
    //public ColorSensorImpl colorSensor;
    //public ColorSensor colorSensorBase;
-   public WebcamName webCam;
    public IMU imu;
    private LinearOpMode opMode;
-
-   public boolean isActive;
 
    public MecanumRobot(){
       initRobot();
@@ -43,20 +39,19 @@ public class MecanumRobot implements Robot {
       fl = Utils.hardwareMap.get(DcMotor.class, "front_left_motor");
       br = Utils.hardwareMap.get(DcMotor.class, "back_right_motor");
       bl = Utils.hardwareMap.get(DcMotor.class, "back_left_motor");
-      initMotors();
+      resetMotors();
 
       // Sensors
       //touchSensor = Utils.hardwareMap.get(TouchSensor.class, "touch_sensor");
       //colorSensorBase = Utils.hardwareMap.get(ColorSensor.class, "color_sensor");
       //colorSensor = new ColorSensorImpl(colorSensorBase);
-      webCam = Utils.hardwareMap.get(WebcamName.class, "webcam");
       imu = new IMU("imu");
    }
 
    /**
     * (Re)Init Motors
     */
-   public void initMotors(){
+   public void resetMotors(){
       fr.setDirection(DcMotorSimple.Direction.FORWARD);
       fl.setDirection(DcMotorSimple.Direction.REVERSE);
       br.setDirection(DcMotorSimple.Direction.FORWARD);

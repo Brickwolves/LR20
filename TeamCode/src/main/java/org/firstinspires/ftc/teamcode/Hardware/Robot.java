@@ -13,7 +13,7 @@ public interface Robot {
     /**
      * Initialize all motors
      */
-    public void initMotors();
+    public void resetMotors();
 
     /**
      * @return {double} Robot's current position

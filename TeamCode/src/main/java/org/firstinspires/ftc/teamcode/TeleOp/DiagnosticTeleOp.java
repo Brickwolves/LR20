@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.teamcode.Hardware.Controller;
+import org.firstinspires.ftc.teamcode.Hardware.MecanumClawRobot;
 import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
@@ -14,7 +15,7 @@ import static android.os.SystemClock.sleep;
 @TeleOp(name = "Diagnostic Mecanum Drive", group="TeleOp")
 public class DiagnosticTeleOp extends OpMode {
 
-    private MecanumRobot mecanumRobot;
+    private MecanumClawRobot mecanumClawRobot;
     private Controller controller;
     private Servo servo_ring_lock, servo_ring_pusher, servo_claw, servo_arm;
 
@@ -29,11 +30,6 @@ public class DiagnosticTeleOp extends OpMode {
     public final static double SERVO_RING_PUSHER_MAX_RANGE = 0.7;
     public double SERVO_RING_PUSHER_SPEED = 0.1;
     double servo_ring_pusher_position = SERVO_RING_PUSHER_HOME;
-
-    public final static double SERVO_CLAW_HOME = 0.23;
-    public final static double SERVO_CLAW_MIN_RANGE = 0.23;
-    public final static double SERVO_CLAW_MAX_RANGE = 0.34;
-    public double SERVO_CLAW_SPEED = 0.1;
 
     public final static double SERVO_ARM_HOME = 0.0;
     public final static double SERVO_ARM_MIN_RANGE = 0.0;
@@ -51,13 +47,12 @@ public class DiagnosticTeleOp extends OpMode {
     public void init() {
         telemetry.addData("Status", "Initialized");
 
-        mecanumRobot = new MecanumRobot();
+        mecanumClawRobot = new MecanumClawRobot();
         controller = new Controller(gamepad1);
         Utils.setOpMode(this);
 
         servo_ring_lock = Utils.hardwareMap.get(Servo.class, "servo_1");
         servo_ring_pusher = Utils.hardwareMap.get(Servo.class, "servo_2");
-        servo_claw = Utils.hardwareMap.get(Servo.class, "servo_3");
         servo_arm = Utils.hardwareMap.get(Servo.class, "servo_4");
 
         servo_ring_lock.setDirection(Servo.Direction.FORWARD);
@@ -101,11 +96,11 @@ public class DiagnosticTeleOp extends OpMode {
         if (CircleLastCycle) claw_toggle = !claw_toggle;
 
         // Check claw_toggle
-        if (claw_toggle) servo_arm.setPosition(SERVO_ARM_MAX_RANGE);
-        else servo_arm.setPosition(SERVO_ARM_MIN_RANGE);
+        if (claw_toggle) mecanumClawRobot.claw.open();
+        else mecanumClawRobot.claw.close();
 
         // Check Absolute Control Mode
-        if (absolute_control_mode) rightThumbstick.setShift(mecanumRobot.imu.getAngle() % 360);
+        if (absolute_control_mode) rightThumbstick.setShift(mecanumClawRobot.imu.getAngle() % 360);
         else rightThumbstick.setShift(0);
 
 
@@ -117,12 +112,12 @@ public class DiagnosticTeleOp extends OpMode {
 
         // DPAD Auto Turn
         if (controller.DPADPress()){
-            if (controller.src.dpad_up) mecanumRobot.turn(MecanumRobot.Direction.NORTH, 1);
-            else if (controller.src.dpad_right) mecanumRobot.turn(MecanumRobot.Direction.EAST, 1);
-            else if (controller.src.dpad_left) mecanumRobot.turn(MecanumRobot.Direction.WEST, 1);
-            else if (controller.src.dpad_down) mecanumRobot.turn(MecanumRobot.Direction.SOUTH, 1);
+            if (controller.src.dpad_up) mecanumClawRobot.turn(MecanumRobot.Direction.NORTH, 1);
+            else if (controller.src.dpad_right) mecanumClawRobot.turn(MecanumRobot.Direction.EAST, 1);
+            else if (controller.src.dpad_left) mecanumClawRobot.turn(MecanumRobot.Direction.WEST, 1);
+            else if (controller.src.dpad_down) mecanumClawRobot.turn(MecanumRobot.Direction.SOUTH, 1);
         }
-        else mecanumRobot.setDrivePower(drive, strafe, turn, velocity);
+        else mecanumClawRobot.setDrivePower(drive, strafe, turn, velocity);
 
 
         /*
@@ -191,11 +186,11 @@ public class DiagnosticTeleOp extends OpMode {
      * Logs out Telemetry Data
      */
     public void log(){
-        telemetry.addData("IMU", mecanumRobot.imu.getAngle());
+        telemetry.addData("IMU", mecanumClawRobot.imu.getAngle());
         //telemetry.addData("RGB", String.format("(%d, %d, %d)", mecanumRobot.colorSensor.red(), mecanumRobot.colorSensor.green(), mecanumRobot.colorSensor.blue()));
         telemetry.addData("Velocity Toggle", velocityToggle);
         telemetry.addData("ACM", absolute_control_mode);
-        telemetry.addData("Error", mecanumRobot.imu.getStartAngle() - mecanumRobot.imu.getAngle());
+        telemetry.addData("Error", mecanumClawRobot.imu.getStartAngle() - mecanumClawRobot.imu.getAngle());
     }
 
 
