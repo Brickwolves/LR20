@@ -87,7 +87,7 @@ public class DiagnosticAuto extends LinearOpMode {
         System.out.println(angle + " " + ticks);
 
 
-        mecanumRobot.initMotors();                                              // Reset Motor Encoders
+        mecanumRobot.resetMotors();                                              // Reset Motor Encoders
 
         double learning_rate = 0.000001;
         double radians = angle * Math.PI / 180;                     // Convert to radians

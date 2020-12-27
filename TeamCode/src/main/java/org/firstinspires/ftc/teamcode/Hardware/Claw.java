@@ -15,10 +15,11 @@ public class Claw {
         servo = Utils.hardwareMap.get(Servo.class, id);
     }
 
-    public void open(){
+    public void openFull(){
         servo.setPosition(SERVO_CLAW_MAX_RANGE);
     }
-    public void close(){
+    public void closeFull(){
         servo.setPosition(SERVO_CLAW_MIN_RANGE);
     }
+    public void setSpeed(double speed){ SERVO_CLAW_SPEED = speed; }
 }

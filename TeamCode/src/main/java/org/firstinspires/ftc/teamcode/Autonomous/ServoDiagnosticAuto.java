@@ -92,7 +92,7 @@ public class ServoDiagnosticAuto extends LinearOpMode {
         System.out.println(angle + " " + ticks);
 
 
-        mecanumRobot.initMotors();                                              // Reset Motor Encoders
+        mecanumRobot.resetMotors();                                              // Reset Motor Encoders
 
         double learning_rate = 0.000001;
         double radians = angle * Math.PI / 180;                     // Convert to radians
@@ -139,6 +139,5 @@ public class ServoDiagnosticAuto extends LinearOpMode {
         telemetry.addData("RGB", "(${mecanumRobot.colorSensor.red()}, ${mecanumRobot.colorSensor.green()}, ${mecanumRobot.colorSensor.blue()}");
         telemetry.addData("Error", mecanumRobot.imu.getStartAngle() - mecanumRobot.imu.getAngle());
         //telemetry.addData("touch", mecanumRobot.touchSensor.isPressed());
-        telemetry.addData("webcam", mecanumRobot.webCam.getConnectionInfo());
     }
 }

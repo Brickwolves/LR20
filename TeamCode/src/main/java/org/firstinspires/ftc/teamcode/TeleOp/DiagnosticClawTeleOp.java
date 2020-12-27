@@ -13,7 +13,7 @@ import static android.os.SystemClock.sleep;
 
 
 @TeleOp(name = "Diagnostic Mecanum Drive", group="TeleOp")
-public class DiagnosticTeleOp extends OpMode {
+public class DiagnosticClawTeleOp extends OpMode {
 
     private MecanumClawRobot mecanumClawRobot;
     private Controller controller;
@@ -96,8 +96,8 @@ public class DiagnosticTeleOp extends OpMode {
         if (CircleLastCycle) claw_toggle = !claw_toggle;
 
         // Check claw_toggle
-        if (claw_toggle) mecanumClawRobot.claw.open();
-        else mecanumClawRobot.claw.close();
+        if (claw_toggle) mecanumClawRobot.claw.openFull();
+        else mecanumClawRobot.claw.closeFull();
 
         // Check Absolute Control Mode
         if (absolute_control_mode) rightThumbstick.setShift(mecanumClawRobot.imu.getAngle() % 360);
