@@ -68,11 +68,11 @@ public class MecanumTeleOp extends OpMode {
         controller = new Controller(gamepad1);
         Utils.setOpMode(this);
 
-        servo_1 = Utils.hardwareMap.get(Servo.class, "servo_1");
-        servo_1.setDirection(Servo.Direction.FORWARD);
-        servo_2 = Utils.hardwareMap.get(Servo.class, "servo_2");
-        servo_3 = Utils.hardwareMap.get(Servo.class, "servo_3");
-        servo_4 = Utils.hardwareMap.get(Servo.class, "servo_4");
+        //servo_1 = Utils.hardwareMap.get(Servo.class, "servo_1");
+        //servo_1.setDirection(Servo.Direction.FORWARD);
+        //servo_2 = Utils.hardwareMap.get(Servo.class, "servo_2");
+        //servo_3 = Utils.hardwareMap.get(Servo.class, "servo_3");
+        //servo_4 = Utils.hardwareMap.get(Servo.class, "servo_4");
 
 
         // Toggles
@@ -144,14 +144,14 @@ public class MecanumTeleOp extends OpMode {
         }
 
 
-        servo1Position = Range.clip(servo1Position, SERVO_1_MIN_RANGE, SERVO_1_MAX_RANGE);
-        servo_1.setPosition(servo1Position);
-        servo2Position = Range.clip(servo2Position, SERVO_2_MIN_RANGE, SERVO_2_MAX_RANGE);
-        servo_2.setPosition(servo2Position);
-        servo3Position = Range.clip(servo3Position, SERVO_3_MIN_RANGE, SERVO_3_MAX_RANGE);
-        servo_3.setPosition(servo3Position);
-        servo4Position = Range.clip(servo4Position, SERVO_4_MIN_RANGE, SERVO_4_MAX_RANGE);
-        servo_4.setPosition(servo4Position);
+        //servo1Position = Range.clip(servo1Position, SERVO_1_MIN_RANGE, SERVO_1_MAX_RANGE);
+        //servo_1.setPosition(servo1Position);
+        //servo2Position = Range.clip(servo2Position, SERVO_2_MIN_RANGE, SERVO_2_MAX_RANGE);
+        //servo_2.setPosition(servo2Position);
+        //servo3Position = Range.clip(servo3Position, SERVO_3_MIN_RANGE, SERVO_3_MAX_RANGE);
+        //servo_3.setPosition(servo3Position);
+        //servo4Position = Range.clip(servo4Position, SERVO_4_MIN_RANGE, SERVO_4_MAX_RANGE);
+        //servo_4.setPosition(servo4Position);
 
 
 
@@ -159,11 +159,11 @@ public class MecanumTeleOp extends OpMode {
         telemetry.addData("Strafe", strafe);
         telemetry.addData("Turn", turn);
         telemetry.addData("wow", wow);
-        telemetry.addData("Servo1Position", servo_1.getPosition());
-        telemetry.addData("Servo2Position", servo_2.getPosition());
-        telemetry.addData("Servo3Position", servo_3.getPosition());
-        telemetry.addData("Servo4Position", servo_4.getPosition());
-        this.log();
+        //telemetry.addData("Servo1Position", servo_1.getPosition());
+        //telemetry.addData("Servo2Position", servo_2.getPosition());
+        //telemetry.addData("Servo3Position", servo_3.getPosition());
+        //telemetry.addData("Servo4Position", servo_4.getPosition());
+        //this.log();
     }
 
 
