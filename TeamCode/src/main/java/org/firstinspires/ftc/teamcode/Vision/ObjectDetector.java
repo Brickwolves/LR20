@@ -44,7 +44,8 @@ public class ObjectDetector {
             double alphaConfidence = -1.0;
             for (Recognition recognition : updatedRecognitions) {
 
-                if (recognition.getConfidence() > alphaConfidence) alphaIndex = i;
+                double confidence = recognition.getConfidence();
+                if (confidence > alphaConfidence) alphaIndex = i;
 
                 /*
                 Utils.telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
@@ -63,16 +64,10 @@ public class ObjectDetector {
     public int getRingConfig(){
 
         Recognition recog = getPrimaryObject();
-        if (recog == null) throw new Error("No object detected");
-
-        switch (recog.getLabel()){
-
-            case "Single":
-                return 1;
-            case "Quad":
-                return 4;
-        }
-        return 0;
+        if (recog == null) return 0;
+        else if (recog.getLabel().equals("Single")) return 1;
+        else if (recog.getLabel().equals("Quad")) return 4;
+        throw new Error("Uh oh");
     }
 
 }

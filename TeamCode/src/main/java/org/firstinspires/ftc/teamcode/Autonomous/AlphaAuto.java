@@ -64,9 +64,12 @@ public class AlphaAuto extends LinearOpMode {
 
         //  Ring identifier
         int rings = od.getRingConfig();
+        telemetry.addData("Rings", rings);
+        telemetry.update();
         for (int i = 0; i < rings; i++) {
             mecanumRobot.turn(360, 0.5);
         }
+        if (rings == 0) mecanumRobot.turn(-360, 0.5);
 
 
         // Shutdown robot
