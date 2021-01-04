@@ -17,6 +17,7 @@ public class MecanumRobot implements Robot {
    //public ColorSensorImpl colorSensor;
    //public ColorSensor colorSensorBase;
    public IMU imu;
+   public Claw claw;
    private LinearOpMode opMode;
 
    public MecanumRobot(){
@@ -46,6 +47,7 @@ public class MecanumRobot implements Robot {
       //colorSensorBase = Utils.hardwareMap.get(ColorSensor.class, "color_sensor");
       //colorSensor = new ColorSensorImpl(colorSensorBase);
       imu = new IMU("imu");
+      claw = new Claw("servo_3");
    }
 
    /**
@@ -99,7 +101,6 @@ public class MecanumRobot implements Robot {
       br.setPower((drive + strafe - turn) * velocity);
       bl.setPower((drive - strafe + turn) * velocity);
    }
-
    public void turn(Direction direction, double MOE) {
       System.out.println("Turning to " + direction + " degrees");
 
@@ -131,10 +132,7 @@ public class MecanumRobot implements Robot {
    }
 
 
-   /**
-      * @param targetAngle
-      * @param MOE
-   */
+
    public void turn(double targetAngle, double MOE) {
          System.out.println("Turning to " + targetAngle + " degrees");
 

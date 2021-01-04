@@ -65,7 +65,7 @@ public class DiagnosticAuto extends LinearOpMode {
         telemetry.addData("started", true);
         for (int i = 1; i < 2 + 1; i++) {
             if (opModeIsActive()){
-                mecanumRobot.turn(i * 180, 1.5);
+                //mecanumRobot.turn(i * 180, 1.5);
             }
         }
         telemetry.addData("started strafe", true);

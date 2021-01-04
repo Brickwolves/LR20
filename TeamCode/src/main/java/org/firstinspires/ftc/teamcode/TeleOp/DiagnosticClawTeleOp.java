@@ -12,13 +12,13 @@ import org.firstinspires.ftc.teamcode.Utilities.Utils;
 import static android.os.SystemClock.sleep;
 
 
-@TeleOp(name = "Diagnostic Mecanum Drive", group="TeleOp")
+@TeleOp(name = "Diagnostic Claw TeleOp", group="TeleOp")
 public class DiagnosticClawTeleOp extends OpMode {
 
-    private MecanumClawRobot mecanumClawRobot;
+    private MecanumRobot mecanumClawRobot;
     private Controller controller;
     private Servo servo_ring_lock, servo_ring_pusher, servo_claw, servo_arm;
-
+/*
     public final static double SERVO_RING_LOCK_HOME = .83;
     public final static double SERVO_RING_LOCK_MIN_RANGE = 0.5;
     public final static double SERVO_RING_LOCK_MAX_RANGE = .83;
@@ -30,34 +30,36 @@ public class DiagnosticClawTeleOp extends OpMode {
     public final static double SERVO_RING_PUSHER_MAX_RANGE = 0.7;
     public double SERVO_RING_PUSHER_SPEED = 0.1;
     double servo_ring_pusher_position = SERVO_RING_PUSHER_HOME;
-
+*/
     public final static double SERVO_ARM_HOME = 0.0;
     public final static double SERVO_ARM_MIN_RANGE = 0.0;
-    public final static double SERVO_ARM_MAX_RANGE = 1.0;
-    public double SERVO_ARM_SPEED = 1;
+    public final static double SERVO_ARM_MAX_RANGE = 0.35;
+    public double SERVO_ARM_SPEED = 0.75;
     double servo_arm_position = SERVO_ARM_HOME;
 
 
     // Toggle Variables
-    private boolean     velocityToggle,     absolute_control_mode,  claw_toggle,         DPAD_Toggle;
-    private boolean     RBLastCycle,        LBLastCycle,            CircleLastCycle,    CrossLastCycle, SquareLastCycle;
+    private boolean velocityToggle;
+    private boolean absolute_control_mode;
+    private boolean claw_toggle;
+    private boolean DPAD_Toggle;
+    private boolean RBLastCycle;
+    private boolean LBLastCycle;
+    private boolean CircleLastCycle;
+    private boolean CrossLastCycle;
+    private boolean SquareLastCycle;
     private boolean wow;
 
     @Override
     public void init() {
         telemetry.addData("Status", "Initialized");
-
-        mecanumClawRobot = new MecanumClawRobot();
-        controller = new Controller(gamepad1);
         Utils.setOpMode(this);
+        mecanumClawRobot = new MecanumRobot();
+        controller = new Controller(gamepad1);
 
-        servo_ring_lock = Utils.hardwareMap.get(Servo.class, "servo_1");
-        servo_ring_pusher = Utils.hardwareMap.get(Servo.class, "servo_2");
         servo_arm = Utils.hardwareMap.get(Servo.class, "servo_4");
+        servo_claw = Utils.hardwareMap.get(Servo.class, "servo_3");
 
-        servo_ring_lock.setDirection(Servo.Direction.FORWARD);
-        servo_ring_pusher.setDirection(Servo.Direction.FORWARD);
-        servo_claw.setDirection(Servo.Direction.FORWARD);
         servo_arm.setDirection(Servo.Direction.FORWARD);
 
 
@@ -151,21 +153,11 @@ public class DiagnosticClawTeleOp extends OpMode {
         if(gamepad1.square){
             servo_arm_position -= SERVO_ARM_SPEED;
         }
-        if(gamepad1.triangle){
-            servo_ring_pusher_position = .3;
-            servo_ring_pusher_position = Range.clip(servo_ring_pusher_position, SERVO_RING_PUSHER_MIN_RANGE, SERVO_RING_PUSHER_MAX_RANGE);
-            servo_ring_pusher.setPosition(servo_ring_pusher_position);
-            sleep(100);
-            servo_ring_pusher_position = .7;
-        }
 
 
-        servo_ring_lock_position = Range.clip(servo_ring_lock_position, SERVO_RING_LOCK_MIN_RANGE, SERVO_RING_LOCK_MAX_RANGE);
-        servo_ring_lock.setPosition(servo_ring_lock_position);
-        servo_ring_pusher_position = Range.clip(servo_ring_pusher_position, SERVO_RING_PUSHER_MIN_RANGE, SERVO_RING_PUSHER_MAX_RANGE);
-        servo_ring_pusher.setPosition(servo_ring_pusher_position);
         servo_arm_position = Range.clip(servo_arm_position, SERVO_ARM_MIN_RANGE, SERVO_ARM_MAX_RANGE);
         servo_arm.setPosition(servo_arm_position);
+
 
 
 
@@ -173,8 +165,6 @@ public class DiagnosticClawTeleOp extends OpMode {
         telemetry.addData("Strafe", strafe);
         telemetry.addData("Turn", turn);
         telemetry.addData("wow", wow);
-        telemetry.addData("Servo1Position", servo_ring_lock.getPosition());
-        telemetry.addData("Servo2Position", servo_ring_pusher.getPosition());
         telemetry.addData("Servo3Position", servo_claw.getPosition());
         telemetry.addData("Servo4Position", servo_arm.getPosition());
         this.log();

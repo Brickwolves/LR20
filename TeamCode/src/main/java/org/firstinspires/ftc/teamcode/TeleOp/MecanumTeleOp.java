@@ -14,12 +14,12 @@ import org.firstinspires.ftc.teamcode.Utilities.Utils;
 import static android.os.SystemClock.sleep;
 
 
-@TeleOp(name = "Mecanum Drive", group="TeleOp")
+@TeleOp(name = "Mecanum TeleOp", group="TeleOp")
 public class MecanumTeleOp extends OpMode {
 
     private MecanumRobot mecanumRobot;
     private Controller controller;
-    private Servo servo_1;
+    /*private Servo servo_1;
     public final static double SERVO_1_HOME = .83;
     public final static double SERVO_1_MIN_RANGE = 0.5;
     public final static double SERVO_1_MAX_RANGE = .83;
@@ -42,7 +42,7 @@ public class MecanumTeleOp extends OpMode {
     public final static double SERVO_4_MIN_RANGE = 0.0;
     public final static double SERVO_4_MAX_RANGE = 1.0;
     public double SERVO_4_SPEED = 1;
-    double servo4Position = SERVO_4_HOME;
+    double servo4Position = SERVO_4_HOME;*/
 
 
 
@@ -63,10 +63,10 @@ public class MecanumTeleOp extends OpMode {
     @Override
     public void init() {
         telemetry.addData("Status", "Initialized");
-
+        Utils.setOpMode(this);
         mecanumRobot = new MecanumRobot();
         controller = new Controller(gamepad1);
-        Utils.setOpMode(this);
+
 
         //servo_1 = Utils.hardwareMap.get(Servo.class, "servo_1");
         //servo_1.setDirection(Servo.Direction.FORWARD);
@@ -90,6 +90,7 @@ public class MecanumTeleOp extends OpMode {
      */
     @Override
     public void loop() {
+        telemetry.addData("Status", "Loop Running");
 
         // Get Thumbsticks
         Controller.Thumbstick rightThumbstick = controller.getRightThumbstick();
@@ -124,8 +125,7 @@ public class MecanumTeleOp extends OpMode {
         }
 
         else mecanumRobot.setDrivePower(drive, strafe, turn, velocity);
-
-        /* touchpad?*/
+        /*
         if (controller.src.touchpad){
 
         }
@@ -141,7 +141,7 @@ public class MecanumTeleOp extends OpMode {
             servo_2.setPosition(servo2Position);
             sleep(100);
             servo2Position = .7;
-        }
+        }*/
 
 
         //servo1Position = Range.clip(servo1Position, SERVO_1_MIN_RANGE, SERVO_1_MAX_RANGE);
@@ -158,7 +158,7 @@ public class MecanumTeleOp extends OpMode {
         telemetry.addData("Drive", drive);
         telemetry.addData("Strafe", strafe);
         telemetry.addData("Turn", turn);
-        telemetry.addData("wow", wow);
+        //telemetry.addData("wow", wow);
         //telemetry.addData("Servo1Position", servo_1.getPosition());
         //telemetry.addData("Servo2Position", servo_2.getPosition());
         //telemetry.addData("Servo3Position", servo_3.getPosition());
@@ -172,11 +172,11 @@ public class MecanumTeleOp extends OpMode {
      * Logs out Telemetry Data
      */
     public void log(){
-        telemetry.addData("IMU", mecanumRobot.imu.getAngle());
-        //telemetry.addData("RGB", String.format("(%d, %d, %d)", mecanumRobot.colorSensor.red(), mecanumRobot.colorSensor.green(), mecanumRobot.colorSensor.blue()));
+        /*telemetry.addData("IMU", mecanumRobot.imu.getAngle());
+        telemetry.addData("RGB", String.format("(%d, %d, %d)", mecanumRobot.colorSensor.red(), mecanumRobot.colorSensor.green(), mecanumRobot.colorSensor.blue()));
         telemetry.addData("Velocity Toggle", velocityToggle);
         telemetry.addData("ACM", absoluteControlMode);
-        telemetry.addData("Error", mecanumRobot.imu.getStartAngle() - mecanumRobot.imu.getAngle());
+        telemetry.addData("Error", mecanumRobot.imu.getStartAngle() - mecanumRobot.imu.getAngle());*/
     }
 
 
