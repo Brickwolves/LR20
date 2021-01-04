@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Vision;
 
+import android.util.Log;
+
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
@@ -9,13 +11,12 @@ import java.util.List;
 
 public class ObjectDetector {
 
-    private TFObjectDetector tfod;
+    public TFObjectDetector tfod;
     private Vuforia vuforia = new Vuforia();
 
     private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
     private static final String LABEL_FIRST_ELEMENT = "Quad";
     private static final String LABEL_SECOND_ELEMENT = "Single";
-
     public ObjectDetector(){
 
         int tfodMonitorViewId = Utils.hardwareMap.appContext.getResources().getIdentifier(
@@ -40,7 +41,7 @@ public class ObjectDetector {
             // Retrieve recognition with max confidence
             // CHECK 0 OBJECTS, 0.8 min confidence
             int i = 0;
-            int alphaIndex = -1;
+            int alphaIndex = 0;
             double alphaConfidence = -1.0;
             for (Recognition recognition : updatedRecognitions) {
 
@@ -55,7 +56,13 @@ public class ObjectDetector {
                         recognition.getRight(), recognition.getBottom());
                  */
             }
+            if(updatedRecognitions.size() == 0){
+                System.out.println("this works");
+                Log.i("Testing ", "Testing ");
+                return null;
+            }
             return updatedRecognitions.get(alphaIndex);
+
         }
 
         return null;

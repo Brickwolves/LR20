@@ -89,13 +89,23 @@ public class DiagnosticClawTeleOp extends OpMode {
         // ButtonTapped() compares current and previous states to handle single presses of buttons.
         // If we press RB once, toggle velocity shift
         RBLastCycle = Utils.buttonTapped(controller.src.right_bumper, RBLastCycle);
-        if (RBLastCycle) velocityToggle = !velocityToggle;
+        if (RBLastCycle) {
+            velocityToggle = !velocityToggle;
+            sleep(100);
+        }
 
         LBLastCycle = Utils.buttonTapped(controller.src.left_bumper, LBLastCycle);
-        if (LBLastCycle) absolute_control_mode = !absolute_control_mode;
+        if (LBLastCycle) {
+            absolute_control_mode = !absolute_control_mode;
+            sleep(100);
+        }
 
         CircleLastCycle = Utils.buttonTapped(controller.src.circle, CircleLastCycle);
-        if (CircleLastCycle) claw_toggle = !claw_toggle;
+        if (CircleLastCycle) {
+            claw_toggle = !claw_toggle;
+            sleep(100);
+        }
+
 
         // Check claw_toggle
         if (claw_toggle) mecanumClawRobot.claw.openFull();

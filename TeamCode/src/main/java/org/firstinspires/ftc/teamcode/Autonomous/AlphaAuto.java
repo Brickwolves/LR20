@@ -51,21 +51,26 @@ public class AlphaAuto extends LinearOpMode {
 
         mecanumRobot = new MecanumRobot();
         od = new ObjectDetector();
+        od.tfod.activate();
     }
 
 
     @Override
     public void runOpMode() {
-
         initialize();
         waitForStart();
         telemetry.addData("started", true);
 
 
+
         //  Ring identifier
-        int rings = od.getRingConfig();
+        int rings = -1;
+        for (int i = 0; i < 20; i++) {
+            rings = od.getRingConfig();
+        }
         telemetry.addData("Rings", rings);
         telemetry.update();
+        sleep(3000);
         for (int i = 0; i < rings; i++) {
             mecanumRobot.turn(360, 0.5);
         }
