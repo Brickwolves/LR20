@@ -57,8 +57,6 @@ public class AlphaAuto extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        Utils.telemetry.addData("Status: ", "Hit [Init] to Initialize ze bot");
-        Utils.telemetry.update();
 
         initialize();
 
@@ -87,12 +85,12 @@ public class AlphaAuto extends LinearOpMode {
 
 
         for (int i = 0; i < rings; i++) {
-            Utils.telemetry.addData("Status: ", "Turning cw" + rings + " times.");
+            Utils.telemetry.addData("Status: ", "Turning ccw" + rings + " times.");
             Utils.telemetry.update();
             mecanumRobot.turn(360, 1.5);
         }
         if (rings == 0) {
-            Utils.telemetry.addData("Status: ", "No Rings Found, turning once ccw.");
+            Utils.telemetry.addData("Status: ", "No Rings Found, turning once cw.");
             Utils.telemetry.update();
             mecanumRobot.turn(-360, 1.5);
         }

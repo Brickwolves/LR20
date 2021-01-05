@@ -9,6 +9,8 @@ import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
 import java.util.List;
 
+import static android.os.SystemClock.sleep;
+
 public class ObjectDetector {
 
     public TFObjectDetector tfod;
@@ -36,6 +38,8 @@ public class ObjectDetector {
         List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
         if (updatedRecognitions != null) {
             Utils.telemetry.addData("# Object Detected", updatedRecognitions.size());
+            Utils.telemetry.update();
+            /*
 
             // step through the list of recognitions and display boundary info.
             // Retrieve recognition with max confidence
@@ -48,33 +52,44 @@ public class ObjectDetector {
                 double confidence = recognition.getConfidence();
                 if (confidence > alphaConfidence) alphaIndex = i;
 
-                /*
+
                 Utils.telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
                 Utils.telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
                         recognition.getLeft(), recognition.getTop());
                 Utils.telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
                         recognition.getRight(), recognition.getBottom());
-                 */
+
             }
+
+             */
             if(updatedRecognitions.size() == 0){
                 System.out.println("this works");
                 Log.i("Testing ", "Testing ");
+                Utils.telemetry.addData("we made it", "we made it");
                 return null;
             }
-            return updatedRecognitions.get(alphaIndex);
+            return updatedRecognitions.get(0);
 
         }
-
-        return null;
+        Utils.telemetry.addData("Nothing found", "nothing found");
+        Utils.telemetry.update();
+       return null;
     }
 
     public int getRingConfig(){
 
         Recognition recog = getPrimaryObject();
-        if (recog == null) return -1;
-        else if (recog.getLabel().equals("Single")) return 1;
+        Utils.telemetry.addData("recog", recog.getLabel());
+        Utils.telemetry.update();
+        if (true) return 10;
+        if (recog.getLabel().equals("Single")) return 1;
         else if (recog.getLabel().equals("Quad")) return 4;
+        else if (recog == null) {
+            return 0;
+
+        }
         throw new Error("Uh oh, it's literally impossible to be getting this error message, you're out of luck bud");
+
     }
 
 }

@@ -128,7 +128,7 @@ public class MecanumRobot implements Robot {
          double turn = (coTermAngle <= 0) ? 1 : -1;
          setDrivePower(0, 0, turn, 0.3);
       }
-      telemetry.addData("TargetAngle", targetAngle);
+      Utils.telemetry.addData("TargetAngle", targetAngle);
    }
 
 
@@ -153,10 +153,13 @@ public class MecanumRobot implements Robot {
 
 
             // Modeling a piece wise of power as a function of distance
+            /*
             power = Utils.powerRamp(anglePosition, deltaAngle, 0.1);
-
+            Utils.telemetry.addData("Power", power);
+            Utils.telemetry.update();
+            */
             // Handle clockwise (+) and counterclockwise (-) motion
-            setDrivePower(0, 0, 1, power);
+            setDrivePower(0, 0, 1, 0.3);
 
             currentAngle = imu.getAngle();
          }
