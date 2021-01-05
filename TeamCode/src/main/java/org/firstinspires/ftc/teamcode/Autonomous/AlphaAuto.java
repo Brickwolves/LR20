@@ -57,27 +57,50 @@ public class AlphaAuto extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        initialize();
-        waitForStart();
-        telemetry.addData("started", true);
+        Utils.telemetry.addData("Status: ", "Hit [Init] to Initialize ze bot");
+        Utils.telemetry.update();
 
+        initialize();
+
+        Utils.telemetry.addData("Status: ", "Hit [Start] to Start ze bot");
+        Utils.telemetry.update();
+
+        waitForStart();
+
+        Utils.telemetry.addData("Status: ", "Running");
+        Utils.telemetry.update();
+        sleep(1000);
 
 
         //  Ring identifier
+        Utils.telemetry.addData("Status: ", "Object Detection Starting in 1 second.");
+        Utils.telemetry.update();
+        sleep(1000);
+
         int rings = -1;
         for (int i = 0; i < 20; i++) {
             rings = od.getRingConfig();
         }
-        telemetry.addData("Rings", rings);
-        telemetry.update();
-        sleep(3000);
+        Utils.telemetry.addData("Rings", rings);
+        Utils.telemetry.update();
+        sleep(5000);
+
+
         for (int i = 0; i < rings; i++) {
-            mecanumRobot.turn(360, 0.5);
+            Utils.telemetry.addData("Status: ", "Turning cw" + rings + " times.");
+            Utils.telemetry.update();
+            mecanumRobot.turn(360, 1.5);
         }
-        if (rings == 0) mecanumRobot.turn(-360, 0.5);
+        if (rings == 0) {
+            Utils.telemetry.addData("Status: ", "No Rings Found, turning once ccw.");
+            Utils.telemetry.update();
+            mecanumRobot.turn(-360, 1.5);
+        }
+        Utils.telemetry.addData("Status: ", "Shutting down.");
+        Utils.telemetry.update();
+        sleep(1000);
 
-
-        // Shutdown robot
-        od.shutdown();
+        // Shutdown object detection
+        od.tfod.shutdown();
     }
 }

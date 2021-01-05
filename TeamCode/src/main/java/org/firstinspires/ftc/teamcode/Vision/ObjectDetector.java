@@ -71,10 +71,10 @@ public class ObjectDetector {
     public int getRingConfig(){
 
         Recognition recog = getPrimaryObject();
-        if (recog == null) return 0;
+        if (recog == null) return -1;
         else if (recog.getLabel().equals("Single")) return 1;
         else if (recog.getLabel().equals("Quad")) return 4;
-        throw new Error("Uh oh");
+        throw new Error("Uh oh, it's literally impossible to be getting this error message, you're out of luck bud");
     }
 
 }
