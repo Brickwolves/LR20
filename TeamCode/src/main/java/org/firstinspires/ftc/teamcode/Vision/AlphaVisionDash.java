@@ -151,7 +151,7 @@ public class AlphaVisionDash extends LinearOpMode
                     ),
                     new Scalar(0, 255, 0), 4);
             */
-
+/*
             // Dimensions for top rectangle
             rectTopX1 = (int) (YCbCr.rows() * DashConstants.rectTopX1Percent);
             rectTopX2 = (int) (YCbCr.rows() * DashConstants.rectTopX2Percent);
@@ -163,6 +163,18 @@ public class AlphaVisionDash extends LinearOpMode
             rectBottomX2 = (int) (YCbCr.rows() * DashConstants.rectBottomX2Percent);
             rectBottomY1 = (int) (YCbCr.cols() * DashConstants.rectBottomY1Percent);
             rectBottomY2 = (int) (YCbCr.cols() * DashConstants.rectBottomY2Percent);
+*/
+            // Dimensions for top rectangle
+            rectTopX1 = (int) (input.rows() * DashConstants.rectTopX1Percent);
+            rectTopX2 = (int) (input.rows() * DashConstants.rectTopX2Percent) - rectTopX1;
+            rectTopY1 = (int) (input.cols() * DashConstants.rectTopY1Percent);
+            rectTopY2 = (int) (input.cols() * DashConstants.rectTopY2Percent) - rectTopY1;
+
+            // Dimensions for bottom rectangle
+            rectBottomX1 = (int) (input.rows() * DashConstants.rectBottomX1Percent);
+            rectBottomX2 = (int) (input.rows() * DashConstants.rectBottomX2Percent) - rectBottomX1;
+            rectBottomY1 = (int) (input.cols() * DashConstants.rectBottomY1Percent);
+            rectBottomY2 = (int) (input.cols() * DashConstants.rectBottomY2Percent) - rectBottomY1;
 
             // VISUALIZATION: Create rectangles and scalars, then draw them onto outPut
             Scalar rectangleColor = new Scalar(0, 0, 255);
@@ -171,7 +183,11 @@ public class AlphaVisionDash extends LinearOpMode
             Imgproc.rectangle(outPut, rectTop, rectangleColor, 2);
             Imgproc.rectangle(outPut, rectBottom, rectangleColor, 2);
 
-        /*
+
+
+
+           // IDENTIFY RINGS //
+
             // Crop
             upperCrop = YCbCr.submat(rectTop);
             lowerCrop = YCbCr.submat(rectBottom);
@@ -191,8 +207,8 @@ public class AlphaVisionDash extends LinearOpMode
             if (
 
                     finalLowerAve > 15 &&
-                            finalLowerAve < 130 &&
-                            finalUpperAve < 130
+                    finalLowerAve < 130 &&
+                    finalUpperAve < 130
 
             ) ringCount = 4.0;
             else if (
@@ -205,7 +221,20 @@ public class AlphaVisionDash extends LinearOpMode
             ) ringCount = 0.0;
             else ringCount = 1.0;
 
-            */
+
+
+
+            /**
+             * RECT_BOTTOM_X1: 0.75
+             * RECT_BOTTOM_X2: 0.9
+             * RECT_BOTTOM_Y1: 0.38
+             * RECT_BOTTOM_Y2: 0.42
+             * RECT_TOP_X1: 0.75
+             * RECT_TOP_X2: 0.9
+             * RECT_TOP_Y1: 0.3
+             * RECT_TOP_Y2: 0.38
+             * Given a distance of around 3ft from rings
+             */
 
             multTelemetry.addData("RECT_TOP_X1", DashConstants.rectTopX1Percent);
             multTelemetry.addData("RECT_TOP_Y1", DashConstants.rectTopY1Percent);
@@ -215,6 +244,16 @@ public class AlphaVisionDash extends LinearOpMode
             multTelemetry.addData("RECT_BOTTOM_Y1", DashConstants.rectBottomY1Percent);
             multTelemetry.addData("RECT_BOTTOM_X2", DashConstants.rectBottomX2Percent);
             multTelemetry.addData("RECT_BOTTOM_Y2", DashConstants.rectBottomY2Percent);
+
+
+            multTelemetry.addData("Upper", upperCrop);
+            multTelemetry.addData("Lower", lowerCrop);
+            multTelemetry.addData("lowerAveOrange", lowerAveOrange);
+            multTelemetry.addData("upperAveOrange", upperAveOrange);
+            multTelemetry.addData("finalLowerAve: ", finalLowerAve);
+            multTelemetry.addData("finalUpperAve: ", finalUpperAve);
+            multTelemetry.addData("RingCount: ", ringCount);
+
             multTelemetry.update();
 
             // Return altered image
