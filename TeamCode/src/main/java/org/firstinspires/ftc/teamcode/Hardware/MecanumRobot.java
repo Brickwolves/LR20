@@ -8,6 +8,7 @@ import org.firstinspires.ftc.teamcode.Utilities.Utils;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 
+import static android.os.SystemClock.sleep;
 import static org.firstinspires.ftc.teamcode.Utilities.Utils.telemetry;
 
 public class MecanumRobot implements Robot {
@@ -162,9 +163,13 @@ public class MecanumRobot implements Robot {
             setDrivePower(0, 0, 1, 0.3);
 
             currentAngle = imu.getAngle();
+            Utils.telemetry.addData("IMU", imu.getAngle());
+            Utils.telemetry.update();
          }
 
          // Stop power
          setAllPower(0);
+
+         sleep(100);
       }
 }

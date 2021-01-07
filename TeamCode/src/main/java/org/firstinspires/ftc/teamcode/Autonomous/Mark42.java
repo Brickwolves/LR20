@@ -1,10 +1,10 @@
-package org.firstinspires.ftc.teamcode.Vision;
-
+package org.firstinspires.ftc.teamcode.Autonomous;
 
 import android.util.Log;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -24,8 +24,8 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-@TeleOp(name="AlphaVisionDash", group="TeleOp Linear Opmode")
-public class AlphaVisionDash extends LinearOpMode
+@Autonomous(name="Mark42", group="Autonomous Linear Opmode")
+public class Mark42 extends LinearOpMode
 {
     private MecanumRobot mecanumRobot;
 
@@ -45,7 +45,7 @@ public class AlphaVisionDash extends LinearOpMode
     public void runOpMode()
     {
 
-        //initialize();
+        initialize();
 
 
         /*
@@ -74,30 +74,41 @@ public class AlphaVisionDash extends LinearOpMode
         /*
         ACTION
          */
-        while (opModeIsActive())
-        {
+        if (opModeIsActive()){
 
             if (ringCount == 1.0){
                 // drive somewhere
-                Utils.telemetry.addData("RingCount", 1.0);
+                multTelemetry.addData("RingCount", 1.0);
             }
             else if (ringCount == 4.0){
                 // drive somewhere else
-                Utils.telemetry.addData("RingCount", 4.0);
+                multTelemetry.addData("RingCount", 4.0);
             }
             else {
                 // drive somewhere other than else
-                Utils.telemetry.addData("RingCount", 0.0);
+                multTelemetry.addData("RingCount", 0.0);
             }
 
             telemetry.addData("FPS", String.format("%.2f", webcam.getFps()));
             telemetry.update();
+            webcam.stopStreaming();
+            sleep(3000);
 
-            if(gamepad1.a)
-            {
-                webcam.stopStreaming();
+
+            // Done completing vision
+            for (int i = 0; i < ringCount; i++) {
+                multTelemetry.addData("Status", "Turning ccw" + i + " times.");
+                multTelemetry.update();
+                sleep(3000);
+                mecanumRobot.turn(360, 1.5);
             }
-            sleep(100);
+            if (ringCount == 0) {
+                multTelemetry.addData("Status", "No Rings Found, turning once cw.");
+                multTelemetry.update();
+                sleep(3000);
+                mecanumRobot.turn(-360, 1.5);
+            }
+
         }
     }
 
@@ -127,43 +138,6 @@ public class AlphaVisionDash extends LinearOpMode
             Imgproc.cvtColor(input, YCbCr, Imgproc.COLOR_RGB2YCrCb);
             input.copyTo(outPut);
 
-            /*
-            Imgproc.rectangle(
-                    outPut,
-                    new Point(
-                            (int) outPut.cols() * DashConstants.rectTopX1Percent,
-                            (int) outPut.rows() * DashConstants.rectTopY1Percent
-                    ),
-                    new Point(
-                            (int) outPut.cols() * DashConstants.rectTopX2Percent,
-                            (int) outPut.rows() * DashConstants.rectTopY2Percent
-                    ),
-                    new Scalar(0, 255, 0), 4);
-            Imgproc.rectangle(
-                    outPut,
-                    new Point(
-                            (int) outPut.cols() * DashConstants.rectBottomX1Percent,
-                            (int) outPut.rows() * DashConstants.rectBottomY1Percent
-                    ),
-                    new Point(
-                            (int) outPut.cols() * DashConstants.rectBottomX2Percent,
-                            (int) outPut.rows() * DashConstants.rectBottomY2Percent
-                    ),
-                    new Scalar(0, 255, 0), 4);
-            */
-/*
-            // Dimensions for top rectangle
-            rectTopX1 = (int) (YCbCr.rows() * DashConstants.rectTopX1Percent);
-            rectTopX2 = (int) (YCbCr.rows() * DashConstants.rectTopX2Percent);
-            rectTopY1 = (int) (YCbCr.cols() * DashConstants.rectTopY1Percent);
-            rectTopY2 = (int) (YCbCr.cols() * DashConstants.rectTopY2Percent);
-
-            // Dimensions for bottom rectangle
-            rectBottomX1 = (int) (YCbCr.rows() * DashConstants.rectBottomX1Percent);
-            rectBottomX2 = (int) (YCbCr.rows() * DashConstants.rectBottomX2Percent);
-            rectBottomY1 = (int) (YCbCr.cols() * DashConstants.rectBottomY1Percent);
-            rectBottomY2 = (int) (YCbCr.cols() * DashConstants.rectBottomY2Percent);
-*/
             // Dimensions for top rectangle
             rectTopX1 = (int) (input.rows() * DashConstants.rectTopX1Percent);
             rectTopX2 = (int) (input.rows() * DashConstants.rectTopX2Percent) - rectTopX1;
@@ -186,7 +160,7 @@ public class AlphaVisionDash extends LinearOpMode
 
 
 
-           // IDENTIFY RINGS //
+            // IDENTIFY RINGS //
 
             // Crop
             upperCrop = YCbCr.submat(rectTop);
@@ -207,14 +181,14 @@ public class AlphaVisionDash extends LinearOpMode
             if (
 
                     finalUpperAve > DashConstants.orangeMin &&
-                    finalUpperAve < DashConstants.orangeMax
+                            finalUpperAve < DashConstants.orangeMax
 
             ) ringCount = 4.0;
-            // Check 0 rings
+                // Check 0 rings
             else if (
 
                     finalLowerAve > DashConstants.orangeMax ||
-                    finalLowerAve < DashConstants.orangeMin
+                            finalLowerAve < DashConstants.orangeMin
 
             ) ringCount = 0.0;
             else ringCount = 1.0;
@@ -231,6 +205,7 @@ public class AlphaVisionDash extends LinearOpMode
              * Given a distance of around 3ft from rings
              */
 
+            /*
             multTelemetry.addData("RECT_TOP_X1", DashConstants.rectTopX1Percent);
             multTelemetry.addData("RECT_TOP_Y1", DashConstants.rectTopY1Percent);
             multTelemetry.addData("RECT_TOP_X2", DashConstants.rectTopX2Percent);
@@ -239,16 +214,11 @@ public class AlphaVisionDash extends LinearOpMode
             multTelemetry.addData("RECT_BOTTOM_Y1", DashConstants.rectBottomY1Percent);
             multTelemetry.addData("RECT_BOTTOM_X2", DashConstants.rectBottomX2Percent);
             multTelemetry.addData("RECT_BOTTOM_Y2", DashConstants.rectBottomY2Percent);
+            */
 
-
-            multTelemetry.addData("Upper", upperCrop);
-            multTelemetry.addData("Lower", lowerCrop);
-            multTelemetry.addData("lowerAveOrange", lowerAveOrange);
-            multTelemetry.addData("upperAveOrange", upperAveOrange);
+            multTelemetry.addData("Ring Count", ringCount);
             multTelemetry.addData("finalLowerAve: ", finalLowerAve);
             multTelemetry.addData("finalUpperAve: ", finalUpperAve);
-            multTelemetry.addData("RingCount: ", ringCount);
-
             multTelemetry.update();
 
             // Return altered image
