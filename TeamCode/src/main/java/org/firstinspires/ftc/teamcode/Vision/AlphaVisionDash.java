@@ -145,11 +145,26 @@ public class AlphaVisionDash extends LinearOpMode
                             (int) outPut.rows() * DashConstants.rectTopY2Percent
                     ),
                     new Scalar(0, 255, 0), 4);
+            Imgproc.rectangle(
+                    outPut,
+                    new Point(
+                            (int) outPut.cols() * DashConstants.rectBottomX1Percent,
+                            (int) outPut.rows() * DashConstants.rectBottomY1Percent
+                    ),
+                    new Point(
+                            (int) outPut.cols() * DashConstants.rectBottomX2Percent,
+                            (int) outPut.rows() * DashConstants.rectBottomY2Percent
+                    ),
+                    new Scalar(0, 255, 0), 4);
 
             multTelemetry.addData("RECT_TOP_X1", DashConstants.rectTopX1Percent);
             multTelemetry.addData("RECT_TOP_Y1", DashConstants.rectTopY1Percent);
             multTelemetry.addData("RECT_TOP_X2", DashConstants.rectTopX2Percent);
             multTelemetry.addData("RECT_TOP_Y2", DashConstants.rectTopY2Percent);
+            multTelemetry.addData("RECT_BOTTOM_X1", DashConstants.rectBottomX1Percent);
+            multTelemetry.addData("RECT_BOTTOM_Y1", DashConstants.rectBottomY1Percent);
+            multTelemetry.addData("RECT_BOTTOM_X2", DashConstants.rectBottomX2Percent);
+            multTelemetry.addData("RECT_BOTTOM_Y2", DashConstants.rectBottomY2Percent);
             multTelemetry.update();
 
             /*
