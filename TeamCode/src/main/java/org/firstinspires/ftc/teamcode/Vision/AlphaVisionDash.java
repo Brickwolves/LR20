@@ -130,10 +130,11 @@ public class AlphaVisionDash extends LinearOpMode
         @Override
         public Mat processFrame(Mat input)
         {
-            // Convert
+            // Convert & Copy to outPut image
             Imgproc.cvtColor(input, YCbCr, Imgproc.COLOR_RGB2YCrCb);
-
             input.copyTo(outPut);
+
+            /*
             Imgproc.rectangle(
                     outPut,
                     new Point(
@@ -156,38 +157,28 @@ public class AlphaVisionDash extends LinearOpMode
                             (int) outPut.rows() * DashConstants.rectBottomY2Percent
                     ),
                     new Scalar(0, 255, 0), 4);
+            */
 
-            multTelemetry.addData("RECT_TOP_X1", DashConstants.rectTopX1Percent);
-            multTelemetry.addData("RECT_TOP_Y1", DashConstants.rectTopY1Percent);
-            multTelemetry.addData("RECT_TOP_X2", DashConstants.rectTopX2Percent);
-            multTelemetry.addData("RECT_TOP_Y2", DashConstants.rectTopY2Percent);
-            multTelemetry.addData("RECT_BOTTOM_X1", DashConstants.rectBottomX1Percent);
-            multTelemetry.addData("RECT_BOTTOM_Y1", DashConstants.rectBottomY1Percent);
-            multTelemetry.addData("RECT_BOTTOM_X2", DashConstants.rectBottomX2Percent);
-            multTelemetry.addData("RECT_BOTTOM_Y2", DashConstants.rectBottomY2Percent);
-            multTelemetry.update();
-
-            /*
             // Dimensions for top rectangle
-            rectTopX1 = (int) Math.round(YCbCr.rows() * DashConstants.rectTopX1Percent);
-            rectTopX2 = (int) Math.round(YCbCr.rows() * DashConstants.rectTopX2Percent);
-            rectTopY1 = (int) Math.round(YCbCr.cols() * DashConstants.rectTopY1Percent);
-            rectTopY2 = (int) Math.round(YCbCr.cols() * DashConstants.rectTopY2Percent);
+            rectTopX1 = (int) (YCbCr.rows() * DashConstants.rectTopX1Percent);
+            rectTopX2 = (int) (YCbCr.rows() * DashConstants.rectTopX2Percent);
+            rectTopY1 = (int) (YCbCr.cols() * DashConstants.rectTopY1Percent);
+            rectTopY2 = (int) (YCbCr.cols() * DashConstants.rectTopY2Percent);
 
             // Dimensions for bottom rectangle
-            rectBottomX1 = (int) Math.round(YCbCr.rows() * DashConstants.rectBottomX1Percent);
-            rectBottomX2 = (int) Math.round(YCbCr.rows() * DashConstants.rectBottomX2Percent);
-            rectBottomY1 = (int) Math.round(YCbCr.cols() * DashConstants.rectBottomY1Percent);
-            rectBottomY2 = (int) Math.round(YCbCr.cols() * DashConstants.rectBottomY2Percent);
+            rectBottomX1 = (int) (YCbCr.rows() * DashConstants.rectBottomX1Percent);
+            rectBottomX2 = (int) (YCbCr.rows() * DashConstants.rectBottomX2Percent);
+            rectBottomY1 = (int) (YCbCr.cols() * DashConstants.rectBottomY1Percent);
+            rectBottomY2 = (int) (YCbCr.cols() * DashConstants.rectBottomY2Percent);
 
             // VISUALIZATION: Create rectangles and scalars, then draw them onto outPut
             Scalar rectangleColor = new Scalar(0, 0, 255);
-            Rect rectTop = new Rect(rectTopX1, rectTopY2, rectTopX2, rectTopY2);
+            Rect rectTop = new Rect(rectTopX1, rectTopY1, rectTopX2, rectTopY2);
             Rect rectBottom = new Rect(rectBottomX1, rectBottomY1, rectBottomX2, rectBottomY2);
             Imgproc.rectangle(outPut, rectTop, rectangleColor, 2);
             Imgproc.rectangle(outPut, rectBottom, rectangleColor, 2);
 
-
+        /*
             // Crop
             upperCrop = YCbCr.submat(rectTop);
             lowerCrop = YCbCr.submat(rectBottom);
@@ -223,6 +214,15 @@ public class AlphaVisionDash extends LinearOpMode
 
             */
 
+            multTelemetry.addData("RECT_TOP_X1", DashConstants.rectTopX1Percent);
+            multTelemetry.addData("RECT_TOP_Y1", DashConstants.rectTopY1Percent);
+            multTelemetry.addData("RECT_TOP_X2", DashConstants.rectTopX2Percent);
+            multTelemetry.addData("RECT_TOP_Y2", DashConstants.rectTopY2Percent);
+            multTelemetry.addData("RECT_BOTTOM_X1", DashConstants.rectBottomX1Percent);
+            multTelemetry.addData("RECT_BOTTOM_Y1", DashConstants.rectBottomY1Percent);
+            multTelemetry.addData("RECT_BOTTOM_X2", DashConstants.rectBottomX2Percent);
+            multTelemetry.addData("RECT_BOTTOM_Y2", DashConstants.rectBottomY2Percent);
+            multTelemetry.update();
 
             // Return altered image
             return outPut;
