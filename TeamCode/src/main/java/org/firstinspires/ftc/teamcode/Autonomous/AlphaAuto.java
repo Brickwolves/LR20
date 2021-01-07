@@ -87,12 +87,14 @@ public class AlphaAuto extends LinearOpMode {
         for (int i = 0; i < rings; i++) {
             Utils.telemetry.addData("Status: ", "Turning ccw" + rings + " times.");
             Utils.telemetry.update();
-            mecanumRobot.turn(360, 1.5);
+            sleep(5000);
+            //mecanumRobot.turn(360, 1.5);
         }
         if (rings == 0) {
             Utils.telemetry.addData("Status: ", "No Rings Found, turning once cw.");
             Utils.telemetry.update();
-            mecanumRobot.turn(-360, 1.5);
+            sleep(5000);
+            //mecanumRobot.turn(-360, 1.5);
         }
         Utils.telemetry.addData("Status: ", "Shutting down.");
         Utils.telemetry.update();
