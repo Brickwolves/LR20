@@ -62,21 +62,28 @@ public class DiagnosticAuto extends LinearOpMode {
         waitForStart();
 
 
-        telemetry.addData("started", true);
-        for (int i = 1; i < 2 + 1; i++) {
-            if (opModeIsActive()){
-                //mecanumRobot.turn(i * 180, 1.5);
-            }
-        }
-        telemetry.addData("started strafe", true);
-        for (int i = 0; i < 8; i++) {
-           if (opModeIsActive()){
-               strafe(i * 45, 500, 0.0, null);
-               sleep(100);
-               strafe(i * 45 + 180, 500, 0.0, null);
-               sleep(100);
-           }
-        }
+        telemetry.addData("Status", "Turning 360");
+        telemetry.addData("IMU", mecanumRobot.imu.getAngle());
+        telemetry.update();
+        sleep(3000);
+        mecanumRobot.turn(360, 1);
+
+
+        telemetry.addData("Status", "Turning 0");
+        telemetry.addData("IMU", mecanumRobot.imu.getAngle());
+        telemetry.update();
+        sleep(3000);
+        mecanumRobot.turn(0, 1);
+
+
+        telemetry.addData("Status", "Turning -360");
+        telemetry.addData("IMU", mecanumRobot.imu.getAngle());
+        telemetry.update();
+        sleep(3000);
+        mecanumRobot.turn(-360, 1);
+
+        telemetry.addData("Status", "Shutting Down");
+        telemetry.update();
     }
     /**
      * @param angle

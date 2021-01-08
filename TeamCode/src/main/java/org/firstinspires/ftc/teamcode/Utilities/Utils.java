@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Utilities;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -59,12 +60,11 @@ public class Utils {
         double p1 = normFactor * Math.sqrt(acceleration * position);
         double p2 = 1;
         double p3 = normFactor * (Math.cbrt(acceleration * (distance - position)));
-        telemetry.addData("p3", p3);
-        telemetry.addData("normFactor", normFactor);
-        telemetry.addData("acceleration", acceleration);
-        telemetry.addData("distance", distance);
-        telemetry.addData("position", position);
-        return Math.min(Math.min(p1, p2), p3)+0.1;
+        double power = Math.min(Math.min(p1, p2), p3)+0.1;
+        telemetry.addData("Distance", distance);
+        telemetry.addData("Position", position);
+
+        return power;
     }
 
 

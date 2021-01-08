@@ -1,9 +1,12 @@
 package org.firstinspires.ftc.teamcode.Hardware;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.hardware.*;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Hardware.Sensors.ColorSensorImpl;
 import org.firstinspires.ftc.teamcode.Hardware.Sensors.IMU;
+import org.firstinspires.ftc.teamcode.Utilities.DashConstants;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -154,16 +157,21 @@ public class MecanumRobot implements Robot {
 
 
             // Modeling a piece wise of power as a function of distance
-            /*
+
             power = Utils.powerRamp(anglePosition, deltaAngle, 0.1);
+            power = Math.abs(power);
             Utils.telemetry.addData("Power", power);
             Utils.telemetry.update();
-            */
+
+
             // Handle clockwise (+) and counterclockwise (-) motion
-            setDrivePower(0, 0, 1, 0.3);
+            setDrivePower(0, 0, -Math.signum(currentDeltaAngle), .2);
 
             currentAngle = imu.getAngle();
             Utils.telemetry.addData("IMU", imu.getAngle());
+            Utils.telemetry.addData("Lower", lowerBound);
+            Utils.telemetry.addData("Upper", upperBound);
+            Utils.telemetry.addData("Reached Target", (lowerBound >= currentAngle || currentAngle <= upperBound));
             Utils.telemetry.update();
          }
 

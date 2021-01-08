@@ -21,5 +21,7 @@ public class DashConstants {
     public static double orangeMax = 110;
     public static double orangeMin = 15;
 
+    public static double power;
+
 
 }
