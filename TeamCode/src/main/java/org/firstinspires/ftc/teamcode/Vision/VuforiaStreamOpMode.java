@@ -18,7 +18,6 @@ public class VuforiaStreamOpMode extends LinearOpMode {
 
     public static final String VUFORIA_LICENSE_KEY = "AbuxcJX/////AAABmXadAYnA80uwmb4Rhy4YmvIh7qg/f2yrRu1Nd8O7sSufbUWHSv1jDhunwDBItvFchrvkc8EjTzjh97m2kAPy8YOjBclQbEBtuR8qcIfrGofASCZh2M6vQ0/Au+YbhYh0MLLdNrond+3YjkLswv6+Se3eVGw9y9fPGamiABzIrosjUdanAOWemf8BtuQUW7EqXa4mNPtQ+2jpZQO2sqtqxGu1anHQCD0S/PvdZdB7dRkyWaH6XTZCat5gZ0fpFH/aLWMFP4yiknlgYbjT7gklUAqyDX81pNrQhWWY4dOFnz2WiWhkCt+MNZMLKH5SdsyC7gwKI/r3h51pTwgXZfyYymB60eYAFqEUpeTrL+4LmltN";
     public Vuforia vuforia_obj;
-    public VuforiaLocalizer vuforia_localizer;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -33,10 +32,9 @@ public class VuforiaStreamOpMode extends LinearOpMode {
         VuforiaLocalizer vuforia = ClassFactory.getInstance().createVuforia(vuforiaParams);
 
 
-        //vuforia_obj = new Vuforia();
-        //vuforia_localizer = vuforia_obj.getVuforiaLocalizer();
+        vuforia_obj = new Vuforia();
 
-        //FtcDashboard.getInstance().startCameraStream(vuforia, 0);
+        FtcDashboard.getInstance().startCameraStream(vuforia_obj.getVuforiaLocalizer(), 0);
 
         waitForStart();
 

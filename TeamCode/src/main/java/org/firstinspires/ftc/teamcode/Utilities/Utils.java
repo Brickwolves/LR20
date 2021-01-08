@@ -80,6 +80,11 @@ public class Utils {
         else return previous;
     }
 
+    public static double map(double x, double a_min, double a_max, double b_min, double b_max){
+        return (x - a_min) / (a_max - a_min) * (b_max - b_min) + b_min;
+    }
+
+
 
     /**
      * @param baseRGB
