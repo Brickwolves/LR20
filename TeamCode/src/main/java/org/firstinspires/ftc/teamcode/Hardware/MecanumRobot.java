@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 
 import static android.os.SystemClock.sleep;
+import static org.firstinspires.ftc.teamcode.Utilities.Utils.map;
 import static org.firstinspires.ftc.teamcode.Utilities.Utils.telemetry;
 
 public class MecanumRobot implements Robot {
@@ -139,12 +140,11 @@ public class MecanumRobot implements Robot {
 
    public void turn(double targetAngle, double MOE) {
          System.out.println("Turning to " + targetAngle + " degrees");
-
+         double power;
+         double startAngle = imu.getAngle();
          double currentAngle = imu.getAngle();
          double deltaAngle = Math.abs(targetAngle - currentAngle);
-         double power;
          double position = getPosition();
-
 
          // Retrieve angle and MOE
          double upperBound = targetAngle + MOE;
@@ -154,24 +154,23 @@ public class MecanumRobot implements Robot {
             // Power Ramping based off a logistic piecewise
             double currentDeltaAngle = targetAngle - currentAngle;
             double anglePosition = deltaAngle - currentDeltaAngle + 0.01; // Added the 0.01 so that it doesn't get stuck at 0
-
+            double relativePosition = map(currentAngle, startAngle, targetAngle, 0, deltaAngle);
+            // RelativePosition must be calculated to match domain restrictions of powerRamp
 
             // Modeling a piece wise of power as a function of distance
-
-            power = Utils.powerRamp(anglePosition, deltaAngle, 0.1);
-            power = Math.abs(power);
+            power = Utils.powerRamp(relativePosition, deltaAngle, 0.1);
             Utils.telemetry.addData("Power", power);
+            Utils.telemetry.addData("Relative Position", relativePosition);
             Utils.telemetry.update();
 
 
             // Handle clockwise (+) and counterclockwise (-) motion
-            setDrivePower(0, 0, -Math.signum(currentDeltaAngle), .2);
+            setDrivePower(0, 0, -Math.signum(currentDeltaAngle), power);
 
             currentAngle = imu.getAngle();
             Utils.telemetry.addData("IMU", imu.getAngle());
             Utils.telemetry.addData("Lower", lowerBound);
             Utils.telemetry.addData("Upper", upperBound);
-            Utils.telemetry.addData("Reached Target", (lowerBound >= currentAngle || currentAngle <= upperBound));
             Utils.telemetry.update();
          }
 

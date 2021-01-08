@@ -97,16 +97,16 @@ public class Mark42 extends LinearOpMode
 
             // Done completing vision
             for (int i = 0; i < ringCount; i++) {
-                multTelemetry.addData("Status", "Turning ccw" + i + " times.");
+                multTelemetry.addData("Status", "Turning ccw" + (ringCount - i) + " times.");
                 multTelemetry.update();
-                sleep(3000);
-                mecanumRobot.turn(360, 1.5);
+                sleep(500);
+                mecanumRobot.turn(360 * (i + 1), 0.5);
             }
             if (ringCount == 0) {
                 multTelemetry.addData("Status", "No Rings Found, turning once cw.");
                 multTelemetry.update();
-                sleep(3000);
-                mecanumRobot.turn(-360, 1.5);
+                sleep(500);
+                mecanumRobot.turn(-360, 0.5);
             }
 
         }

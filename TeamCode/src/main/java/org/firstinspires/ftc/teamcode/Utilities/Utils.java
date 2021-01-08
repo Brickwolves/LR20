@@ -52,6 +52,10 @@ public class Utils {
      * @return
      */
     public static double powerRamp(double position, double distance, double acceleration){
+        /**
+         * The piece wise function has domain restriction [0, inf] and range restriction [0, 1]
+         * Simply returns a proportional constant
+         */
 
         position += 0.01;           // Necessary otherwise we're stuck at position 0 (sqrt(0) = 0)
         double normFactor = 1 / Math.sqrt(0.1 * distance);

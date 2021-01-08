@@ -30,6 +30,7 @@ package org.firstinspires.ftc.teamcode.Autonomous;
  */
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
@@ -40,7 +41,7 @@ import org.firstinspires.ftc.teamcode.Vision.ObjectDetector;
 
 
 @Autonomous(name="AlphaAuto", group="Autonomous Linear Opmode")
-//@Disabled
+@Disabled
 public class AlphaAuto extends LinearOpMode {
 
     private MecanumRobot mecanumRobot;

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Vision;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -15,6 +16,7 @@ import org.openftc.easyopencv.*;
 import static android.os.SystemClock.sleep;
 
 @Autonomous(name = "WebCamStackDetectorAuto", group = "Autonomous")
+@Disabled
 public class WebCamStackDetector extends OpMode {
 
     OpenCvCamera webCam = null;

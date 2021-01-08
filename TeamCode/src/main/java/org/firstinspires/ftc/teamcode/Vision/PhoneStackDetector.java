@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Vision;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -9,6 +10,7 @@ import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.*;
 
 @TeleOp(name = "PhoneStackDetectorAuto", group = "Autonomous")
+@Disabled
 public class PhoneStackDetector extends OpMode {
 
     OpenCvCamera phoneCam = null;

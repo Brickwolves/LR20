@@ -30,6 +30,7 @@ package org.firstinspires.ftc.teamcode.Autonomous;
  */
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -40,7 +41,7 @@ import org.firstinspires.ftc.teamcode.Utilities.Utils;
 import org.firstinspires.ftc.teamcode.Utilities.SyncTask;
 
 @Autonomous(name="ServoDiagnosticAuto", group="Autonomous Linear Opmode")
-//@Disabled
+@Disabled
 public class ServoDiagnosticAuto extends LinearOpMode {
 
     private MecanumRobot mecanumRobot;
