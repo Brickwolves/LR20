@@ -158,6 +158,7 @@ public class MecanumTeleOp extends OpMode {
         telemetry.addData("Drive", drive);
         telemetry.addData("Strafe", strafe);
         telemetry.addData("Turn", turn);
+        telemetry.addData("IMU", mecanumRobot.imu.getAngle());
         //telemetry.addData("wow", wow);
         //telemetry.addData("Servo1Position", servo_1.getPosition());
         //telemetry.addData("Servo2Position", servo_2.getPosition());

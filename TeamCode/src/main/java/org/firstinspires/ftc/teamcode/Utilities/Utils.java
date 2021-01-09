@@ -45,6 +45,17 @@ public class Utils {
         System.out.println(str);
     }
 
+
+   public static double convertInches2Ticks(double ticks){
+        return (ticks - 4.38) / 0.0207; // Calculated using desmos
+   }
+
+   public static double convertTicks2Inches(double inches){
+        return (0.0207 * inches) + 4.38; // Calculated using desmos
+   }
+
+
+
     /**
      * @param position
      * @param distance
@@ -62,11 +73,11 @@ public class Utils {
 
         // Modeling a piece wise of power as a function of distance
         double p1 = normFactor * Math.sqrt(acceleration * position);
-        double p2 = 1;
+        double p2 = .8;
         double p3 = normFactor * (Math.cbrt(acceleration * (distance - position)));
         double power = Math.min(Math.min(p1, p2), p3)+0.1;
-        telemetry.addData("Distance", distance);
-        telemetry.addData("Position", position);
+        //telemetry.addData("Distance", distance);
+        //telemetry.addData("Position", position);
 
         return power;
     }

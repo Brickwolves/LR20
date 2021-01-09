@@ -23,5 +23,8 @@ public class DashConstants {
 
     public static double power;
 
+    public static double diagnosticInches = 28;
+    public static double learning_rate = 0.01;
+
 
 }

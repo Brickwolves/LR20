@@ -24,8 +24,8 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-@Autonomous(name="Mark42", group="Autonomous Linear Opmode")
-public class Mark42 extends LinearOpMode
+@Autonomous(name="Mark2", group="Autonomous Linear Opmode")
+public class Mark2 extends LinearOpMode
 {
     private MecanumRobot mecanumRobot;
 
@@ -94,20 +94,29 @@ public class Mark42 extends LinearOpMode
             webcam.stopStreaming();
             sleep(3000);
 
+            double MOE = 1;
+
+            // if rings go up, intake rings
+            // strafe left
+            // go to corresponding dropzone
+
+            mecanumRobot.strafe(0, 12, 0, 0.075, null);
 
             // Done completing vision
-            for (int i = 0; i < ringCount; i++) {
-                multTelemetry.addData("Status", "Turning ccw" + (ringCount - i) + " times.");
-                multTelemetry.update();
-                sleep(500);
-                mecanumRobot.turn(360 * (i + 1), 0.5);
+            if (ringCount == 0){
+                mecanumRobot.turn(60, MOE);
             }
-            if (ringCount == 0) {
-                multTelemetry.addData("Status", "No Rings Found, turning once cw.");
-                multTelemetry.update();
-                sleep(500);
-                mecanumRobot.turn(-360, 0.5);
+            else if (ringCount == 1){
+                mecanumRobot.turn(45, MOE);
             }
+            else {
+                mecanumRobot.turn(30, MOE);
+            }
+
+            sleep(1000);
+            mecanumRobot.turn(0, 1);
+            mecanumRobot.strafe(180, 12, 0, 0.05, null);
+
 
         }
     }
