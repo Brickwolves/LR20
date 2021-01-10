@@ -123,13 +123,16 @@ public class DiagnosticClawTeleOp extends OpMode {
         double velocity = (velocityToggle) ? 0.5 : 1;
 
         // DPAD Auto Turn
+        /*
         if (controller.DPADPress()){
             if (controller.src.dpad_up) mecanumClawRobot.turn(MecanumRobot.Direction.NORTH, 1);
             else if (controller.src.dpad_right) mecanumClawRobot.turn(MecanumRobot.Direction.EAST, 1);
             else if (controller.src.dpad_left) mecanumClawRobot.turn(MecanumRobot.Direction.WEST, 1);
             else if (controller.src.dpad_down) mecanumClawRobot.turn(MecanumRobot.Direction.SOUTH, 1);
         }
-        else mecanumClawRobot.setDrivePower(drive, strafe, turn, velocity);
+
+         */
+        mecanumClawRobot.setDrivePower(drive, strafe, turn, velocity);
 
 
         /*

@@ -169,55 +169,27 @@ public class MecanumRobot implements Robot {
       sleep(200);
    }
 
-
    /**
-    * @param direction
+    * @param targetAngle
     * @param MOE
     */
-   public double turn(Direction direction, double MOE) {
-      System.out.println("Turning to " + direction + " degrees");
+   public double turn2Direction(double targetAngle, double MOE) {
+
+      System.out.println("Turning to " + targetAngle + " degrees");
 
       double turn = 0;
-      double turn_direction = 0;
-      double targetAngle = 0;
-      double coTermAngle = 0;
-      switch (direction) {
-         case NORTH:
-            targetAngle = 0;
-            break;
-         case WEST:
-            targetAngle = 90;
-            break;
-         case EAST:
-            targetAngle = -90;
-            break;
-         case SOUTH:
-            targetAngle = 180;
-            break;
-      }
-      targetAngle += imu.getDeltaAngle();
       double currentAngle = imu.getAngle();
-      double upperBound = targetAngle + MOE;
-      double lowerBound = targetAngle - MOE;
-      if ((lowerBound >= currentAngle || currentAngle >= upperBound) && Utils.isActive()){
-         coTermAngle = Utils.coTerminal(targetAngle - currentAngle);
-         turn_direction = (coTermAngle <= 0) ? 1 : -1;
-         turn = turn_direction * 0.1;
-
-         /*
-         double currentDeltaAngle = targetAngle - currentAngle;
-         double anglePosition = deltaAngle - currentDeltaAngle + 0.01; // Added the 0.01 so that it doesn't get stuck at 0
-         double relativePosition = map(currentAngle, startAngle, targetAngle, 0, deltaAngle);
-
-         turn = Utils.powerRamp(relativePosition, deltaAngle, 0.01);
-
-          */
+      if (currentAngle < 0){
+         targetAngle += imu.getDeltaAngle();
       }
-      Utils.telemetry.addData("CoTerm", coTermAngle);
-      Utils.telemetry.addData("turn_direction", turn_direction);
-      return turn;
-   }
 
+      double deltaX1 = targetAngle - Utils.coTerminal(currentAngle);
+      double deltaX2 = 360 - Math.abs(deltaX1);
+      double modifier = Math.signum(deltaX1);
+      if (Math.abs(deltaX1) < Math.abs(deltaX2)) turn = -1 * modifier;
+      else turn = modifier;
+      return turn * 0.2;
+   }
 
 
    public void turn(double targetAngle, double MOE) {

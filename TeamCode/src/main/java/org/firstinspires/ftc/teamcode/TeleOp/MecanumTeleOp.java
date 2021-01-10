@@ -84,10 +84,10 @@ public class MecanumTeleOp extends OpMode {
 
         // DPAD Auto Turn
         if (controller.DPADPress()){
-            if (controller.src.dpad_up) turn = mecanumRobot.turn(MecanumRobot.Direction.NORTH, 1);
-            else if (controller.src.dpad_right) turn = mecanumRobot.turn(MecanumRobot.Direction.EAST, 1);
-            else if (controller.src.dpad_left) turn = mecanumRobot.turn(MecanumRobot.Direction.WEST, 1);
-            else if (controller.src.dpad_down) turn = mecanumRobot.turn(MecanumRobot.Direction.SOUTH, 1);
+            if (controller.src.dpad_up) turn = mecanumRobot.turn2Direction(0, 1);
+            else if (controller.src.dpad_right) turn = mecanumRobot.turn2Direction(-90, 1);
+            else if (controller.src.dpad_left) turn = mecanumRobot.turn2Direction(90, 1);
+            else if (controller.src.dpad_down) turn = mecanumRobot.turn2Direction(180, 1);
         }
         mecanumRobot.setDrivePower(drive, strafe, turn, velocity);
 
