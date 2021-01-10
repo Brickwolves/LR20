@@ -3,12 +3,26 @@ package org.firstinspires.ftc.teamcode.Hardware;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 
+import org.firstinspires.ftc.teamcode.Utilities.Utils;
+
+import static android.os.SystemClock.sleep;
+
 public class Controller {
 
+    // Toggles
+    public boolean DPAD_Toggle = false;
+    public boolean LBLastCycle = false;
+    public boolean RBLastCycle = false;
+    public boolean CrossLastCycle = false;
+    public boolean SquareLastCycle = false;
+    public boolean CircleLastCycle = false;
+
+    // Default Vars
     public Gamepad src;
     public Controller(Gamepad src){
         this.src = src;
     }
+
 
     public Thumbstick getRightThumbstick() {
         return new Thumbstick(src.right_stick_x, src.right_stick_y);
@@ -89,4 +103,31 @@ public class Controller {
         }
     }
     public boolean DPADPress() {return src.dpad_down || src.dpad_left || src.dpad_right || src.dpad_up;}
+
+
+    public void updateToggles(){
+        RBLastCycle = buttonTapped(src.right_bumper, RBLastCycle);
+
+        LBLastCycle = buttonTapped(src.left_bumper, LBLastCycle);
+
+        CrossLastCycle = buttonTapped(src.cross, CrossLastCycle);
+
+        SquareLastCycle = buttonTapped(src.circle, SquareLastCycle);
+
+        CircleLastCycle = buttonTapped(src.circle, CircleLastCycle);
+
+    }
+
+
+    /**
+     * Super simple method to check toggles on buttons
+     * @param current
+     * @param previous
+     * @return
+     */
+    public Boolean buttonTapped(boolean current, boolean previous){
+        if (current && !previous )return true;
+        else if (!current) return false;
+        else return previous;
+    }
 }

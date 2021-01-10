@@ -62,7 +62,7 @@ public class DiagnosticAuto extends LinearOpMode {
         initialize();
         waitForStart();
 
-        //sleep(5000);
+        sleep(5000);
         mecanumRobot.strafe(0, DashConstants.diagnosticInches, 0, 0.05, null);
         sleep(5000);
         mecanumRobot.strafe(180, DashConstants.diagnosticInches, 0, 0.05, null);

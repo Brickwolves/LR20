@@ -174,10 +174,13 @@ public class MecanumRobot implements Robot {
     * @param direction
     * @param MOE
     */
-   public void turn(Direction direction, double MOE) {
+   public double turn(Direction direction, double MOE) {
       System.out.println("Turning to " + direction + " degrees");
 
+      double turn = 0;
+      double turn_direction = 0;
       double targetAngle = 0;
+      double coTermAngle = 0;
       switch (direction) {
          case NORTH:
             targetAngle = 0;
@@ -196,13 +199,23 @@ public class MecanumRobot implements Robot {
       double currentAngle = imu.getAngle();
       double upperBound = targetAngle + MOE;
       double lowerBound = targetAngle - MOE;
-      while ((lowerBound >= currentAngle || currentAngle >= upperBound) && Utils.isActive()){
-         double coTermAngle = Utils.coTerminal(targetAngle - currentAngle);
-         double turn = (coTermAngle <= 0) ? 1 : -1;
-         setDrivePower(0, 0, turn, 0.3);
+      if ((lowerBound >= currentAngle || currentAngle >= upperBound) && Utils.isActive()){
+         coTermAngle = Utils.coTerminal(targetAngle - currentAngle);
+         turn_direction = (coTermAngle <= 0) ? 1 : -1;
+         turn = turn_direction * 0.1;
+
+         /*
+         double currentDeltaAngle = targetAngle - currentAngle;
+         double anglePosition = deltaAngle - currentDeltaAngle + 0.01; // Added the 0.01 so that it doesn't get stuck at 0
+         double relativePosition = map(currentAngle, startAngle, targetAngle, 0, deltaAngle);
+
+         turn = Utils.powerRamp(relativePosition, deltaAngle, 0.01);
+
+          */
       }
-      Utils.telemetry.addData("TargetAngle", targetAngle);
-      sleep(100);
+      Utils.telemetry.addData("CoTerm", coTermAngle);
+      Utils.telemetry.addData("turn_direction", turn_direction);
+      return turn;
    }
 
 

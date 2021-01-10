@@ -91,19 +91,19 @@ public class DiagnosticClawTeleOp extends OpMode {
         RBLastCycle = Utils.buttonTapped(controller.src.right_bumper, RBLastCycle);
         if (RBLastCycle) {
             velocityToggle = !velocityToggle;
-            sleep(100);
+            sleep(200);
         }
 
         LBLastCycle = Utils.buttonTapped(controller.src.left_bumper, LBLastCycle);
         if (LBLastCycle) {
             absolute_control_mode = !absolute_control_mode;
-            sleep(100);
+            sleep(200);
         }
 
         CircleLastCycle = Utils.buttonTapped(controller.src.circle, CircleLastCycle);
         if (CircleLastCycle) {
             claw_toggle = !claw_toggle;
-            sleep(100);
+            sleep(200);
         }
 
 
