@@ -12,7 +12,14 @@ public class Claw {
     private double SERVO_CLAW_SPEED = 0.1;
 
     public Claw(String id){
-        servo = Utils.hardwareMap.get(Servo.class, id);
+
+        try {
+            servo = Utils.hardwareMap.get(Servo.class, id);
+        }
+        catch (Exception e){
+            throw new Error("Cannot find servo with id: " + id + "\n. Could not initialize claw.");
+        }
+
     }
 
     public void openFull(){
