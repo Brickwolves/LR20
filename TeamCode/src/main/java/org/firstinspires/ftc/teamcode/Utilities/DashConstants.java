@@ -18,8 +18,9 @@ public class DashConstants {
     public static double rectBottomX1Percent = 0.75; public static double rectBottomX2Percent = 0.9;
     public static double rectBottomY1Percent = 0.38; public static double rectBottomY2Percent = 0.42;
 
+    // Generally, orange should be around 90-100
     public static double orangeMax = 110;
-    public static double orangeMin = 15;
+    public static double orangeMin = 80;
 
     public static double power;
 
