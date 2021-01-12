@@ -27,5 +27,7 @@ public class DashConstants {
     public static double diagnosticInches = 28;
     public static double learning_rate = 0.01;
 
+    public static double diagnostic_ring_count = 0;
+
 
 }

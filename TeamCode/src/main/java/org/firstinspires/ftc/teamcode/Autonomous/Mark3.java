@@ -24,17 +24,20 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-@Autonomous(name="Mark2 - Vision", group="Autonomous Linear Opmode")
-public class Mark2 extends LinearOpMode
+@Autonomous(name="Mark3 - No Vision", group="Autonomous Linear Opmode")
+public class Mark3 extends LinearOpMode
 {
     private MecanumRobot mecanumRobot;
 
     OpenCvCamera webcam;
-    private static double ringCount = 0;
 
     private FtcDashboard dashboard = FtcDashboard.getInstance();
     private Telemetry dashboardTelemetry = dashboard.getTelemetry();
     private MultipleTelemetry multTelemetry = new MultipleTelemetry(telemetry, dashboardTelemetry);
+
+
+    private static double ringCount = 0;
+    private boolean ringsFound = false;
 
     public void initialize(){
         Utils.setOpMode(this);
@@ -50,7 +53,7 @@ public class Mark2 extends LinearOpMode
 
         /*
         Set up camera, and pipeline
-         */
+
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam"), cameraMonitorViewId);
 
@@ -63,7 +66,7 @@ public class Mark2 extends LinearOpMode
                 webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
             }
         });
-
+        */
 
 
         telemetry.addLine("Waiting for start");
@@ -76,46 +79,71 @@ public class Mark2 extends LinearOpMode
          */
         if (opModeIsActive()){
 
-            if (ringCount == 1.0){
-                // drive somewhere
-                multTelemetry.addData("RingCount", 1.0);
-            }
-            else if (ringCount == 4.0){
-                // drive somewhere else
-                multTelemetry.addData("RingCount", 4.0);
-            }
-            else {
-                // drive somewhere other than else
-                multTelemetry.addData("RingCount", 0.0);
+            double MOE = 1;
+            if (DashConstants.diagnostic_ring_count == 1.0 || DashConstants.diagnostic_ring_count == 4.0) ringsFound = true;
+
+            // Go to Ring Identification Position
+            multTelemetry.addData("Status", "Strafing to Ring Position");
+            multTelemetry.update();
+            mecanumRobot.strafe(-90, 12, 0, 0.075, null);
+
+
+            // Go to Power Shot Position
+            multTelemetry.addData("Status", "Strafing to Power Shot Position");
+            multTelemetry.update();
+            mecanumRobot.strafe(-90, 32, 0, 0.075, null);
+            mecanumRobot.strafe(0, 58, 0, 0.075, null);
+
+
+            // Shooting Power Shots
+            for (int i=0; i < 3; i++){
+                multTelemetry.addData("Status", "Shooting Power Shot: " + i);
+                multTelemetry.update();
+                sleep(1000);
+
+                multTelemetry.addData("Status", "Strafing to next Power Shot");
+                multTelemetry.update();
+                sleep(1000);
+                mecanumRobot.strafe(-90, 2, 0, 0.075, null);
             }
 
+            if (DashConstants.diagnostic_ring_count == 0.0){
+
+                // Go to A
+                multTelemetry.addData("Status", "Moving to A");
+                multTelemetry.update();
+                mecanumRobot.strafe(0, 12, 0, 0.075, null);
+                mecanumRobot.strafe(90, 52, 0, 0.075, null);
+            }
+            else if (DashConstants.diagnostic_ring_count == 1.0){
+
+                // Go to B
+                multTelemetry.addData("Status", "Moving to B");
+                multTelemetry.update();
+                mecanumRobot.strafe(0, 40, 0, 0.075, null);
+                mecanumRobot.strafe(90, 30, 0, 0.075, null);
+
+            }
+            else {
+
+                // Go to C
+                multTelemetry.addData("Status", "Moving to C");
+                multTelemetry.update();
+                mecanumRobot.strafe(0, 63, 0, 0.075, null);
+                mecanumRobot.strafe(90, 52, 0, 0.075, null);
+            }
+
+
+
+
+
+
+            /*
             telemetry.addData("FPS", String.format("%.2f", webcam.getFps()));
             telemetry.update();
             webcam.stopStreaming();
             sleep(3000);
-
-            double MOE = 1;
-
-            // if rings go up, intake rings
-            // strafe left
-            // go to corresponding dropzone
-
-            mecanumRobot.strafe(0, 12, 0, 0.075, null);
-
-            // Done completing vision
-            if (ringCount == 0){
-                mecanumRobot.turn(60, MOE);
-            }
-            else if (ringCount == 1){
-                mecanumRobot.turn(45, MOE);
-            }
-            else {
-                mecanumRobot.turn(30, MOE);
-            }
-
-            sleep(1000);
-            mecanumRobot.turn(0, 1);
-            mecanumRobot.strafe(180, 12, 0, 0.05, null);
+             */
 
 
         }
