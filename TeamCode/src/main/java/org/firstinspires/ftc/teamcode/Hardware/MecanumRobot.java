@@ -191,6 +191,10 @@ public class MecanumRobot implements Robot {
       return turn * 0.2;
    }
 
+   public double turnPID(double targetAngle, double MOE){
+      return 0.0;
+   }
+
 
    public void turn(double targetAngle, double MOE) {
          System.out.println("Turning to " + targetAngle + " degrees");

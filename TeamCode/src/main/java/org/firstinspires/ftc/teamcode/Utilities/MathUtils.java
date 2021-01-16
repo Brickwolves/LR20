@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.Utilities;
 
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
 import static java.lang.Math.floorMod;
 
 public class MathUtils {
@@ -13,18 +17,20 @@ public class MathUtils {
     }
 
     //TODO Make these actually have input for accuracy like a normal function
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public static double floorModDouble(double dividend, double divisor){
         return floorMod(Math.round(dividend * 1e6), Math.round(divisor * 1e6)) / 1e6;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public static double floorModDouble(double dividend, int divisor){
         return floorMod(Math.round(dividend * 1e6), divisor) / 1e6;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public static double floorModDouble(int dividend, double divisor){
         System.out.println("pls work, github");
         return floorMod(dividend, Math.round(divisor * 1e6)) / 1e6;
-
     }
 
 
