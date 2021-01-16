@@ -7,6 +7,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Hardware.Sensors.ColorSensorImpl;
 import org.firstinspires.ftc.teamcode.Hardware.Sensors.IMU;
 import org.firstinspires.ftc.teamcode.Utilities.DashConstants;
+import org.firstinspires.ftc.teamcode.Utilities.PID;
 import org.firstinspires.ftc.teamcode.Utilities.SyncTask;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -191,7 +192,22 @@ public class MecanumRobot implements Robot {
       return turn * 0.2;
    }
 
-   public double turnPID(double targetAngle, double MOE){
+   public double turnPID(double targetAngle, double MOE, PID rotationPID){
+
+      double currentAngle = imu.getAngle();
+
+      // Retrieve angle and MOE
+      double upperBound = targetAngle + MOE;
+      double lowerBound = targetAngle - MOE;
+      while ((lowerBound >= currentAngle || currentAngle >= upperBound) && Utils.isActive()) {
+         double error = currentAngle - targetAngle;
+         double turn = rotationPID.update(error);
+         setDrivePower(0 ,0, turn, 1);
+
+         currentAngle = imu.getAngle();
+      }
+
+
       return 0.0;
    }
 

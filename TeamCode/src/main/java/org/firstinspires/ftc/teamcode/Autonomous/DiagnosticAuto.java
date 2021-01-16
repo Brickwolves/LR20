@@ -36,6 +36,7 @@ import org.firstinspires.ftc.teamcode.Hardware.Controller;
 import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
 import org.firstinspires.ftc.teamcode.Hardware.Sensors.IMU;
 import org.firstinspires.ftc.teamcode.Utilities.DashConstants;
+import org.firstinspires.ftc.teamcode.Utilities.PID;
 import org.firstinspires.ftc.teamcode.Utilities.SyncTask;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
@@ -47,6 +48,7 @@ import static org.firstinspires.ftc.teamcode.Utilities.Utils.telemetry;
 public class DiagnosticAuto extends LinearOpMode {
 
     private MecanumRobot mecanumRobot;
+    private PID rotationPID = new PID(.017, .00022, .0022, 100, true);
 
     private double currentPosition, currentAngle;
 
@@ -62,30 +64,32 @@ public class DiagnosticAuto extends LinearOpMode {
         initialize();
         waitForStart();
 
+        /*
         sleep(5000);
         mecanumRobot.strafe(0, DashConstants.diagnosticInches, 0, 0.05, null);
         sleep(5000);
         mecanumRobot.strafe(180, DashConstants.diagnosticInches, 0, 0.05, null);
+         */
 
-        /*
+
         telemetry.addData("Status", "Turning 360");
         telemetry.addData("IMU", mecanumRobot.imu.getAngle());
         telemetry.update();
-        mecanumRobot.turn(360, 1);
+        mecanumRobot.turn3(360, 1, rotationPID);
 
 
         telemetry.addData("Status", "Turning 0");
         telemetry.addData("IMU", mecanumRobot.imu.getAngle());
         telemetry.update();
-        mecanumRobot.turn(0, 1);
+        mecanumRobot.turn3(0, 1);
 
 
         telemetry.addData("Status", "Turning -360");
         telemetry.addData("IMU", mecanumRobot.imu.getAngle());
         telemetry.update();
-        mecanumRobot.turn(-360, 1);
+        mecanumRobot.turn3(-360, 1);
 
-         */
+
 
         telemetry.addData("Status", "Shutting Down");
         telemetry.update();
