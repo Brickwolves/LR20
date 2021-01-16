@@ -75,19 +75,19 @@ public class DiagnosticAuto extends LinearOpMode {
         telemetry.addData("Status", "Turning 360");
         telemetry.addData("IMU", mecanumRobot.imu.getAngle());
         telemetry.update();
-        mecanumRobot.turn3(360, 1, rotationPID);
+        mecanumRobot.turnPID(360, 1, rotationPID);
 
 
         telemetry.addData("Status", "Turning 0");
         telemetry.addData("IMU", mecanumRobot.imu.getAngle());
         telemetry.update();
-        mecanumRobot.turn3(0, 1);
+        mecanumRobot.turnPID(0, 1, rotationPID);
 
 
         telemetry.addData("Status", "Turning -360");
         telemetry.addData("IMU", mecanumRobot.imu.getAngle());
         telemetry.update();
-        mecanumRobot.turn3(-360, 1);
+        mecanumRobot.turnPID(-360, 1, rotationPID);
 
 
 
