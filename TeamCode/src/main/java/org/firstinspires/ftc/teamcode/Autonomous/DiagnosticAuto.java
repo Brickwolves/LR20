@@ -48,7 +48,7 @@ import static org.firstinspires.ftc.teamcode.Utilities.Utils.telemetry;
 public class DiagnosticAuto extends LinearOpMode {
 
     private MecanumRobot mecanumRobot;
-    private PID rotationPID = new PID(.017, .00022, .0022, 100, true);
+
 
     private double currentPosition, currentAngle;
 
@@ -72,26 +72,88 @@ public class DiagnosticAuto extends LinearOpMode {
          */
 
 
-        telemetry.addData("Status", "Turning 360");
-        telemetry.addData("IMU", mecanumRobot.imu.getAngle());
-        telemetry.update();
-        mecanumRobot.turnPID(360, 1, rotationPID);
+        Utils.multTelemetry.addData("Status", "Turning 45");
+        Utils.multTelemetry.addData("IMU", mecanumRobot.imu.getAngle());
+        Utils.multTelemetry.update();
+        sleep(2000);
+        mecanumRobot.turnPID(45, 0.01);
 
 
-        telemetry.addData("Status", "Turning 0");
-        telemetry.addData("IMU", mecanumRobot.imu.getAngle());
-        telemetry.update();
-        mecanumRobot.turnPID(0, 1, rotationPID);
+        Utils.multTelemetry.addData("Status", "Turning 0");
+        Utils.multTelemetry.addData("IMU", mecanumRobot.imu.getAngle());
+        Utils.multTelemetry.update();
+        sleep(2000);
+        mecanumRobot.turnPID(0, 0.01);
+
+        /*---------------------------------------------------*/
+
+        Utils.multTelemetry.addData("Status", "Turning 60");
+        Utils.multTelemetry.addData("IMU", mecanumRobot.imu.getAngle());
+        Utils.multTelemetry.update();
+        sleep(2000);
+        mecanumRobot.turnPID(60, 0.01);
 
 
-        telemetry.addData("Status", "Turning -360");
-        telemetry.addData("IMU", mecanumRobot.imu.getAngle());
-        telemetry.update();
-        mecanumRobot.turnPID(-360, 1, rotationPID);
+        Utils.multTelemetry.addData("Status", "Turning 0");
+        Utils.multTelemetry.addData("IMU", mecanumRobot.imu.getAngle());
+        Utils.multTelemetry.update();
+        sleep(2000);
+        mecanumRobot.turnPID(0, 0.01);
+
+        /*---------------------------------------------------*/
+
+        Utils.multTelemetry.addData("Status", "Turning 90");
+        Utils.multTelemetry.addData("IMU", mecanumRobot.imu.getAngle());
+        Utils.multTelemetry.update();
+        sleep(2000);
+        mecanumRobot.turnPID(90, 0.01);
+
+        Utils.multTelemetry.addData("Status", "Turning 0");
+        Utils.multTelemetry.addData("IMU", mecanumRobot.imu.getAngle());
+        Utils.multTelemetry.update();
+        sleep(2000);
+        mecanumRobot.turnPID(0, 0.01);
+
+        /*---------------------------------------------------*/
+
+        Utils.multTelemetry.addData("Status", "Turning 45");
+        Utils.multTelemetry.addData("IMU", mecanumRobot.imu.getAngle());
+        Utils.multTelemetry.update();
+        sleep(2000);
+        mecanumRobot.turnPID(180, 0.01);
+
+
+        Utils.multTelemetry.addData("Status", "Turning 0");
+        Utils.multTelemetry.addData("IMU", mecanumRobot.imu.getAngle());
+        Utils.multTelemetry.update();
+        sleep(2000);
+        mecanumRobot.turnPID(0, 0.01);
+
+        /*---------------------------------------------------*/
+
+        Utils.multTelemetry.addData("Status", "Turning -360");
+        Utils.multTelemetry.addData("IMU", mecanumRobot.imu.getAngle());
+        Utils.multTelemetry.update();
+        sleep(2000);
+        mecanumRobot.turnPID(-360, 0.01);
+
+        Utils.multTelemetry.addData("Status", "Turning 0");
+        Utils.multTelemetry.addData("IMU", mecanumRobot.imu.getAngle());
+        Utils.multTelemetry.update();
+        sleep(2000);
+        mecanumRobot.turnPID(0, 0.01);
 
 
 
-        telemetry.addData("Status", "Shutting Down");
-        telemetry.update();
+        Utils.multTelemetry.addData("Status", "Turning -360");
+        Utils.multTelemetry.addData("IMU", mecanumRobot.imu.getAngle());
+        Utils.multTelemetry.update();
+        sleep(2000);
+        mecanumRobot.turnPID(-360, 0.01);
+
+
+        Utils.multTelemetry.addData("Status", "Shutting Down");
+        Utils.multTelemetry.update();
+        sleep(2000);
     }
 }

@@ -31,6 +31,8 @@ public class MecanumRobot implements Robot {
    private double initAngle;
    private double currentPosition;
 
+   private PID rotationPID = new PID(DashConstants.p, DashConstants.i, DashConstants.d, 100, true);
+
    public MecanumRobot(){
       initRobot();
    }
@@ -153,7 +155,8 @@ public class MecanumRobot implements Robot {
 
          // PID Controller
          double error = directionFacingAngle - imu.getAngle();
-         turn = error * DashConstants.learning_rate * -1;
+         turn = rotationPID.update(error) * -1;
+         //turn = error * DashConstants.learning_rate * -1;
          setDrivePower(drive * power, strafe * power, turn, 1);
 
          // Log and get new position
@@ -192,23 +195,32 @@ public class MecanumRobot implements Robot {
       return turn * 0.2;
    }
 
-   public double turnPID(double targetAngle, double MOE, PID rotationPID){
+   public void turnPID(double targetAngle, double MOE){
+
+      double startTime = System.currentTimeMillis();
 
       double currentAngle = imu.getAngle();
+      double error = targetAngle - currentAngle;
 
-      // Retrieve angle and MOE
-      double upperBound = targetAngle + MOE;
-      double lowerBound = targetAngle - MOE;
-      while ((lowerBound >= currentAngle || currentAngle >= upperBound) && Utils.isActive()) {
-         double error = currentAngle - targetAngle;
-         double turn = rotationPID.update(error);
-         setDrivePower(0 ,0, turn, 1);
+      while ((Math.abs(error) > MOE) && Utils.isActive()) {
+         error = targetAngle - currentAngle;
+         double turn = rotationPID.update(error) * -1;
+         setDrivePower(0 ,0, turn, DashConstants.velocity);
 
          currentAngle = imu.getAngle();
+
+
+         double elapsedTime = Math.abs(System.currentTimeMillis() - startTime);
+         if (elapsedTime > 3000) break;
+
+
+         Utils.multTelemetry.addData("Error", error);
+         Utils.multTelemetry.addData("Turn", turn);
+         Utils.multTelemetry.addData("IMU", currentAngle);
+         Utils.multTelemetry.update();
       }
 
-
-      return 0.0;
+      setDrivePower(0, 0, 0, 0);
    }
 
 
@@ -234,7 +246,7 @@ public class MecanumRobot implements Robot {
             // We want to map our currentAngle relative to a range of [0, and distance it needs to travel]
 
             // Modeling a piece wise of power as a function of distance
-            power = Utils.powerRamp(relativePosition, deltaAngle, 0.01);
+            power = Utils.powerRamp(relativePosition, deltaAngle, 0.05);
 
             // Handle clockwise (+) and counterclockwise (-) motion
             setDrivePower(0, 0, direction, power);

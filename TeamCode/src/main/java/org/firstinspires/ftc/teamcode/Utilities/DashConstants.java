@@ -4,9 +4,9 @@ import com.acmerobotics.dashboard.config.Config;
 @Config
 public class DashConstants {
 
-    public static double p = .015;
-    public static double i = .0;
-    public static double d = .0004;
+    public static double p = .1;
+    public static double i = .00000001;
+    public static double d = .005;
 
 
     /* ------- VISION --------- */
@@ -25,9 +25,14 @@ public class DashConstants {
     public static double power;
 
     public static double diagnosticInches = 28;
+    public static double velocity = 1;
+
+
     public static double learning_rate = 0.01;
 
     public static double diagnostic_ring_count = 0;
+
+
 
 
 }
