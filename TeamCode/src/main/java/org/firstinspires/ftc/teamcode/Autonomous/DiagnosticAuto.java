@@ -40,6 +40,7 @@ import org.firstinspires.ftc.teamcode.Utilities.PID;
 import org.firstinspires.ftc.teamcode.Utilities.SyncTask;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
+import static org.firstinspires.ftc.teamcode.Utilities.Utils.multTelemetry;
 import static org.firstinspires.ftc.teamcode.Utilities.Utils.telemetry;
 
 
@@ -65,13 +66,18 @@ public class DiagnosticAuto extends LinearOpMode {
         waitForStart();
 
         /*
-        sleep(5000);
-        mecanumRobot.strafe(0, DashConstants.diagnosticInches, 0, 0.05, null);
-        sleep(5000);
-        mecanumRobot.strafe(180, DashConstants.diagnosticInches, 0, 0.05, null);
-         */
+        Utils.multTelemetry.addData("Status", "Strafing " + DashConstants.diagnosticInches);
+        Utils.multTelemetry.update();
+        sleep(3000);
+        mecanumRobot.strafe(0, DashConstants.diagnosticInches, 0, 0.1, null);
 
+        Utils.multTelemetry.addData("Status", "Strafing " + DashConstants.diagnosticInches);
+        Utils.multTelemetry.update();
+        sleep(3000);
+        mecanumRobot.strafe(180, DashConstants.diagnosticInches, 0, 0.1, null);
+        */
 
+        /*
         Utils.multTelemetry.addData("Status", "Turning 45");
         Utils.multTelemetry.addData("IMU", mecanumRobot.imu.getAngle());
         Utils.multTelemetry.update();
@@ -85,7 +91,7 @@ public class DiagnosticAuto extends LinearOpMode {
         sleep(2000);
         mecanumRobot.turnPID(0, 0.01);
 
-        /*---------------------------------------------------*/
+        //---------------------------------------------------
 
         Utils.multTelemetry.addData("Status", "Turning 60");
         Utils.multTelemetry.addData("IMU", mecanumRobot.imu.getAngle());
@@ -100,7 +106,7 @@ public class DiagnosticAuto extends LinearOpMode {
         sleep(2000);
         mecanumRobot.turnPID(0, 0.01);
 
-        /*---------------------------------------------------*/
+        //---------------------------------------------------
 
         Utils.multTelemetry.addData("Status", "Turning 90");
         Utils.multTelemetry.addData("IMU", mecanumRobot.imu.getAngle());
@@ -114,7 +120,7 @@ public class DiagnosticAuto extends LinearOpMode {
         sleep(2000);
         mecanumRobot.turnPID(0, 0.01);
 
-        /*---------------------------------------------------*/
+        //---------------------------------------------------
 
         Utils.multTelemetry.addData("Status", "Turning 45");
         Utils.multTelemetry.addData("IMU", mecanumRobot.imu.getAngle());
@@ -129,7 +135,7 @@ public class DiagnosticAuto extends LinearOpMode {
         sleep(2000);
         mecanumRobot.turnPID(0, 0.01);
 
-        /*---------------------------------------------------*/
+        //---------------------------------------------------
 
         Utils.multTelemetry.addData("Status", "Turning -360");
         Utils.multTelemetry.addData("IMU", mecanumRobot.imu.getAngle());
@@ -150,6 +156,7 @@ public class DiagnosticAuto extends LinearOpMode {
         Utils.multTelemetry.update();
         sleep(2000);
         mecanumRobot.turnPID(-360, 0.01);
+        */
 
 
         Utils.multTelemetry.addData("Status", "Shutting Down");

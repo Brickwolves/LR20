@@ -32,10 +32,6 @@ public class Mark2 extends LinearOpMode
     OpenCvCamera webcam;
     private static double ringCount = 0;
 
-    private FtcDashboard dashboard = FtcDashboard.getInstance();
-    private Telemetry dashboardTelemetry = dashboard.getTelemetry();
-    private MultipleTelemetry multTelemetry = new MultipleTelemetry(telemetry, dashboardTelemetry);
-
     public void initialize(){
         Utils.setOpMode(this);
         mecanumRobot = new MecanumRobot();
@@ -78,15 +74,15 @@ public class Mark2 extends LinearOpMode
 
             if (ringCount == 1.0){
                 // drive somewhere
-                multTelemetry.addData("RingCount", 1.0);
+                Utils.multTelemetry.addData("RingCount", 1.0);
             }
             else if (ringCount == 4.0){
                 // drive somewhere else
-                multTelemetry.addData("RingCount", 4.0);
+                Utils.multTelemetry.addData("RingCount", 4.0);
             }
             else {
                 // drive somewhere other than else
-                multTelemetry.addData("RingCount", 0.0);
+                Utils.multTelemetry.addData("RingCount", 0.0);
             }
 
             telemetry.addData("FPS", String.format("%.2f", webcam.getFps()));
@@ -225,10 +221,10 @@ public class Mark2 extends LinearOpMode
             multTelemetry.addData("RECT_BOTTOM_Y2", DashConstants.rectBottomY2Percent);
             */
 
-            multTelemetry.addData("Ring Count", ringCount);
-            multTelemetry.addData("finalLowerAve: ", finalLowerAve);
-            multTelemetry.addData("finalUpperAve: ", finalUpperAve);
-            multTelemetry.update();
+            Utils.multTelemetry.addData("Ring Count", ringCount);
+            Utils.multTelemetry.addData("finalLowerAve: ", finalLowerAve);
+            Utils.multTelemetry.addData("finalUpperAve: ", finalUpperAve);
+            Utils.multTelemetry.update();
 
             // Return altered image
             return outPut;

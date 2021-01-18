@@ -163,11 +163,11 @@ public class MecanumRobot implements Robot {
          currentPosition = getPosition();
 
 
-         Utils.telemetry.addData("Error", error);
-         Utils.telemetry.addData("Turn", turn);
-         Utils.telemetry.addData("Drive", drive * power);
-         Utils.telemetry.addData("Strafe", strafe * power);
-         Utils.telemetry.update();
+         Utils.multTelemetry.addData("Error", error);
+         Utils.multTelemetry.addData("Turn", turn);
+         Utils.multTelemetry.addData("Drive", drive * power);
+         Utils.multTelemetry.addData("Strafe", strafe * power);
+         Utils.multTelemetry.update();
       }
       setAllPower(0);
       sleep(200);
@@ -189,10 +189,19 @@ public class MecanumRobot implements Robot {
 
       double deltaX1 = targetAngle - Utils.coTerminal(currentAngle);
       double deltaX2 = 360 - Math.abs(deltaX1);
+      double deltaFinal = 0;
       double modifier = Math.signum(deltaX1);
-      if (Math.abs(deltaX1) < Math.abs(deltaX2)) turn = -1 * modifier;
-      else turn = modifier;
-      return turn * 0.2;
+
+      if (Math.abs(deltaX1) < Math.abs(deltaX2)) {
+         turn = -1 * modifier;
+         deltaFinal = deltaX1;
+      }
+      else {
+         turn = modifier;
+         deltaFinal = deltaX2;
+      }
+      turn *= rotationPID.update(deltaFinal);
+      return turn;
    }
 
    public void turnPID(double targetAngle, double MOE){

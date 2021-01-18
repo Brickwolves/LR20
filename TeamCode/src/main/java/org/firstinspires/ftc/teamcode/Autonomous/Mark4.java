@@ -24,11 +24,6 @@ public class Mark4 extends LinearOpMode
 
     OpenCvCamera webcam;
 
-    private FtcDashboard dashboard = FtcDashboard.getInstance();
-    private Telemetry dashboardTelemetry = dashboard.getTelemetry();
-    private MultipleTelemetry multTelemetry = new MultipleTelemetry(telemetry, dashboardTelemetry);
-
-
     private static double ringCount = 0;
     private boolean ringsFound = false;
 
@@ -76,26 +71,26 @@ public class Mark4 extends LinearOpMode
             if (DashConstants.diagnostic_ring_count == 1.0 || DashConstants.diagnostic_ring_count == 4.0) ringsFound = true;
 
             // Go to Ring Identification Position
-            multTelemetry.addData("Status", "Strafing to Ring Position");
-            multTelemetry.update();
+            Utils.multTelemetry.addData("Status", "Strafing to Ring Position");
+            Utils.multTelemetry.update();
             mecanumRobot.strafe(-90, 12, 0, 0.075, null);
 
 
             // Go to Power Shot Position
-            multTelemetry.addData("Status", "Strafing to Power Shot Position");
-            multTelemetry.update();
+            Utils.multTelemetry.addData("Status", "Strafing to Power Shot Position");
+            Utils.multTelemetry.update();
             mecanumRobot.strafe(-90, 32, 0, 0.075, null);
             mecanumRobot.strafe(0, 58, 0, 0.075, null);
 
 
             // Shooting Power Shots
             for (int i=0; i < 3; i++){
-                multTelemetry.addData("Status", "Shooting Power Shot: " + i);
-                multTelemetry.update();
+                Utils.multTelemetry.addData("Status", "Shooting Power Shot: " + i);
+                Utils.multTelemetry.update();
                 sleep(1000);
 
-                multTelemetry.addData("Status", "Strafing to next Power Shot");
-                multTelemetry.update();
+                Utils.multTelemetry.addData("Status", "Strafing to next Power Shot");
+                Utils.multTelemetry.update();
                 sleep(1000);
                 mecanumRobot.strafe(-90, 2, 0, 0.075, null);
             }
@@ -103,16 +98,16 @@ public class Mark4 extends LinearOpMode
             if (DashConstants.diagnostic_ring_count == 0.0){
 
                 // Go to A
-                multTelemetry.addData("Status", "Moving to A");
-                multTelemetry.update();
+                Utils.multTelemetry.addData("Status", "Moving to A");
+                Utils.multTelemetry.update();
                 mecanumRobot.strafe(0, 12, 0, 0.075, null);
                 mecanumRobot.strafe(90, 52, 0, 0.075, null);
             }
             else if (DashConstants.diagnostic_ring_count == 1.0){
 
                 // Go to B
-                multTelemetry.addData("Status", "Moving to B");
-                multTelemetry.update();
+                Utils.multTelemetry.addData("Status", "Moving to B");
+                Utils.multTelemetry.update();
                 mecanumRobot.strafe(0, 40, 0, 0.075, null);
                 mecanumRobot.strafe(90, 30, 0, 0.075, null);
 
@@ -120,8 +115,8 @@ public class Mark4 extends LinearOpMode
             else {
 
                 // Go to C
-                multTelemetry.addData("Status", "Moving to C");
-                multTelemetry.update();
+                Utils.multTelemetry.addData("Status", "Moving to C");
+                Utils.multTelemetry.update();
                 mecanumRobot.strafe(0, 63, 0, 0.075, null);
                 mecanumRobot.strafe(90, 52, 0, 0.075, null);
             }
@@ -246,10 +241,10 @@ public class Mark4 extends LinearOpMode
             multTelemetry.addData("RECT_BOTTOM_Y2", DashConstants.rectBottomY2Percent);
             */
 
-            multTelemetry.addData("Ring Count", ringCount);
-            multTelemetry.addData("finalLowerAve: ", finalLowerAve);
-            multTelemetry.addData("finalUpperAve: ", finalUpperAve);
-            multTelemetry.update();
+            Utils.multTelemetry.addData("Ring Count", ringCount);
+            Utils.multTelemetry.addData("finalLowerAve: ", finalLowerAve);
+            Utils.multTelemetry.addData("finalUpperAve: ", finalUpperAve);
+            Utils.multTelemetry.update();
 
             // Return altered image
             return outPut;
