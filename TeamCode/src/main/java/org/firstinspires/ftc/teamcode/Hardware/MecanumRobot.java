@@ -26,6 +26,7 @@ public class MecanumRobot implements Robot {
    //public ColorSensor colorSensorBase;
    public IMU imu;
    public Claw claw;
+   public Arm arm;
    private LinearOpMode opMode;
 
    private double initAngle;
@@ -61,6 +62,7 @@ public class MecanumRobot implements Robot {
       //colorSensor = new ColorSensorImpl(colorSensorBase);
       imu = new IMU("imu");
       claw = new Claw("servo_3");
+      arm = new Arm("servo_4");
 
       initAngle = imu.getAngle();
    }

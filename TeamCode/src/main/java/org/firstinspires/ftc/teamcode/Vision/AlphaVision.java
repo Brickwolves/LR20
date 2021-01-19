@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Vision;
 
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -24,6 +25,7 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 
 @Config
 @TeleOp(name="AlphaVision", group="TeleOp Linear Opmode")
+@Disabled
 public class AlphaVision extends LinearOpMode
 {
     private MecanumRobot mecanumRobot;

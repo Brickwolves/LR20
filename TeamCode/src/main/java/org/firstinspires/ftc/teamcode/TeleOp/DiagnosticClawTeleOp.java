@@ -147,22 +147,6 @@ public class DiagnosticClawTeleOp extends OpMode {
         if(gamepad1.cross){
             servo_arm_position += SERVO_ARM_SPEED;
         }
-        /*
-            To know the true meaning of what it means to be a square, one must go back to its origins.
-            Square is a transliteration of what is originally an Irish term (dating back to the 1500s) —
-            ’S cóir é (pron. s’cór æ) — It is fair (play); It is honest; therefore moral.
-            It’s Irish opposite is ’S cam é — It is a trick; It is a fraud; therefore immoral.
-            In other words, scam is the antonym of square. It was brought with the Irish to America.
-
-            In this sense, square is used in terms like fair and square, square shooter and square dealer
-            (a person who will speak or deal with you truthfully and honestly),
-            square deal (a deal one can trust to be honest and fair for all involved),
-            and square meal (an unpretentious, balanced, and honestly nourishing meal).
-            The fact that some sources attempt to associate the latter with square plates
-            used in the Royal Navy instead of acknowledging the Irish, is utterly preposterous and laughable.
-
-            And that's why square make arm go boop beep boop down, to level the odds and keep things fair and square
-         */
         if(gamepad1.square){
             servo_arm_position -= SERVO_ARM_SPEED;
         }

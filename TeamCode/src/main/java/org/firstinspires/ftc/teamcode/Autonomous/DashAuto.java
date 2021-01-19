@@ -33,6 +33,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -46,6 +47,7 @@ import org.firstinspires.ftc.teamcode.Utilities.Utils;
 import org.firstinspires.ftc.teamcode.Utilities.SyncTask;
 
 @Config
+@Disabled
 @Autonomous(name="DashAuto", group="Autonomous Linear Opmode")
 //@Disabled
 public class DashAuto extends LinearOpMode {

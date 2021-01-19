@@ -15,6 +15,8 @@ public class Claw {
 
         try {
             servo = Utils.hardwareMap.get(Servo.class, id);
+            servo.setDirection(Servo.Direction.FORWARD);
+            servo.setPosition(SERVO_CLAW_HOME);
         }
         catch (Exception e){
             throw new Error("Cannot find servo with id: " + id + "\n. Could not initialize claw.");
@@ -23,10 +25,21 @@ public class Claw {
     }
 
     public void openFull(){
-        servo.setPosition(SERVO_CLAW_MAX_RANGE);
+        try {
+            servo.setPosition(SERVO_CLAW_MAX_RANGE);
+        }
+        catch (Exception e){
+            throw new Error("Could not set position of non-existant claw");
+        }
     }
     public void closeFull(){
-        servo.setPosition(SERVO_CLAW_MIN_RANGE);
+        try {
+            servo.setPosition(SERVO_CLAW_MIN_RANGE);
+        }
+        catch (Exception e){
+            throw new Error("Could not set position of non-existant claw");
+        }
+
     }
     public void setSpeed(double speed){ SERVO_CLAW_SPEED = speed; }
 }

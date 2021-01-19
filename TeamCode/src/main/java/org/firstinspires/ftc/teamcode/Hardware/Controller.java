@@ -112,7 +112,7 @@ public class Controller {
 
         CrossLastCycle = buttonTapped(src.cross, CrossLastCycle);
 
-        SquareLastCycle = buttonTapped(src.circle, SquareLastCycle);
+        SquareLastCycle = buttonTapped(src.square, SquareLastCycle);
 
         CircleLastCycle = buttonTapped(src.circle, CircleLastCycle);
 
