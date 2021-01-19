@@ -24,8 +24,10 @@ public class MecanumTeleOp extends OpMode {
     private int buttonWaitSeconds = 200;
 
     // Toggle Modes
-    private boolean absolute_control_mode;
-    private boolean velocityToggle;
+    private boolean absolute_control_mode = false;
+    private boolean velocityToggle = false;
+    private boolean locked_mode = false;
+    private double locked_direction = 0;
 
 
     @Override
@@ -55,8 +57,6 @@ public class MecanumTeleOp extends OpMode {
         // Update the toggles
         controller.updateToggles();
 
-
-
         // If we press RB once, toggle velocity shift
         if (controller.RBLastCycle) {
             velocityToggle = !velocityToggle;
@@ -68,12 +68,17 @@ public class MecanumTeleOp extends OpMode {
             sleep(buttonWaitSeconds);
         }
 
+        if (controller.SquareLastCycle){
+            locked_mode = !locked_mode;
+            if (locked_mode) locked_direction = mecanumRobot.imu.getAngle();
+            sleep(buttonWaitSeconds);
+        }
 
-        // TOGGLE FUNCTIONALITY
+
+
+        // Toggle functions
         if (absolute_control_mode) rightThumbstick.setShift(mecanumRobot.imu.getAngle() % 360);
         else rightThumbstick.setShift(0);
-
-
 
 
         // Set Driver Values
@@ -81,6 +86,11 @@ public class MecanumTeleOp extends OpMode {
         double strafe = rightThumbstick.getShiftedX();
         double turn = leftThumbstick.getX();
         double velocity = (velocityToggle) ? 0.5 : 1;
+
+
+        if (locked_mode) turn = mecanumRobot.rotationPID.update(locked_direction - mecanumRobot.imu.getAngle());
+
+
 
         // DPAD Auto Turn
         if (controller.DPADPress()){
@@ -94,12 +104,13 @@ public class MecanumTeleOp extends OpMode {
 
 
         /* TELEMETRY */
-        telemetry.addData("Drive", drive);
-        telemetry.addData("Strafe", strafe);
-        telemetry.addData("Turn", turn);
-        telemetry.addData("IMU", mecanumRobot.imu.getAngle());
-        telemetry.addData("Velocity Toggle", velocityToggle);
-        telemetry.addData("ACM", absolute_control_mode);
+        Utils.multTelemetry.addData("Drive", drive);
+        Utils.multTelemetry.addData("Strafe", strafe);
+        Utils.multTelemetry.addData("Turn", turn);
+        Utils.multTelemetry.addData("IMU", mecanumRobot.imu.getAngle());
+        Utils.multTelemetry.addData("Velocity Toggle", velocityToggle);
+        Utils.multTelemetry.addData("ACM", absolute_control_mode);
+        Utils.multTelemetry.addData("Locked", locked_mode);
     }
 
     /*

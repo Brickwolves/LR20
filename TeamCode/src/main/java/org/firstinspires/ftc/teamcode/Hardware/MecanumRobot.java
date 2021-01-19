@@ -31,7 +31,7 @@ public class MecanumRobot implements Robot {
    private double initAngle;
    private double currentPosition;
 
-   private PID rotationPID = new PID(DashConstants.p, DashConstants.i, DashConstants.d, 100, true);
+   public PID rotationPID = new PID(DashConstants.p, DashConstants.i, DashConstants.d, 100, true);
 
    public MecanumRobot(){
       initRobot();
@@ -200,7 +200,7 @@ public class MecanumRobot implements Robot {
          turn = modifier;
          deltaFinal = deltaX2;
       }
-      turn *= rotationPID.update(deltaFinal);
+      turn *= Math.abs(rotationPID.update(deltaFinal));
       return turn;
    }
 
