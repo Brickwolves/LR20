@@ -48,6 +48,14 @@ public class Arm {
 
     }
 
+    public void shutdown(){
+        try {
+            servo.setPosition(SERVO_ARM_HOME);
+        } catch (Exception e) {
+            throw new Error("Could not set position of non-existant arm.");
+        }
+    }
+
     public void setPosition(double position){
         servo.setPosition(position);
     }

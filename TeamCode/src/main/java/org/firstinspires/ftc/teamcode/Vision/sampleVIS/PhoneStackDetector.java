@@ -1,25 +1,19 @@
-package org.firstinspires.ftc.teamcode.Vision;
+package org.firstinspires.ftc.teamcode.Vision.sampleVIS;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
-import org.opencv.core.Rect;
-import org.opencv.core.Scalar;
+import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.*;
 
-import static android.os.SystemClock.sleep;
-
-@Autonomous(name = "WebCamStackDetectorAuto", group = "Autonomous")
+@TeleOp(name = "PhoneStackDetectorAuto", group = "Autonomous")
 @Disabled
-public class WebCamStackDetector extends OpMode {
+public class PhoneStackDetector extends OpMode {
 
-    OpenCvCamera webCam = null;
+    OpenCvCamera phoneCam = null;
     static double ringCount = 0;
 
     @Override
@@ -31,16 +25,19 @@ public class WebCamStackDetector extends OpMode {
     public void init_loop(){
 
         // Init the phone
-        int cameraMonitorViewId = Utils.hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        webCam = OpenCvCameraFactory.getInstance().createWebcam(Utils.hardwareMap.get(WebcamName.class, "webcam"), cameraMonitorViewId);
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        phoneCam = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
+        //phoneCam = OpenCvCameraFactory.getInstance().createWebcam(OpenCvWebcam.CameraDirection.BACK, cameraMonitorViewId);
 
-        webCam.setPipeline(new RingDetectingPipeline());
+        // Pipeline is just a section of code that will be passed the image to then be processed
+        phoneCam.setPipeline(new RingDetectingPipeline());
+
         // Start Streaming
-        webCam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+        phoneCam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
 
-                webCam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+                phoneCam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
             }
         });
     }
@@ -50,15 +47,15 @@ public class WebCamStackDetector extends OpMode {
 
         if (ringCount == 1.0){
             // drive somewhere
-            Utils.telemetry.addData("RingCount", 1.0);
+            telemetry.addData("RingCount", 1.0);
         }
         else if (ringCount == 4.0){
             // drive somewhere else
-            Utils.telemetry.addData("RingCount", 4.0);
+            telemetry.addData("RingCount", 4.0);
         }
         else {
             // drive somewhere other than else
-            Utils.telemetry.addData("RingCount", 0.0);
+            telemetry.addData("RingCount", 0.0);
         }
 
     }

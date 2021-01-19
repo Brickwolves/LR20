@@ -41,5 +41,15 @@ public class Claw {
         }
 
     }
+
+
+    public void shutdown(){
+        try {
+            servo.setPosition(SERVO_CLAW_HOME);
+        } catch (Exception e) {
+            throw new Error("Could not set position of non-existant arm.");
+        }
+    }
+
     public void setSpeed(double speed){ SERVO_CLAW_SPEED = speed; }
 }
