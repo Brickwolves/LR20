@@ -105,19 +105,32 @@ public class AlphaTeleOp extends LinearOpMode {
                 sleep(buttonWaitSeconds);
             }
 
-
+            /*
             // Arm functionality
-            if (gamepad1.triangle){
+            if (controller.src.triangle){
                 mecanumRobot.arm.up();
             }
-            if (gamepad1.cross){
+            if (controller.src.cross){
                 mecanumRobot.arm.down();
             }
+             */
 
-            // Claw functionality
+            // Claw Functionality
             if (claw_toggle) mecanumRobot.claw.openFull();
             else mecanumRobot.claw.closeFull();
 
+
+            // Intake Functionality
+            if (controller.src.triangle){
+                mecanumRobot.intake.setPower(1);
+            }
+            if (controller.src.cross){
+                mecanumRobot.intake.setPower(-1);
+            }
+            if (controller.src.right_stick_button){
+                mecanumRobot.intake.setPower(0);
+            }
+            mecanumRobot.intake.update();
 
 
 

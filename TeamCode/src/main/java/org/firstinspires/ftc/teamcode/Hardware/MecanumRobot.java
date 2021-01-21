@@ -27,6 +27,8 @@ public class MecanumRobot implements Robot {
    public IMU imu;
    public Claw claw;
    public Arm arm;
+   public Intake intake;
+
    private LinearOpMode opMode;
 
    private double initAngle;
