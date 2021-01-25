@@ -21,8 +21,11 @@ public class Arm {
             servo = Utils.hardwareMap.get(Servo.class, id);
             servo.setDirection(Servo.Direction.FORWARD);
             servo.setPosition(SERVO_ARM_HOME);
+
         } catch (Exception e) {
-            throw new Error("Cannot find servo with id: " + id + "\n. Could not initialize arm.");
+            //throw new Error("Cannot find servo with id: " + id + "\n. Could not initialize arm.");
+            Utils.telemetry.addData("Status","Could not set position of non-existant arm.");
+            Utils.telemetry.update();
         }
 
     }
@@ -33,7 +36,9 @@ public class Arm {
             servo_arm_position = Range.clip(servo_arm_position, SERVO_ARM_MIN_RANGE, SERVO_ARM_MAX_RANGE);
             servo.setPosition(servo_arm_position);
         } catch (Exception e) {
-            throw new Error("Could not set position of non-existant arm.");
+            //throw new Error("Could not set position of non-existant arm.");
+            Utils.telemetry.addData("Status","Could not set position of non-existant arm.");
+            Utils.telemetry.update();
         }
     }
 
@@ -43,7 +48,9 @@ public class Arm {
             servo_arm_position = Range.clip(servo_arm_position, SERVO_ARM_MIN_RANGE, SERVO_ARM_MAX_RANGE);
             servo.setPosition(servo_arm_position);
         } catch (Exception e) {
-            throw new Error("Could not set position of non-existant arm.");
+            //throw new Error("Could not set position of non-existant arm.");
+            Utils.telemetry.addData("Status","Could not set position of non-existant arm.");
+            Utils.telemetry.update();
         }
 
     }
@@ -52,7 +59,9 @@ public class Arm {
         try {
             servo.setPosition(SERVO_ARM_HOME);
         } catch (Exception e) {
-            throw new Error("Could not set position of non-existant arm.");
+            //throw new Error("Could not set position of non-existant arm.");
+            Utils.telemetry.addData("Status","Could not set position of non-existant arm.");
+            Utils.telemetry.update();
         }
     }
 

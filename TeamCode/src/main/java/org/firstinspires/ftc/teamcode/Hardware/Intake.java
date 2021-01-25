@@ -19,7 +19,9 @@ public class Intake {
             motor.setDirection(DcMotor.Direction.FORWARD);
         }
         catch (Exception e){
-            throw new Error("Cannot find motor with id: " + DcMotor_id + "\n. Could not initialize motor.");
+            //throw new Error("Cannot find motor with id: " + DcMotor_id + "\n. Could not initialize motor.");
+            Utils.telemetry.addData("Status", "Could not initialize motor");
+            Utils.telemetry.update();
         }
 
     }
@@ -33,7 +35,7 @@ public class Intake {
         }
         catch (Exception e){
             //throw new Error("Cannot find motor with id: " + DcMotor_id + "\n. Could not initialize motor.");
-            Utils.telemetry.addData("Status", "Could not initialize motors");
+            Utils.telemetry.addData("Status", "Could not initialize motor");
             Utils.telemetry.update();
         }
     }

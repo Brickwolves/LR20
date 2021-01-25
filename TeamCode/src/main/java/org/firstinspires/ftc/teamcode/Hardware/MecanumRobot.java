@@ -52,7 +52,7 @@ public class MecanumRobot implements Robot {
       Utils.telemetry.addData("Status", "Initialized");
 
       // Init Motors
-      try{
+      try {
          fr = Utils.hardwareMap.get(DcMotor.class, "front_right_motor");
          fl = Utils.hardwareMap.get(DcMotor.class, "front_left_motor");
          br = Utils.hardwareMap.get(DcMotor.class, "back_right_motor");

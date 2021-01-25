@@ -19,7 +19,9 @@ public class Claw {
             servo.setPosition(SERVO_CLAW_HOME);
         }
         catch (Exception e){
-            throw new Error("Cannot find servo with id: " + id + "\n. Could not initialize claw.");
+            //throw new Error("Cannot find servo with id: " + id + "\n. Could not initialize claw.");
+            Utils.telemetry.addData("Status","Could not set position of non-existant claw.");
+            Utils.telemetry.update();
         }
 
     }
@@ -29,7 +31,9 @@ public class Claw {
             servo.setPosition(SERVO_CLAW_MAX_RANGE);
         }
         catch (Exception e){
-            throw new Error("Could not set position of non-existant claw");
+            //throw new Error("Could not set position of non-existant claw");
+            Utils.telemetry.addData("Status","Could not set position of non-existant claw.");
+            Utils.telemetry.update();
         }
     }
     public void closeFull(){
@@ -37,7 +41,9 @@ public class Claw {
             servo.setPosition(SERVO_CLAW_MIN_RANGE);
         }
         catch (Exception e){
-            throw new Error("Could not set position of non-existant claw");
+            //throw new Error("Could not set position of non-existant claw");
+            Utils.telemetry.addData("Status","Could not set position of non-existant claw.");
+            Utils.telemetry.update();
         }
 
     }
