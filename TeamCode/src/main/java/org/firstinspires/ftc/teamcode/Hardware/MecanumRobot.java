@@ -52,10 +52,18 @@ public class MecanumRobot implements Robot {
       Utils.telemetry.addData("Status", "Initialized");
 
       // Init Motors
-      fr = Utils.hardwareMap.get(DcMotor.class, "front_right_motor");
-      fl = Utils.hardwareMap.get(DcMotor.class, "front_left_motor");
-      br = Utils.hardwareMap.get(DcMotor.class, "back_right_motor");
-      bl = Utils.hardwareMap.get(DcMotor.class, "back_left_motor");
+      try{
+         fr = Utils.hardwareMap.get(DcMotor.class, "front_right_motor");
+         fl = Utils.hardwareMap.get(DcMotor.class, "front_left_motor");
+         br = Utils.hardwareMap.get(DcMotor.class, "back_right_motor");
+         bl = Utils.hardwareMap.get(DcMotor.class, "back_left_motor");
+      }
+      catch (Exception e){
+         //throw new Error("Could not initialize motors");
+         Utils.telemetry.addData("Status", "Could not initialize motors");
+         Utils.telemetry.update();
+      }
+
       resetMotors();
 
       // Sensors
@@ -65,6 +73,7 @@ public class MecanumRobot implements Robot {
       imu = new IMU("imu");
       claw = new Claw("servo_3");
       arm = new Arm("servo_4");
+      intake = new Intake("intake");
 
       initAngle = imu.getAngle();
    }
@@ -73,20 +82,26 @@ public class MecanumRobot implements Robot {
     * (Re)Init Motors
     */
    public void resetMotors(){
-      fr.setDirection(DcMotorSimple.Direction.FORWARD);
-      fl.setDirection(DcMotorSimple.Direction.REVERSE);
-      br.setDirection(DcMotorSimple.Direction.FORWARD);
-      bl.setDirection(DcMotorSimple.Direction.REVERSE);
+      try {
 
-      fl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-      fr.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-      bl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-      br.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+         fr.setDirection(DcMotorSimple.Direction.FORWARD);
+         fl.setDirection(DcMotorSimple.Direction.REVERSE);
+         br.setDirection(DcMotorSimple.Direction.FORWARD);
+         bl.setDirection(DcMotorSimple.Direction.REVERSE);
 
-      fl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-      fr.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-      bl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-      br.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+         fl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+         fr.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+         bl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+         br.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+         fl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+         fr.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+         bl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+         br.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+      }
+      catch (Exception e){
+         throw new Error("Could not initialize motors, and therefore cannot set mode");
+      }
    }
 
 
