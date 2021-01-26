@@ -64,6 +64,10 @@ public class ServoDiagnosticTeleOp extends LinearOpMode {
 
         while (opModeIsActive()) {
 
+            SERVO_MAX_RANGE = DashConstants.servo_max;
+            SERVO_MIN_RANGE = DashConstants.servo_min;
+            SERVO_HOME = DashConstants.servo_home;
+
             if (controller.src.triangle) {
                 servo_position += SERVO_SPEED;
                 Utils.multTelemetry.addData("Servo Status", "Forward");
