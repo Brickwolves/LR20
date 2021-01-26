@@ -32,6 +32,9 @@ public class DashConstants {
 
     public static double diagnostic_ring_count = 0;
 
+    public static double servo_max = 0.0;
+    public static double servo_min = 0.0;
+
 
 
 

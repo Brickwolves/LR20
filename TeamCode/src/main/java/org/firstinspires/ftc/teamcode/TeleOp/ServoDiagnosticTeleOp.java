@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.teamcode.Hardware.Controller;
 import org.firstinspires.ftc.teamcode.Hardware.MecanumClawRobot;
 import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
+import org.firstinspires.ftc.teamcode.Utilities.DashConstants;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
 import static android.os.SystemClock.sleep;
@@ -23,8 +24,8 @@ public class ServoDiagnosticTeleOp extends LinearOpMode {
     private String servo_id = "servo_0";
 
     private final static double SERVO_HOME = 0.0;
-    private final static double SERVO_MIN_RANGE = 0.0;
-    private final static double SERVO_MAX_RANGE = 0.35;
+    private final static double SERVO_MIN_RANGE = DashConstants.servo_min;
+    private final static double SERVO_MAX_RANGE = DashConstants.servo_max;
     private double SERVO_SPEED = 0.75;
     private double servo_position = SERVO_HOME;
 
