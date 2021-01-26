@@ -105,7 +105,7 @@ public class AlphaTeleOp extends LinearOpMode {
                 sleep(buttonWaitSeconds);
             }
 
-            /*
+
             // Arm functionality
             if (controller.src.triangle){
                 mecanumRobot.arm.up();
@@ -113,7 +113,7 @@ public class AlphaTeleOp extends LinearOpMode {
             if (controller.src.cross){
                 mecanumRobot.arm.down();
             }
-             */
+
 
             // Claw Functionality
             if (claw_toggle) mecanumRobot.claw.openFull();
@@ -121,6 +121,7 @@ public class AlphaTeleOp extends LinearOpMode {
 
 
             // Intake Functionality
+            /*
             if (controller.src.triangle){
                 mecanumRobot.intake.setPower(1);
             }
@@ -132,7 +133,7 @@ public class AlphaTeleOp extends LinearOpMode {
             }
             mecanumRobot.intake.update();
 
-
+            */
 
         /*
 
@@ -151,7 +152,7 @@ public class AlphaTeleOp extends LinearOpMode {
             double drive = rightThumbstick.getInvertedShiftedY(); Utils.multTelemetry.addData("Drive1", rightThumbstick.getInvertedShiftedY());
             double strafe = rightThumbstick.getShiftedX();
             double turn = leftThumbstick.getX();
-            double velocity = (velocityToggle) ? 0.5 : 1;
+            double velocity = (velocityToggle) ? 0.2 : 1;
 
 
 

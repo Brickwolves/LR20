@@ -6,9 +6,9 @@ import org.firstinspires.ftc.teamcode.Utilities.Utils;
 public class Claw {
 
     private Servo servo;
-    private final static double SERVO_CLAW_HOME = 0.23;
-    private final static double SERVO_CLAW_MIN_RANGE = 0.23;
-    private final static double SERVO_CLAW_MAX_RANGE = 0.38;
+    private final static double SERVO_CLAW_HOME = 0.3;
+    private final static double SERVO_CLAW_MIN_RANGE = 0.3;
+    private final static double SERVO_CLAW_MAX_RANGE = 0.65;
     private double SERVO_CLAW_SPEED = 0.1;
 
     public Claw(String id){

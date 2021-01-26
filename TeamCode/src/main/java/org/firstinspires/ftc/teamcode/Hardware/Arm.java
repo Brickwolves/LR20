@@ -9,9 +9,9 @@ public class Arm {
 
     private Servo servo;
 
-    private final static double SERVO_ARM_HOME = 0.0;
-    private final static double SERVO_ARM_MIN_RANGE = 0.0;
-    private final static double SERVO_ARM_MAX_RANGE = 0.35;
+    private final static double SERVO_ARM_HOME = 0.5;
+    private final static double SERVO_ARM_MIN_RANGE = 0.05;
+    private final static double SERVO_ARM_MAX_RANGE = 0.5;
     private double SERVO_ARM_SPEED = 0.75;
     private double servo_arm_position = SERVO_ARM_HOME;
 
