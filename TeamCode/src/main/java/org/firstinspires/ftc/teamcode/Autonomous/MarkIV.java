@@ -77,7 +77,7 @@ public class MarkIV extends LinearOpMode
             if (DashConstants.diagnostic_ring_count == 1.0 || DashConstants.diagnostic_ring_count == 4.0) ringsFound = true;
 
             // Go to 1st Position
-            multTelemetry.addData("Status", "Strafing to Deposit WobbleGoal Position");
+            multTelemetry.addData("Status", "Strafing to Deposit Wobble Goal Position");
             multTelemetry.update();
             //mecanumRobot.strafe(90, 7, 0, 0.075, null);
             //mecanumRobot.strafe(0, 37, 0, 0.075, null);
@@ -114,14 +114,17 @@ public class MarkIV extends LinearOpMode
             }
 
 
-            // Go to next Wobble Goal
-            multTelemetry.addData("Status", "Dropping WobbleGoal");
+            // Drop Wobble Goal
+            multTelemetry.addData("Status", "Dropping Wobble Goal");
             multTelemetry.update();
-            sleep(3000);
+            mecanumRobot.arm.down();
+            mecanumRobot.claw.openFull();
+            mecanumRobot.arm.up();
+            sleep(1000);
 
 
             // Go to next Wobble Goal
-            multTelemetry.addData("Status", "Strafing to pickup next WobbleGoal");
+            multTelemetry.addData("Status", "Strafing to pickup next Wobble Goal");
             multTelemetry.update();
             //mecanumRobot.strafe(-90, 18, 0, 0.075, null);
             //mecanumRobot.strafe(180, 30, 0, 0.075, null);
