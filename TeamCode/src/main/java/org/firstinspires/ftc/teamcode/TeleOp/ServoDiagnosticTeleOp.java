@@ -23,9 +23,9 @@ public class ServoDiagnosticTeleOp extends LinearOpMode {
     private Servo servo;
     private String servo_id = "servo_0";
 
-    private final static double SERVO_HOME = 0.0;
-    private final static double SERVO_MIN_RANGE = DashConstants.servo_min;
-    private final static double SERVO_MAX_RANGE = DashConstants.servo_max;
+    private double SERVO_HOME = DashConstants.servo_home;
+    private double SERVO_MIN_RANGE = DashConstants.servo_min;
+    private double SERVO_MAX_RANGE = DashConstants.servo_max;
     private double SERVO_SPEED = 0.75;
     private double servo_position = SERVO_HOME;
 
