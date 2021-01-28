@@ -1,20 +1,11 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
-import android.util.Log;
-
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.ServoController;
-import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.Hardware.Controller;
 import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
-
-import static android.os.SystemClock.sleep;
 
 
 @TeleOp(name = "Alpha TeleOp", group="Linear TeleOp")
@@ -84,23 +75,23 @@ public class AlphaTeleOp extends LinearOpMode {
             controller.updateToggles();
 
             // If we press RB once, toggle velocity shift
-            if (controller.RBLastCycle) {
+            if (controller.RB1_tap) {
                 velocityToggle = !velocityToggle;
                 sleep(buttonWaitSeconds);
             }
 
-            if (controller.LBLastCycle) {
+            if (controller.LB1_tap) {
                 absolute_control_mode = !absolute_control_mode;
                 sleep(buttonWaitSeconds);
             }
 
-            if (controller.SquareLastCycle){
+            if (controller.square_tap){
                 locked_mode = !locked_mode;
                 if (locked_mode) locked_direction = mecanumRobot.imu.getAngle();
                 sleep(buttonWaitSeconds);
             }
 
-            if (controller.CircleLastCycle){
+            if (controller.circle_tap){
                 claw_toggle = !claw_toggle;
                 sleep(buttonWaitSeconds);
             }
@@ -188,6 +179,7 @@ public class AlphaTeleOp extends LinearOpMode {
 
             Utils.multTelemetry.addData("Arm", mecanumRobot.arm.getPosition());
             Utils.multTelemetry.addData("Claw", claw_toggle);
+            Utils.multTelemetry.update();
 
 
 

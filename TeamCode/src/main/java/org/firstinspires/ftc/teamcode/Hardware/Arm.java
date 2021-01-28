@@ -30,6 +30,17 @@ public class Arm {
 
     }
 
+    public void setArmPosition(double position){
+        try {
+            servo_arm_position = Range.clip(position, SERVO_ARM_MIN_RANGE, SERVO_ARM_MAX_RANGE);
+            servo.setPosition(servo_arm_position);
+        } catch (Exception e) {
+            //throw new Error("Could not set position of non-existant arm.");
+            Utils.telemetry.addData("Status","Could not set position of non-existant arm.");
+            Utils.telemetry.update();
+        }
+    }
+
     public void up() {
         try {
             servo_arm_position += SERVO_ARM_SPEED;

@@ -81,7 +81,7 @@ public class MarkIV extends LinearOpMode
             multTelemetry.update();
             //mecanumRobot.strafe(90, 7, 0, 0.075, null);
             //mecanumRobot.strafe(0, 37, 0, 0.075, null);
-            mecanumRobot.strafe(10.7, 37.67, 0, 0.075, null);
+            mecanumRobot.strafe(13.7, 38, 0, 0.075, null);
 
 
             if (DashConstants.diagnostic_ring_count == 0.0){
