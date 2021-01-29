@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode.Hardware;
 
+import android.os.Build;
 import android.util.Log;
+
+import androidx.annotation.RequiresApi;
 
 import com.qualcomm.robotcore.hardware.*;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -14,6 +17,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 
 import static android.os.SystemClock.sleep;
+import static java.lang.Math.floorMod;
 import static org.firstinspires.ftc.teamcode.Utilities.Utils.convertInches2Ticks;
 import static org.firstinspires.ftc.teamcode.Utilities.Utils.map;
 import static org.firstinspires.ftc.teamcode.Utilities.Utils.telemetry;
@@ -192,36 +196,13 @@ public class MecanumRobot implements Robot {
       sleep(200);
    }
 
-   /**
-    * @param targetAngle
-    * @param MOE
-    */
-   public double turn2Direction(double targetAngle, double MOE) {
-
-      System.out.println("Turning to " + targetAngle + " degrees");
-
-      double turn = 0;
-      double currentAngle = imu.getAngle();
-      if (currentAngle < 0){
-         targetAngle += imu.getDeltaAngle();
-      }
-
-      double deltaX1 = targetAngle - Utils.coTerminal(currentAngle);
-      double deltaX2 = 360 - Math.abs(deltaX1);
-      double deltaFinal = 0;
-      double modifier = Math.signum(deltaX1);
-
-      if (Math.abs(deltaX1) < Math.abs(deltaX2)) {
-         turn = -1 * modifier;
-         deltaFinal = deltaX1;
-      }
-      else {
-         turn = modifier;
-         deltaFinal = deltaX2;
-      }
-      turn *= Math.abs(rotationPID.update(deltaFinal));
-      return turn;
+   @RequiresApi(api = Build.VERSION_CODES.N)
+   public static double turnTarget(double targetAngle, double currentAngle){
+      double simpleTargetDelta = floorMod(Math.round(((360 - targetAngle) + currentAngle) * 1e6), Math.round(360.000 * 1e6)) / 1e6;
+      double alternateTargetDelta = -1 * (360 - simpleTargetDelta);
+      return StrictMath.abs(simpleTargetDelta) <= StrictMath.abs(alternateTargetDelta) ? currentAngle - simpleTargetDelta : currentAngle - alternateTargetDelta;
    }
+
 
    public void turnPID(double targetAngle, double MOE){
 

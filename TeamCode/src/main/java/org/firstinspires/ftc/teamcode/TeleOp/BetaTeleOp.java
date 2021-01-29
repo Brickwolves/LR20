@@ -1,10 +1,15 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.Hardware.Controller;
+import org.firstinspires.ftc.teamcode.Hardware.MecanumClawRobot;
 import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
@@ -47,6 +52,7 @@ public class BetaTeleOp extends LinearOpMode {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void runOpMode() {
 
@@ -111,18 +117,22 @@ public class BetaTeleOp extends LinearOpMode {
             // VELOCITY RANGER
             double velocity = Range.clip((1 - controller1.src.left_trigger), 0.3, 1);
 
-            // LOCKED DIRECTION MODE
-            if (controller1.src.left_stick_x != 0) locked_direction = mecanumRobot.imu.getAngle();
-            else turn = mecanumRobot.rotationPID.update(locked_direction - mecanumRobot.imu.getAngle()) * -1;
+
 
 
             // DPAD Auto Turn
             if (controller1.DPADPress()){
-                if (controller1.src.dpad_up) turn = mecanumRobot.turn2Direction(0, 1);
-                else if (controller1.src.dpad_right) turn = mecanumRobot.turn2Direction(-90, 1);
-                else if (controller1.src.dpad_left) turn = mecanumRobot.turn2Direction(90, 1);
-                else if (controller1.src.dpad_down) turn = mecanumRobot.turn2Direction(180, 1);
+                if (controller1.src.dpad_up) locked_direction               = MecanumRobot.turnTarget(0, mecanumRobot.imu.getAngle());
+                else if (controller1.src.dpad_right) locked_direction       = MecanumRobot.turnTarget(-90, mecanumRobot.imu.getAngle());
+                else if (controller1.src.dpad_left) locked_direction        = MecanumRobot.turnTarget(90, mecanumRobot.imu.getAngle());
+                else if (controller1.src.dpad_down) locked_direction        = MecanumRobot.turnTarget(180, mecanumRobot.imu.getAngle());
             }
+
+
+            // LOCKED DIRECTION MODE
+            if (controller1.src.left_stick_x != 0) locked_direction = mecanumRobot.imu.getAngle();
+            else turn = mecanumRobot.rotationPID.update(locked_direction - mecanumRobot.imu.getAngle()) * -1;
+
             mecanumRobot.setDrivePower(drive * velocity, strafe * velocity, turn * 0.5, 1);
 
 

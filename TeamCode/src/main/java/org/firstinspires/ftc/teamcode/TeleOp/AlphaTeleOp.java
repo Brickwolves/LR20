@@ -152,10 +152,10 @@ public class AlphaTeleOp extends LinearOpMode {
 
             // DPAD Auto Turn
             if (controller.DPADPress()){
-                if (controller.src.dpad_up) turn = mecanumRobot.turn2Direction(0, 1);
-                else if (controller.src.dpad_right) turn = mecanumRobot.turn2Direction(-90, 1);
-                else if (controller.src.dpad_left) turn = mecanumRobot.turn2Direction(90, 1);
-                else if (controller.src.dpad_down) turn = mecanumRobot.turn2Direction(180, 1);
+                //if (controller.src.dpad_up) turn = mecanumRobot.turn2Direction(0, 1);
+                //else if (controller.src.dpad_right) turn = mecanumRobot.turn2Direction(-90, 1);
+                //else if (controller.src.dpad_left) turn = mecanumRobot.turn2Direction(90, 1);
+                //else if (controller.src.dpad_down) turn = mecanumRobot.turn2Direction(180, 1);
             }
             mecanumRobot.setDrivePower(drive * velocity, strafe * velocity, turn * 0.5, 1);
 
