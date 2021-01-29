@@ -6,9 +6,9 @@ import org.firstinspires.ftc.teamcode.Utilities.Utils;
 public class Claw {
 
     private Servo servo;
-    private final static double SERVO_CLAW_HOME = 0.3;
     private final static double SERVO_CLAW_MIN_RANGE = 0.3;
     private final static double SERVO_CLAW_MAX_RANGE = 0.65;
+    private final static double SERVO_CLAW_HOME = 0.65;
     private double SERVO_CLAW_SPEED = 0.1;
 
     public Claw(String id){
@@ -17,6 +17,22 @@ public class Claw {
             servo = Utils.hardwareMap.get(Servo.class, id);
             servo.setDirection(Servo.Direction.FORWARD);
             servo.setPosition(SERVO_CLAW_HOME);
+        }
+        catch (Exception e){
+            //throw new Error("Cannot find servo with id: " + id + "\n. Could not initialize claw.");
+            Utils.telemetry.addData("Status","Could not set position of non-existant claw.");
+            Utils.telemetry.update();
+        }
+
+    }
+
+    public Claw(String id, boolean start_open){
+
+        try {
+            servo = Utils.hardwareMap.get(Servo.class, id);
+            servo.setDirection(Servo.Direction.FORWARD);
+            double servo_start_position = (start_open) ? SERVO_CLAW_MAX_RANGE : SERVO_CLAW_MIN_RANGE;
+            servo.setPosition(servo_start_position);
         }
         catch (Exception e){
             //throw new Error("Cannot find servo with id: " + id + "\n. Could not initialize claw.");

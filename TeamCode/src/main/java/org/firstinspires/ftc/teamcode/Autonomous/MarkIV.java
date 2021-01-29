@@ -35,7 +35,6 @@ public class MarkIV extends LinearOpMode
     public void initialize(){
         Utils.setOpMode(this);
         mecanumRobot = new MecanumRobot();
-
     }
 
     @Override
@@ -73,6 +72,11 @@ public class MarkIV extends LinearOpMode
          */
         if (opModeIsActive()){
 
+
+            mecanumRobot.strafe(0, 12, 0, 0.09, null);
+            sleep(5000);
+
+            /*
             double MOE = 1;
             if (DashConstants.diagnostic_ring_count == 1.0 || DashConstants.diagnostic_ring_count == 4.0) ringsFound = true;
 
@@ -130,16 +134,7 @@ public class MarkIV extends LinearOpMode
             //mecanumRobot.strafe(180, 30, 0, 0.075, null);
             mecanumRobot.strafe(-149.04, 35, 0, 0.075, null);
 
-
-
-            /*
-            telemetry.addData("FPS", String.format("%.2f", webcam.getFps()));
-            telemetry.update();
-            webcam.stopStreaming();
-            sleep(3000);
-             */
-
-
+            */
         }
     }
 

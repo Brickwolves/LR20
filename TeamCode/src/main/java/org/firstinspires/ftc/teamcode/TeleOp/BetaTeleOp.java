@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.Hardware.Controller;
 import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
@@ -43,7 +44,6 @@ public class BetaTeleOp extends LinearOpMode {
         Utils.multTelemetry.update();
         mecanumRobot.arm.shutdown();
         mecanumRobot.claw.shutdown();
-        sleep(3000);
     }
 
 
@@ -67,12 +67,12 @@ public class BetaTeleOp extends LinearOpMode {
             controller2.updateToggles();
 
             // Arm functionality
-            if (controller2.triangle_toggle) mecanumRobot.arm.up();
-            else mecanumRobot.arm.down();
+            if (controller2.triangle_toggle) mecanumRobot.arm.down();
+            else mecanumRobot.arm.up();
 
             // Claw Functionality
-            if (controller2.circle_toggle) mecanumRobot.claw.openFull();
-            else mecanumRobot.claw.closeFull();
+            if (controller2.circle_toggle) mecanumRobot.claw.closeFull();
+            else mecanumRobot.claw.openFull();
 
             // Intake Functionality
             /*
@@ -109,7 +109,7 @@ public class BetaTeleOp extends LinearOpMode {
             double turn = leftThumbstick.getX();
 
             // VELOCITY RANGER
-            double velocity = 1 - (double) controller1.src.left_trigger;
+            double velocity = Range.clip((1 - controller1.src.left_trigger), 0.3, 1);
 
             // LOCKED DIRECTION MODE
             if (controller1.src.left_stick_x != 0) locked_direction = mecanumRobot.imu.getAngle();
