@@ -29,6 +29,7 @@ package org.firstinspires.ftc.teamcode.Autonomous;
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -38,9 +39,9 @@ import org.firstinspires.ftc.teamcode.Hardware.Controller;
 import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
-
 @Autonomous(name="ServoDiagnosticAuto", group="Autonomous Linear Opmode")
 public class ServoDiagnosticAuto extends LinearOpMode {
+
 
     private MecanumRobot mecanumRobot;
     private Controller controller;

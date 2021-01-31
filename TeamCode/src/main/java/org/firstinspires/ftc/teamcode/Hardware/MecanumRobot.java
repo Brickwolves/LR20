@@ -1,15 +1,14 @@
 package org.firstinspires.ftc.teamcode.Hardware;
 
 import android.os.Build;
-import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.*;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.Hardware.Sensors.ColorSensorImpl;
+
 import org.firstinspires.ftc.teamcode.Hardware.Sensors.IMU;
-import org.firstinspires.ftc.teamcode.Utilities.DashConstants;
+import org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Movement;
 import org.firstinspires.ftc.teamcode.Utilities.PID;
 import org.firstinspires.ftc.teamcode.Utilities.SyncTask;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
@@ -20,7 +19,7 @@ import static android.os.SystemClock.sleep;
 import static java.lang.Math.floorMod;
 import static org.firstinspires.ftc.teamcode.Utilities.Utils.convertInches2Ticks;
 import static org.firstinspires.ftc.teamcode.Utilities.Utils.map;
-import static org.firstinspires.ftc.teamcode.Utilities.Utils.telemetry;
+
 
 public class MecanumRobot implements Robot {
 
@@ -38,7 +37,7 @@ public class MecanumRobot implements Robot {
    private double initAngle;
    private double currentPosition;
 
-   public PID rotationPID = new PID(DashConstants.p, DashConstants.i, DashConstants.d, 100, true);
+   public PID rotationPID = new PID(Dash_Movement.p, Dash_Movement.i, Dash_Movement.d, 100, true);
 
    public MecanumRobot(){
       initRobot();
@@ -203,6 +202,36 @@ public class MecanumRobot implements Robot {
       return StrictMath.abs(simpleTargetDelta) <= StrictMath.abs(alternateTargetDelta) ? currentAngle - simpleTargetDelta : currentAngle - alternateTargetDelta;
    }
 
+   @RequiresApi(api = Build.VERSION_CODES.N)
+   public void turn(double target_angle, double MOE) {
+
+      double startTime = System.currentTimeMillis();
+
+      double turn;
+      double current_angle = imu.getAngle();
+      double actual_target_angle = turnTarget(target_angle, current_angle);
+      double error = actual_target_angle - current_angle;
+
+      while ((Math.abs(error) > MOE) && Utils.isActive()) {
+         actual_target_angle = turnTarget(target_angle, current_angle);
+         error = actual_target_angle - current_angle;
+         turn = rotationPID.update(error) * -1;
+         setDrivePower(0, 0, turn, Dash_Movement.velocity);
+
+         current_angle = imu.getAngle();
+
+         // Check timeout
+         double elapsedTime = Math.abs(System.currentTimeMillis() - startTime);
+         if (elapsedTime > 3000) break;
+
+
+         Utils.multTelemetry.addData("Error", error);
+         Utils.multTelemetry.addData("Turn", turn);
+         Utils.multTelemetry.addData("IMU", current_angle);
+         Utils.multTelemetry.update();
+      }
+   }
+
 
    public void turnPID(double targetAngle, double MOE){
 
@@ -214,7 +243,7 @@ public class MecanumRobot implements Robot {
       while ((Math.abs(error) > MOE) && Utils.isActive()) {
          error = targetAngle - currentAngle;
          double turn = rotationPID.update(error) * -1;
-         setDrivePower(0 ,0, turn, DashConstants.velocity);
+         setDrivePower(0 ,0, turn, Dash_Movement.velocity);
 
          currentAngle = imu.getAngle();
 
@@ -233,7 +262,7 @@ public class MecanumRobot implements Robot {
    }
 
 
-   public void turn(double targetAngle, double MOE) {
+   public void turnPowerRamp(double targetAngle, double MOE) {
          System.out.println("Turning to " + targetAngle + " degrees");
          double power;
          double startAngle = imu.getAngle();

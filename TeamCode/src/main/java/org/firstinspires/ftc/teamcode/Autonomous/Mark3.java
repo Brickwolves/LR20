@@ -1,27 +1,20 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
-import android.util.Log;
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
-import org.firstinspires.ftc.teamcode.Utilities.DashConstants;
+import org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Vision;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
-import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 @Autonomous(name="Mark3 - No Vision", group="Autonomous Linear Opmode")
@@ -81,7 +74,7 @@ public class Mark3 extends LinearOpMode
         if (opModeIsActive()){
 
             double MOE = 1;
-            if (DashConstants.diagnostic_ring_count == 1.0 || DashConstants.diagnostic_ring_count == 4.0) ringsFound = true;
+            if (Dash_Vision.diagnostic_ring_count == 1.0 || Dash_Vision.diagnostic_ring_count == 4.0) ringsFound = true;
 
             // Go to Ring Identification Position
             multTelemetry.addData("Status", "Strafing to Ring Position");
@@ -108,7 +101,7 @@ public class Mark3 extends LinearOpMode
                 mecanumRobot.strafe(-90, 2, 0, 0.075, null);
             }
 
-            if (DashConstants.diagnostic_ring_count == 0.0){
+            if (Dash_Vision.diagnostic_ring_count == 0.0){
 
                 // Go to A
                 multTelemetry.addData("Status", "Moving to A");
@@ -116,7 +109,7 @@ public class Mark3 extends LinearOpMode
                 mecanumRobot.strafe(0, 12, 0, 0.075, null);
                 mecanumRobot.strafe(90, 52, 0, 0.075, null);
             }
-            else if (DashConstants.diagnostic_ring_count == 1.0){
+            else if (Dash_Vision.diagnostic_ring_count == 1.0){
 
                 // Go to B
                 multTelemetry.addData("Status", "Moving to B");
@@ -177,16 +170,16 @@ public class Mark3 extends LinearOpMode
             input.copyTo(outPut);
 
             // Dimensions for top rectangle
-            rectTopX1 = (int) (input.rows() * DashConstants.rectTopX1Percent);
-            rectTopX2 = (int) (input.rows() * DashConstants.rectTopX2Percent) - rectTopX1;
-            rectTopY1 = (int) (input.cols() * DashConstants.rectTopY1Percent);
-            rectTopY2 = (int) (input.cols() * DashConstants.rectTopY2Percent) - rectTopY1;
+            rectTopX1 = (int) (input.rows() * Dash_Vision.rectTopX1Percent);
+            rectTopX2 = (int) (input.rows() * Dash_Vision.rectTopX2Percent) - rectTopX1;
+            rectTopY1 = (int) (input.cols() * Dash_Vision.rectTopY1Percent);
+            rectTopY2 = (int) (input.cols() * Dash_Vision.rectTopY2Percent) - rectTopY1;
 
             // Dimensions for bottom rectangle
-            rectBottomX1 = (int) (input.rows() * DashConstants.rectBottomX1Percent);
-            rectBottomX2 = (int) (input.rows() * DashConstants.rectBottomX2Percent) - rectBottomX1;
-            rectBottomY1 = (int) (input.cols() * DashConstants.rectBottomY1Percent);
-            rectBottomY2 = (int) (input.cols() * DashConstants.rectBottomY2Percent) - rectBottomY1;
+            rectBottomX1 = (int) (input.rows() * Dash_Vision.rectBottomX1Percent);
+            rectBottomX2 = (int) (input.rows() * Dash_Vision.rectBottomX2Percent) - rectBottomX1;
+            rectBottomY1 = (int) (input.cols() * Dash_Vision.rectBottomY1Percent);
+            rectBottomY2 = (int) (input.cols() * Dash_Vision.rectBottomY2Percent) - rectBottomY1;
 
             // VISUALIZATION: Create rectangles and scalars, then draw them onto outPut
             Scalar rectangleColor = new Scalar(0, 0, 255);
@@ -218,15 +211,15 @@ public class Mark3 extends LinearOpMode
             // Check 4 rings
             if (
 
-                    finalUpperAve > DashConstants.orangeMin &&
-                            finalUpperAve < DashConstants.orangeMax
+                    finalUpperAve > Dash_Vision.orangeMin &&
+                            finalUpperAve < Dash_Vision.orangeMax
 
             ) ringCount = 4.0;
                 // Check 0 rings
             else if (
 
-                    finalLowerAve > DashConstants.orangeMax ||
-                            finalLowerAve < DashConstants.orangeMin
+                    finalLowerAve > Dash_Vision.orangeMax ||
+                            finalLowerAve < Dash_Vision.orangeMin
 
             ) ringCount = 0.0;
             else ringCount = 1.0;

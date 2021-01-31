@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode.Vision;
 
 
-import android.util.Log;
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -12,11 +10,10 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
-import org.firstinspires.ftc.teamcode.Utilities.DashConstants;
+import org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Vision;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
-import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
@@ -167,16 +164,16 @@ public class AlphaVisionDash extends LinearOpMode
             rectBottomY2 = (int) (YCbCr.cols() * DashConstants.rectBottomY2Percent);
 */
             // Dimensions for top rectangle
-            rectTopX1 = (int) (input.rows() * DashConstants.rectTopX1Percent);
-            rectTopX2 = (int) (input.rows() * DashConstants.rectTopX2Percent) - rectTopX1;
-            rectTopY1 = (int) (input.cols() * DashConstants.rectTopY1Percent);
-            rectTopY2 = (int) (input.cols() * DashConstants.rectTopY2Percent) - rectTopY1;
+            rectTopX1 = (int) (input.rows() * Dash_Vision.rectTopX1Percent);
+            rectTopX2 = (int) (input.rows() * Dash_Vision.rectTopX2Percent) - rectTopX1;
+            rectTopY1 = (int) (input.cols() * Dash_Vision.rectTopY1Percent);
+            rectTopY2 = (int) (input.cols() * Dash_Vision.rectTopY2Percent) - rectTopY1;
 
             // Dimensions for bottom rectangle
-            rectBottomX1 = (int) (input.rows() * DashConstants.rectBottomX1Percent);
-            rectBottomX2 = (int) (input.rows() * DashConstants.rectBottomX2Percent) - rectBottomX1;
-            rectBottomY1 = (int) (input.cols() * DashConstants.rectBottomY1Percent);
-            rectBottomY2 = (int) (input.cols() * DashConstants.rectBottomY2Percent) - rectBottomY1;
+            rectBottomX1 = (int) (input.rows() * Dash_Vision.rectBottomX1Percent);
+            rectBottomX2 = (int) (input.rows() * Dash_Vision.rectBottomX2Percent) - rectBottomX1;
+            rectBottomY1 = (int) (input.cols() * Dash_Vision.rectBottomY1Percent);
+            rectBottomY2 = (int) (input.cols() * Dash_Vision.rectBottomY2Percent) - rectBottomY1;
 
             // VISUALIZATION: Create rectangles and scalars, then draw them onto outPut
             Scalar rectangleColor = new Scalar(0, 0, 255);
@@ -208,15 +205,15 @@ public class AlphaVisionDash extends LinearOpMode
             // Check 4 rings
             if (
 
-                    finalUpperAve > DashConstants.orangeMin &&
-                    finalUpperAve < DashConstants.orangeMax
+                    finalUpperAve > Dash_Vision.orangeMin &&
+                    finalUpperAve < Dash_Vision.orangeMax
 
             ) ringCount = 4.0;
             // Check 0 rings
             else if (
 
-                    finalLowerAve > DashConstants.orangeMax ||
-                    finalLowerAve < DashConstants.orangeMin
+                    finalLowerAve > Dash_Vision.orangeMax ||
+                    finalLowerAve < Dash_Vision.orangeMin
 
             ) ringCount = 0.0;
             else ringCount = 1.0;
@@ -233,14 +230,14 @@ public class AlphaVisionDash extends LinearOpMode
              * Given a distance of around 3ft from rings
              */
 
-            multTelemetry.addData("RECT_TOP_X1", DashConstants.rectTopX1Percent);
-            multTelemetry.addData("RECT_TOP_Y1", DashConstants.rectTopY1Percent);
-            multTelemetry.addData("RECT_TOP_X2", DashConstants.rectTopX2Percent);
-            multTelemetry.addData("RECT_TOP_Y2", DashConstants.rectTopY2Percent);
-            multTelemetry.addData("RECT_BOTTOM_X1", DashConstants.rectBottomX1Percent);
-            multTelemetry.addData("RECT_BOTTOM_Y1", DashConstants.rectBottomY1Percent);
-            multTelemetry.addData("RECT_BOTTOM_X2", DashConstants.rectBottomX2Percent);
-            multTelemetry.addData("RECT_BOTTOM_Y2", DashConstants.rectBottomY2Percent);
+            multTelemetry.addData("RECT_TOP_X1", Dash_Vision.rectTopX1Percent);
+            multTelemetry.addData("RECT_TOP_Y1", Dash_Vision.rectTopY1Percent);
+            multTelemetry.addData("RECT_TOP_X2", Dash_Vision.rectTopX2Percent);
+            multTelemetry.addData("RECT_TOP_Y2", Dash_Vision.rectTopY2Percent);
+            multTelemetry.addData("RECT_BOTTOM_X1", Dash_Vision.rectBottomX1Percent);
+            multTelemetry.addData("RECT_BOTTOM_Y1", Dash_Vision.rectBottomY1Percent);
+            multTelemetry.addData("RECT_BOTTOM_X2", Dash_Vision.rectBottomX2Percent);
+            multTelemetry.addData("RECT_BOTTOM_Y2", Dash_Vision.rectBottomY2Percent);
 
 
             multTelemetry.addData("Upper", upperCrop);

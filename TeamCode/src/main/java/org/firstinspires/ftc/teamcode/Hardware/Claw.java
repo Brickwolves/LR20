@@ -6,9 +6,9 @@ import org.firstinspires.ftc.teamcode.Utilities.Utils;
 public class Claw {
 
     private Servo servo;
-    private final static double SERVO_CLAW_MIN_RANGE = 0.3;
-    private final static double SERVO_CLAW_MAX_RANGE = 0.65;
-    private final static double SERVO_CLAW_HOME = 0.65;
+    private final static double SERVO_CLAW_MIN = 0.3;
+    private final static double SERVO_CLAW_MAX = 0.65;
+    private final static double SERVO_CLAW_HOME = SERVO_CLAW_MAX;
     private double SERVO_CLAW_SPEED = 0.1;
 
     public Claw(String id){
@@ -31,7 +31,7 @@ public class Claw {
         try {
             servo = Utils.hardwareMap.get(Servo.class, id);
             servo.setDirection(Servo.Direction.FORWARD);
-            double servo_start_position = (start_open) ? SERVO_CLAW_MAX_RANGE : SERVO_CLAW_MIN_RANGE;
+            double servo_start_position = (start_open) ? SERVO_CLAW_MAX : SERVO_CLAW_MIN;
             servo.setPosition(servo_start_position);
         }
         catch (Exception e){
@@ -44,7 +44,7 @@ public class Claw {
 
     public void openFull(){
         try {
-            servo.setPosition(SERVO_CLAW_MAX_RANGE);
+            servo.setPosition(SERVO_CLAW_MAX);
         }
         catch (Exception e){
             //throw new Error("Could not set position of non-existant claw");
@@ -54,7 +54,7 @@ public class Claw {
     }
     public void closeFull(){
         try {
-            servo.setPosition(SERVO_CLAW_MIN_RANGE);
+            servo.setPosition(SERVO_CLAW_MIN);
         }
         catch (Exception e){
             //throw new Error("Could not set position of non-existant claw");

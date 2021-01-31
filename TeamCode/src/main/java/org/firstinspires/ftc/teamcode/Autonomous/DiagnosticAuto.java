@@ -29,20 +29,21 @@ package org.firstinspires.ftc.teamcode.Autonomous;
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.Hardware.Controller;
 import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
-import org.firstinspires.ftc.teamcode.Hardware.Sensors.IMU;
-import org.firstinspires.ftc.teamcode.Utilities.DashConstants;
-import org.firstinspires.ftc.teamcode.Utilities.PID;
 import org.firstinspires.ftc.teamcode.Utilities.SyncTask;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
-import static org.firstinspires.ftc.teamcode.Utilities.Utils.multTelemetry;
-import static org.firstinspires.ftc.teamcode.Utilities.Utils.telemetry;
-
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Movement.MOE;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Movement.diagnostic_turn1;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Movement.diagnostic_turn2;
 
 @Autonomous(name="DiagnosticAuto", group="Autonomous Linear Opmode")
 //@Disabled
@@ -56,14 +57,20 @@ public class DiagnosticAuto extends LinearOpMode {
     public void initialize(){
         Utils.setOpMode(this);
         mecanumRobot = new MecanumRobot();
+
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void runOpMode() {
 
         initialize();
         waitForStart();
+
+
+        mecanumRobot.turn(diagnostic_turn1, MOE);
+        mecanumRobot.turn(diagnostic_turn2, MOE);
 
         /*
         Utils.multTelemetry.addData("Status", "Strafing " + DashConstants.diagnosticInches);

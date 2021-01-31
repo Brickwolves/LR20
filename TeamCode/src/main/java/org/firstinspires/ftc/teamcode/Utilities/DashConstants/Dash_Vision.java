@@ -1,14 +1,8 @@
-package org.firstinspires.ftc.teamcode.Utilities;
+package org.firstinspires.ftc.teamcode.Utilities.DashConstants;
 import com.acmerobotics.dashboard.config.Config;
 
 @Config
-public class DashConstants {
-
-    public static double p = .1;
-    public static double i = .00000001;
-    public static double d = .005;
-
-
+public class Dash_Vision {
     /* ------- VISION --------- */
     // Top rectangle starting percentages
     public static double rectTopX1Percent = 0.62; public static double rectTopX2Percent = 0.84;
@@ -22,21 +16,5 @@ public class DashConstants {
     public static double orangeMax = 110;
     public static double orangeMin = 80;
 
-    public static double power;
-
-    public static double diagnosticInches = 28;
-    public static double velocity = 1;
-
-
-    public static double learning_rate = 0.01;
-
-    public static double diagnostic_ring_count = 0;
-
-    public static double servo_max = 0.0;
-    public static double servo_min = 0.0;
-    public static double servo_home = 0.0;
-
-
-
-
+    public static double diagnostic_ring_count = 0.0;
 }
