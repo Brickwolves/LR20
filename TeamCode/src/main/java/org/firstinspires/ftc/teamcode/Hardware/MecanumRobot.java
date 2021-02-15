@@ -43,14 +43,6 @@ public class MecanumRobot implements Robot {
       initRobot();
    }
 
-
-   public enum Direction {
-      NORTH,
-      WEST,
-      EAST,
-      SOUTH
-   }
-
    public void initRobot() {
       Utils.telemetry.addData("Status", "Initialized");
 

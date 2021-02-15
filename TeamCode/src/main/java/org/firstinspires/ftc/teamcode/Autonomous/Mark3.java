@@ -20,7 +20,7 @@ import org.openftc.easyopencv.OpenCvPipeline;
 @Autonomous(name="Mark3 - No Vision", group="Autonomous Linear Opmode")
 public class Mark3 extends LinearOpMode
 {
-    private MecanumRobot mecanumRobot;
+    private MecanumRobot robot;
 
     OpenCvCamera webcam;
 
@@ -34,7 +34,7 @@ public class Mark3 extends LinearOpMode
 
     public void initialize(){
         Utils.setOpMode(this);
-        mecanumRobot = new MecanumRobot();
+        robot = new MecanumRobot();
 
     }
 
@@ -79,14 +79,14 @@ public class Mark3 extends LinearOpMode
             // Go to Ring Identification Position
             multTelemetry.addData("Status", "Strafing to Ring Position");
             multTelemetry.update();
-            mecanumRobot.strafe(-90, 12, 0, 0.075, null);
+            robot.strafe(-90, 12, 0, 0.075, null);
 
 
             // Go to Power Shot Position
             multTelemetry.addData("Status", "Strafing to Power Shot Position");
             multTelemetry.update();
-            mecanumRobot.strafe(-90, 32, 0, 0.075, null);
-            mecanumRobot.strafe(0, 58, 0, 0.075, null);
+            robot.strafe(-90, 32, 0, 0.075, null);
+            robot.strafe(0, 58, 0, 0.075, null);
 
 
             // Shooting Power Shots
@@ -98,7 +98,7 @@ public class Mark3 extends LinearOpMode
                 multTelemetry.addData("Status", "Strafing to next Power Shot");
                 multTelemetry.update();
                 sleep(1000);
-                mecanumRobot.strafe(-90, 2, 0, 0.075, null);
+                robot.strafe(-90, 2, 0, 0.075, null);
             }
 
             if (Dash_Vision.diagnostic_ring_count == 0.0){
@@ -106,16 +106,16 @@ public class Mark3 extends LinearOpMode
                 // Go to A
                 multTelemetry.addData("Status", "Moving to A");
                 multTelemetry.update();
-                mecanumRobot.strafe(0, 12, 0, 0.075, null);
-                mecanumRobot.strafe(90, 52, 0, 0.075, null);
+                robot.strafe(0, 12, 0, 0.075, null);
+                robot.strafe(90, 52, 0, 0.075, null);
             }
             else if (Dash_Vision.diagnostic_ring_count == 1.0){
 
                 // Go to B
                 multTelemetry.addData("Status", "Moving to B");
                 multTelemetry.update();
-                mecanumRobot.strafe(0, 40, 0, 0.075, null);
-                mecanumRobot.strafe(90, 30, 0, 0.075, null);
+                robot.strafe(0, 40, 0, 0.075, null);
+                robot.strafe(90, 30, 0, 0.075, null);
 
             }
             else {
@@ -123,8 +123,8 @@ public class Mark3 extends LinearOpMode
                 // Go to C
                 multTelemetry.addData("Status", "Moving to C");
                 multTelemetry.update();
-                mecanumRobot.strafe(0, 63, 0, 0.075, null);
-                mecanumRobot.strafe(90, 52, 0, 0.075, null);
+                robot.strafe(0, 63, 0, 0.075, null);
+                robot.strafe(90, 52, 0, 0.075, null);
             }
 
 
