@@ -6,22 +6,31 @@ import androidx.annotation.RequiresApi;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.Hardware.Controller;
 import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
+import org.firstinspires.ftc.teamcode.Hardware.Shooter;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SERVO4_HOME;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SERVO5_HOME;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SERVO_HOME;
 
-@TeleOp(name = "Beta TeleOp - Scrimmage", group="Linear TeleOp")
-public class BetaTeleOp extends LinearOpMode {
+
+@TeleOp(name = "Gamma TeleOp - Scrimmage", group="Linear TeleOp")
+public class GammaTeleOp extends LinearOpMode {
 
     private MecanumRobot mecanumRobot;
     private Controller controller1;
     private Controller controller2;
-    private Servo servo_2;
-    private Servo servo_3;
+    private Shooter shooter;
+    private DcMotor spinny_1, spinny_2;
+    private Servo servo_lock, servo_shoot;
+
 
 
     private double locked_direction;
@@ -32,6 +41,21 @@ public class BetaTeleOp extends LinearOpMode {
         mecanumRobot = new MecanumRobot();
         controller1 = new Controller(gamepad1);
         controller2 = new Controller(gamepad2);
+
+        servo_shoot = Utils.hardwareMap.get(Servo.class, "servo_4");
+        servo_shoot.setPosition(SERVO4_HOME);
+        servo_lock = Utils.hardwareMap.get(Servo.class, "servo_5");
+        servo_lock.setPosition(SERVO5_HOME);
+
+        spinny_1 = Utils.hardwareMap.get(DcMotor.class, "spinny_1");
+        spinny_1.setDirection(DcMotorSimple.Direction.REVERSE);
+        spinny_2 = Utils.hardwareMap.get(DcMotor.class, "spinny_2");
+        spinny_2.setDirection(DcMotorSimple.Direction.REVERSE);
+
+
+
+
+        shooter = new Shooter(spinny_1, spinny_2, servo_shoot, servo_lock);
 
         Utils.multTelemetry.addData("Steering Controls", "--------");
         Utils.multTelemetry.addData("Toggle ACM", "[Right Stick Btn]");
@@ -83,10 +107,24 @@ public class BetaTeleOp extends LinearOpMode {
             else mecanumRobot.claw.openFull();
 
             if(controller2.RB2_toggle) {
-                if(controller2.LB2_toggle) mecanumRobot.intake.setPower(-1);
-                else mecanumRobot.intake.setPower(1);
-
+                mecanumRobot.intake.setPower(-1);
             }
+                else mecanumRobot.intake.setPower(0);
+
+            if(controller2.LB1_toggle){
+                shooter.unlockFeeder();
+            }
+
+            else shooter.lockFeeder();
+            if(controller2.RB1_toggle){
+                shooter.feedRing();
+            }
+            else shooter.resetFeeder();
+
+            if(controller2.triangle_toggle){
+                shooter.setRPM(3500);
+            }
+
 
             mecanumRobot.intake.update();
 

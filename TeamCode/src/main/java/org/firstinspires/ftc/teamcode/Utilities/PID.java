@@ -27,12 +27,12 @@ public class PID {
         this.integral = integral;
         this.derivative = derivative;
         this.debugMode = debugMode;
-        errors = new PIDRingBuffer(integralLength);
+        //errors = new PIDRingBuffer(integralLength);
         previousTime = System.currentTimeMillis();
     }
 
     public Double update(double error){
-        PIDRingBuffer.IntegralDerivativePair integralDerivativePair = errors.update(error, System.currentTimeMillis());
+        //PIDRingBuffer.IntegralDerivativePair integralDerivativePair = errors.update(error, System.currentTimeMillis());
         integralSum += error;
         long currentTime = System.currentTimeMillis();
         double deltaTime = (currentTime - previousTime) / 1000.0;

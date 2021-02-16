@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.Utilities.Utils;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SERVO_HOME;
 
 
+
 @TeleOp(name = "ServoDiagnostic TeleOp", group="Linear TeleOp")
 public class ServoDiagnosticTeleOp extends LinearOpMode {
 
@@ -19,7 +20,7 @@ public class ServoDiagnosticTeleOp extends LinearOpMode {
     private Controller controller;
 
     private Servo servo;
-    private String servo_id = "servo_0";
+    private String servo_id = "servo_5";
 
     private double servo_position = SERVO_HOME;
 
@@ -44,7 +45,7 @@ public class ServoDiagnosticTeleOp extends LinearOpMode {
     public void shutdown(){
         Utils.multTelemetry.addData("Status", "Shutting Down");
         Utils.multTelemetry.update();
-        servo.setPosition(Dash_ServoDiagnostic.SERVO_HOME);
+        servo.setPosition(SERVO_HOME);
         sleep(3000);
     }
 

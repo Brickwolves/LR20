@@ -14,7 +14,7 @@ public class Intake {
 
         try {
             this.DcMotor_id = DcMotor_id;
-            motor = Utils.hardwareMap.get(DcMotor.class, DcMotor_id);
+            motor = Utils.hardwareMap.get(DcMotor.class, "Intake");
             motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             motor.setDirection(DcMotor.Direction.FORWARD);
         }
