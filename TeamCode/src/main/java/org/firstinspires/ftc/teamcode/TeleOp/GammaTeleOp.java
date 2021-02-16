@@ -12,6 +12,12 @@ import org.firstinspires.ftc.teamcode.Hardware.Controller;
 import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SERVO2_HOME;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SERVO2_MAX;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SERVO2_MIN;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SERVO3_MAX;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SERVO3_MIN;
+
 
 @TeleOp(name = "Gamma TeleOp - Scrimmage", group="Linear TeleOp")
 public class GammaTeleOp extends LinearOpMode {
@@ -19,7 +25,8 @@ public class GammaTeleOp extends LinearOpMode {
     private MecanumRobot robot;
     private Controller controller1;
     private Controller controller2;
-
+    private double Servo2_position = SERVO2_HOME;
+    private double Servo3_position = SERVO2_HOME;
     private double locked_direction;
 
 
@@ -89,6 +96,7 @@ public class GammaTeleOp extends LinearOpMode {
             // SHOOTER CODE
             if (controller2.LB1_toggle){
                 robot.shooter.unlockFeeder();
+                robot.shooter.resetFeeder();
             }
             else robot.shooter.lockFeeder();
 
@@ -98,7 +106,16 @@ public class GammaTeleOp extends LinearOpMode {
             else robot.shooter.resetFeeder();
 
             if (controller2.triangle_toggle){
-                robot.shooter.setRPM(3500);
+                robot.shooter.setRPM(4500);
+            }
+            //Intake Arm
+            if(controller2.src.dpad_up){
+                Servo2_position = SERVO2_MIN;
+                Servo3_position = SERVO3_MAX;
+            }
+            else if(controller2.src.dpad_down){
+                Servo2_position= SERVO2_MAX;
+                Servo3_position = SERVO3_MIN;
             }
 
         /*
