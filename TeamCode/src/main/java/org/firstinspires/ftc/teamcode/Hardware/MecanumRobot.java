@@ -17,6 +17,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import static android.os.SystemClock.sleep;
 import static java.lang.Math.floorMod;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SERVO4_HOME;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SERVO5_HOME;
 import static org.firstinspires.ftc.teamcode.Utilities.Utils.convertInches2Ticks;
 import static org.firstinspires.ftc.teamcode.Utilities.Utils.map;
 
@@ -31,6 +33,9 @@ public class MecanumRobot implements Robot {
    public Claw claw;
    public Arm arm;
    public Intake intake;
+   public Shooter shooter;
+   private DcMotor spinny_1, spinny_2;
+   private Servo servo_lock, servo_shoot;
 
    private LinearOpMode opMode;
 
@@ -70,6 +75,20 @@ public class MecanumRobot implements Robot {
       claw = new Claw("servo_1");
       arm = new Arm("servo_0");
       intake = new Intake("intake");
+
+      // Initialize Shooter
+      servo_shoot = Utils.hardwareMap.get(Servo.class, "servo_4");
+      servo_shoot.setPosition(SERVO4_HOME);
+      servo_lock = Utils.hardwareMap.get(Servo.class, "servo_5");
+      servo_lock.setPosition(SERVO5_HOME);
+
+      spinny_1 = Utils.hardwareMap.get(DcMotor.class, "spinny_1");
+      spinny_1.setDirection(DcMotorSimple.Direction.REVERSE);
+      spinny_2 = Utils.hardwareMap.get(DcMotor.class, "spinny_2");
+      spinny_2.setDirection(DcMotorSimple.Direction.REVERSE);
+
+      shooter = new Shooter(spinny_1, spinny_2, servo_shoot, servo_lock);
+
 
       initAngle = imu.getAngle();
    }
