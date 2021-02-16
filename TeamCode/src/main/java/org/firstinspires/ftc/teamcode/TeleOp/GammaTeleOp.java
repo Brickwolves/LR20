@@ -79,8 +79,9 @@ public class GammaTeleOp extends LinearOpMode {
             else robot.claw.openFull();
 
             // INTAKE CODE
-            if(controller2.RB2_toggle) {
-                robot.intake.setPower(-1);
+            if (controller2.RB2_toggle) {
+                if (controller2.LB2_toggle) robot.intake.setPower(-1);
+                else robot.intake.setPower(1);
             }
             else robot.intake.setPower(0);
             robot.intake.update();
