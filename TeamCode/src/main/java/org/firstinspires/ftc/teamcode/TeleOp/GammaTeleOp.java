@@ -47,8 +47,14 @@ public class GammaTeleOp extends LinearOpMode {
         Utils.multTelemetry.addData("Face Direction", "DPAD");
 
         Utils.multTelemetry.addData("Hardware Controls", "--------");
-        Utils.multTelemetry.addData("Claw", "[Circle]");
-        Utils.multTelemetry.addData("Arm", "[Triangle]");
+        Utils.multTelemetry.addData("Shoot", "[CIRCLE]");
+        Utils.multTelemetry.addData("Claw", "[CROSS]");
+        Utils.multTelemetry.addData("Arm", "[TRIANGLE]");
+        Utils.multTelemetry.addData("Intake ON/OFF", "[RB1]");
+        Utils.multTelemetry.addData("Intake Direction", "[LB1]");
+        Utils.multTelemetry.addData("Intake Arm Up", "[DPAD UP]");
+        Utils.multTelemetry.addData("Intake Arm Down", "[DPAD DOWN]");
+
         Utils.multTelemetry.addData("Shutdown Keys", "[RB] & [LB] simultaneously");
         Utils.multTelemetry.update();
 
@@ -88,27 +94,26 @@ public class GammaTeleOp extends LinearOpMode {
 
 
             // CLAW
-            if (controller2.circle_toggle) robot.claw.closeFull();
+            if (controller2.cross_toggle) robot.claw.closeFull();
             else robot.claw.openFull();
 
 
             // INTAKE CODE
-            if (controller2.RB1_toggle) {
+            if (controller2.RB1_toggle && !controller2.src.circle) {
                 if (controller2.LB1_toggle) robot.intake.setIntakePower(-1);
                 else robot.intake.setIntakePower(1);
             }
             else robot.intake.setIntakePower(0);
 
             // INTAKE ARM
-            if (controller2.src.dpad_up) robot.intake.armUp();
-            else if (controller2.src.dpad_down) robot.intake.armDown();
+            if (controller2.src.dpad_up && !controller2.src.circle) robot.intake.armUp();
+            else if (controller2.src.dpad_down && !controller2.src.circle) robot.intake.armDown();
 
 
-            // SHOOTER
+            // SHOOTER SOMETHIN REALLLY WEIRD GOING ON? HOW USING STATE MACHINE AND THEN SETTING POWER?? HOW DOES THIS WORK? I KNOW THTE WHY
             robot.shooter.feederState(controller2.src.circle);
             if (controller2.triangle_toggle) {
                 robot.shooter.setRPM(4500);
-                robot.intake.setIntakePower(0);
                 robot.intake.armDown();
             }
 
