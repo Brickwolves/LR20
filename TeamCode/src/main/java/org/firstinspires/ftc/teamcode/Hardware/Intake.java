@@ -25,7 +25,7 @@ public class Intake {
     private Servo left_arm_servo;
     private Servo right_arm_servo;
 
-    public Intake(String intake_motor_id){
+    public Intake(String intake_motor_id, String left_servo_id, String right_servo_id){
 
 
         this.intake_motor_id = intake_motor_id;
@@ -68,6 +68,9 @@ public class Intake {
     }
     public double getIntakePosition(){
         return intake_motor.getCurrentPosition();
+    }
+    public double getIntakePower(){
+        return intake_motor.getPower();
     }
 
 }

@@ -65,7 +65,7 @@ public class MecanumRobot implements Robot {
       imu = new IMU("imu");
       claw = new Claw("servo_1");
       arm = new Arm("servo_0");
-      intake = new Intake("intake");
+      intake = new Intake("intake", "servo_2", "servo_3");
 
 
       // S H O O T E R
