@@ -4,7 +4,6 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
-import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.*;
 
 import org.firstinspires.ftc.teamcode.Hardware.Sensors.IMU;
@@ -17,8 +16,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import static android.os.SystemClock.sleep;
 import static java.lang.Math.floorMod;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SERVO4_HOME;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SERVO5_HOME;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SHOOT_SERVO_HOME;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.LOCK_SERVO_HOME;
 import static org.firstinspires.ftc.teamcode.Utilities.Utils.convertInches2Ticks;
 import static org.firstinspires.ftc.teamcode.Utilities.Utils.map;
 
@@ -35,7 +34,7 @@ public class MecanumRobot implements Robot {
    public Intake intake;
    public Shooter shooter;
    private DcMotor spinny_1, spinny_2;
-   private Servo servo_lock, servo_shoot;
+   private Servo lock_servo, shoot_servo;
 
    private LinearOpMode opMode;
 
@@ -53,18 +52,10 @@ public class MecanumRobot implements Robot {
 
       // Init Motors
 
-       try {
-         fr = Utils.hardwareMap.get(DcMotor.class, "front_right_motor");
-         fl = Utils.hardwareMap.get(DcMotor.class, "front_left_motor");
-         br = Utils.hardwareMap.get(DcMotor.class, "back_right_motor");
-         bl = Utils.hardwareMap.get(DcMotor.class, "back_left_motor");
-      }
-      catch (Exception e){
-         //throw new Error("Could not initialize motors");
-         Utils.telemetry.addData("Status", "Could not initialize motors");
-         Utils.telemetry.update();
-      }
-
+      fr = Utils.hardwareMap.get(DcMotor.class, "front_right_motor");
+      fl = Utils.hardwareMap.get(DcMotor.class, "front_left_motor");
+      br = Utils.hardwareMap.get(DcMotor.class, "back_right_motor");
+      bl = Utils.hardwareMap.get(DcMotor.class, "back_left_motor");
       resetMotors();
 
       // Sensors
@@ -76,18 +67,23 @@ public class MecanumRobot implements Robot {
       arm = new Arm("servo_0");
       intake = new Intake("intake");
 
-      // Initialize Shooter
-      servo_shoot = Utils.hardwareMap.get(Servo.class, "servo_4");
-      servo_shoot.setPosition(SERVO4_HOME);
-      servo_lock = Utils.hardwareMap.get(Servo.class, "servo_5");
-      servo_lock.setPosition(SERVO5_HOME);
+
+      // S H O O T E R
+      shoot_servo = Utils.hardwareMap.get(Servo.class, "servo_4");
+      shoot_servo.setDirection(Servo.Direction.FORWARD);
+      shoot_servo.setPosition(SHOOT_SERVO_HOME);
+
+      lock_servo = Utils.hardwareMap.get(Servo.class, "servo_5");
+      lock_servo.setDirection(Servo.Direction.FORWARD);
+      lock_servo.setPosition(LOCK_SERVO_HOME);
 
       spinny_1 = Utils.hardwareMap.get(DcMotor.class, "spinny_1");
       spinny_1.setDirection(DcMotorSimple.Direction.REVERSE);
       spinny_2 = Utils.hardwareMap.get(DcMotor.class, "spinny_2");
       spinny_2.setDirection(DcMotorSimple.Direction.REVERSE);
 
-      shooter = new Shooter(spinny_1, spinny_2, servo_shoot, servo_lock);
+      shooter = new Shooter(spinny_1, spinny_2, shoot_servo, lock_servo);
+
 
 
       initAngle = imu.getAngle();

@@ -10,12 +10,12 @@ import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
 import org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SERVO2_HOME;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SERVO2_MAX;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SERVO2_MIN;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SERVO3_HOME;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SERVO3_MAX;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SERVO3_MIN;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.LEFT_ARM_SERVO_HOME;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.LEFT_ARM_SERVO_MAX;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.LEFT_ARM_SERVO_MIN;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.RIGHT_ARM_SERVO_HOME;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.RIGHT_ARM_SERVO_MAX;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.RIGHT_ARM_SERVO_MIN;
 
 
 @TeleOp(name = "IntakeTest", group="Linear TeleOp")
@@ -27,12 +27,12 @@ public class IntakeTest extends LinearOpMode {
     private Servo Servo2;
     private String servo2_id = "servo_2";
 
-    private double Servo2_position = SERVO2_HOME;
+    private double Servo2_position = LEFT_ARM_SERVO_HOME;
 
     private Servo Servo3;
     private String servo3_id = "servo_3";
 
-    private double Servo3_position = SERVO3_HOME;
+    private double Servo3_position = RIGHT_ARM_SERVO_HOME;
 
 
 
@@ -46,11 +46,11 @@ public class IntakeTest extends LinearOpMode {
         Servo2 = Utils.hardwareMap.get(Servo.class, servo2_id);
         Servo2.setDirection(Servo.Direction.FORWARD);
         // SERVO_ARM: IF WE DON'T SET THE POSITION, SERVO STARTS AT 0.23 (halfway) instead of 0.0 (down)
-        Servo2.setPosition(SERVO2_HOME);
+        Servo2.setPosition(LEFT_ARM_SERVO_HOME);
         Servo3 = Utils.hardwareMap.get(Servo.class, servo3_id);
         Servo3.setDirection(Servo.Direction.FORWARD);
         // SERVO_ARM: IF WE DON'T SET THE POSITION, SERVO STARTS AT 0.23 (halfway) instead of 0.0 (down)
-        Servo3.setPosition(SERVO3_HOME);
+        Servo3.setPosition(RIGHT_ARM_SERVO_HOME);
 
         Utils.multTelemetry.addData("Status", "Initialized");
         Utils.multTelemetry.addData("Start Keys", "Press [>] to begin");
@@ -61,8 +61,8 @@ public class IntakeTest extends LinearOpMode {
     public void shutdown(){
         Utils.multTelemetry.addData("Status", "Shutting Down");
         Utils.multTelemetry.update();
-        Servo2.setPosition(SERVO2_HOME);
-        Servo3.setPosition(SERVO3_HOME);
+        Servo2.setPosition(LEFT_ARM_SERVO_HOME);
+        Servo3.setPosition(RIGHT_ARM_SERVO_HOME);
 
         sleep(3000);
     }
@@ -78,22 +78,22 @@ public class IntakeTest extends LinearOpMode {
         while (opModeIsActive()) {
 
             if(controller.src.dpad_up){
-                Servo2_position = SERVO2_MIN;
-                Servo3_position = SERVO3_MAX;
+                Servo2_position = LEFT_ARM_SERVO_MIN;
+                Servo3_position = RIGHT_ARM_SERVO_MAX;
             }
             else if(controller.src.dpad_down){
-                Servo2_position= SERVO2_MAX;
-                Servo3_position = SERVO3_MIN;
+                Servo2_position= LEFT_ARM_SERVO_MAX;
+                Servo3_position = RIGHT_ARM_SERVO_MIN;
             }
 
 
-            Servo2_position = Range.clip(Servo2_position, Dash_ServoDiagnostic.SERVO2_MIN, Dash_ServoDiagnostic.SERVO2_MAX);
+            Servo2_position = Range.clip(Servo2_position, Dash_ServoDiagnostic.LEFT_ARM_SERVO_MIN, Dash_ServoDiagnostic.LEFT_ARM_SERVO_MAX);
             Servo2.setPosition(Servo2_position);
 
             Utils.multTelemetry.addData("Servo ID", servo2_id);
             Utils.multTelemetry.addData("Servo Position", Servo2.getPosition());
 
-            Servo3_position = Range.clip(Servo3_position, Dash_ServoDiagnostic.SERVO3_MIN, Dash_ServoDiagnostic.SERVO3_MAX);
+            Servo3_position = Range.clip(Servo3_position, Dash_ServoDiagnostic.RIGHT_ARM_SERVO_MIN, Dash_ServoDiagnostic.RIGHT_ARM_SERVO_MAX);
             Servo3.setPosition(Servo3_position);
 
             Utils.multTelemetry.addData("Servo ID", servo3_id);

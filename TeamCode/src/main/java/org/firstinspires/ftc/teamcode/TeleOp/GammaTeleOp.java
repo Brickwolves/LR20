@@ -6,22 +6,14 @@ import androidx.annotation.RequiresApi;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.Hardware.Controller;
 import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
-import org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SERVO2_HOME;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SERVO2_MAX;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SERVO2_MIN;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SERVO3_MAX;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SERVO3_MIN;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SERVO3_HOME;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SERVO4_HOME;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SERVO5_HOME;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SHOOT_SERVO_HOME;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.LOCK_SERVO_HOME;
 
 
 @TeleOp(name = "Gamma TeleOp - Scrimmage", group="Linear TeleOp")
@@ -30,18 +22,12 @@ public class GammaTeleOp extends LinearOpMode {
     private MecanumRobot robot;
     private Controller controller1;
     private Controller controller2;
-    private Servo Servo2;
-    private String servo2_id = "servo_2";
-    private Servo Servo3;
-    private String servo3_id = "servo_3";
-    private Servo Servo4;
-    private String servo4_id = "servo_4";
-    private Servo Servo5;
-    private String servo5_id = "servo_5";
-    private double Servo2_position = SERVO2_HOME;
-    private double Servo3_position = SERVO3_HOME;
-    private double Servo4_position = SERVO4_HOME;
-    private double Servo5_position = SERVO5_HOME;
+
+
+    private double Servo4_position = SHOOT_SERVO_HOME;
+    private double Servo5_position = LOCK_SERVO_HOME;
+
+
     private double locked_direction;
 
 
@@ -51,18 +37,8 @@ public class GammaTeleOp extends LinearOpMode {
         robot = new MecanumRobot();
         controller1 = new Controller(gamepad1);
         controller2 = new Controller(gamepad2);
-        Servo2 = Utils.hardwareMap.get(Servo.class, servo2_id);
-        Servo2.setDirection(Servo.Direction.FORWARD);
-        Servo2.setPosition(SERVO2_HOME);
-        Servo3 = Utils.hardwareMap.get(Servo.class, servo3_id);
-        Servo3.setDirection(Servo.Direction.FORWARD);
-        Servo3.setPosition(SERVO3_HOME);
-        Servo4 = Utils.hardwareMap.get(Servo.class, servo4_id);
-        Servo4.setDirection(Servo.Direction.FORWARD);
-        Servo4.setPosition(SERVO4_HOME);
-        Servo5 = Utils.hardwareMap.get(Servo.class, servo5_id);
-        Servo5.setDirection(Servo.Direction.FORWARD);
-        Servo5.setPosition(SERVO5_HOME);
+
+
 
 
         Utils.multTelemetry.addData("Steering Controls", "--------");
@@ -106,53 +82,40 @@ public class GammaTeleOp extends LinearOpMode {
             controller1.updateToggles();
             controller2.updateToggles();
 
-            // Arm functionality
+            // ARM
             if (controller2.triangle_toggle) robot.arm.down();
             else robot.arm.up();
 
-            // Claw Functionality
+
+            // CLAW
             if (controller2.circle_toggle) robot.claw.closeFull();
             else robot.claw.openFull();
 
+
             // INTAKE CODE
             if (controller2.RB1_toggle) {
-                if (controller2.LB1_toggle) robot.intake.setPower(-1);
-                else robot.intake.setPower(1);
+                if (controller2.LB1_toggle) robot.intake.setIntakePower(-1);
+                else robot.intake.setIntakePower(1);
             }
-            else robot.intake.setPower(0);
-            robot.intake.update();
+            else robot.intake.setIntakePower(0);
 
-            // SHOOTER CODE
-            /*if (controller2.LB1_toggle){
-                robot.shooter.unlockFeeder();
-                robot.shooter.resetFeeder();
-            }
-            else robot.shooter.lockFeeder();
+            // INTAKE ARM
+            if (controller2.src.dpad_up) robot.intake.armUp();
+            else if (controller2.src.dpad_down) robot.intake.armDown();
 
-            if (controller2.RB1_toggle){
-                robot.shooter.feedRing();
-            }
-            else robot.shooter.resetFeeder();*/
+
+            // SHOOTER
             robot.shooter.feederState(controller2.src.circle);
-
-
-            if (controller2.triangle_toggle){
+            if (controller2.triangle_toggle) {
                 robot.shooter.setRPM(4500);
+                robot.intake.setIntakePower(0);
+                robot.intake.armDown();
             }
-            //Intake Arm
-            if(controller2.src.dpad_up){
-                Servo2_position = SERVO2_MIN;
-                Servo3_position = SERVO3_MAX;
-            }
-            else if(controller2.src.dpad_down){
-                Servo2_position= SERVO2_MAX;
-                Servo3_position = SERVO3_MIN;
-            }
-            Servo2_position = Range.clip(Servo2_position, Dash_ServoDiagnostic.SERVO2_MIN, Dash_ServoDiagnostic.SERVO2_MAX);
-            Servo2.setPosition(Servo2_position);
 
-            Servo3_position = Range.clip(Servo3_position, Dash_ServoDiagnostic.SERVO3_MIN, Dash_ServoDiagnostic.SERVO3_MAX);
-            Servo3.setPosition(Servo3_position);
+
+
+
+
 
         /*
 
