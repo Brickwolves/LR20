@@ -65,6 +65,7 @@ public class GammaTeleOp extends LinearOpMode {
         Utils.multTelemetry.update();
         robot.arm.shutdown();
         robot.claw.shutdown();
+        robot.intake.shutdown();
     }
 
 
@@ -114,7 +115,10 @@ public class GammaTeleOp extends LinearOpMode {
             robot.shooter.feederState(controller2.src.circle);
             if (controller2.triangle_toggle) {
                 robot.shooter.setRPM(4500);
-                robot.intake.armDown();
+                robot.intake.armDown();         // IS THIS REALLY NECESSARY? WHAT'S GOING ON?
+            }
+            else {
+                robot.shooter.setRPM(0);
             }
 
 
@@ -173,13 +177,15 @@ public class GammaTeleOp extends LinearOpMode {
             Utils.multTelemetry.addData("Locked Direction", locked_direction);
 
             Utils.multTelemetry.addData("ACM", controller1.right_stick_btn_toggle);
-            Utils.multTelemetry.addData("Drive", drive);
-            Utils.multTelemetry.addData("Strafe", strafe);
             Utils.multTelemetry.addData("Turn", turn);
             Utils.multTelemetry.addData("Velocity", velocity);
-
+            Utils.multTelemetry.addData("HARDWARE", "---------------------------------------");
             Utils.multTelemetry.addData("Arm", robot.arm.getPosition());
             Utils.multTelemetry.addData("Claw", controller2.circle_toggle);
+            Utils.multTelemetry.addData("Intake ON/OFF", controller2.RB1_toggle);
+            Utils.multTelemetry.addData("Intake Forward", controller2.LB1_toggle);
+            Utils.multTelemetry.addData("Intake Left Arm", robot.intake.getLeftServoPosition());
+            Utils.multTelemetry.addData("Intake Right Arm", robot.intake.getRightServoPosition());
             Utils.multTelemetry.update();
 
 

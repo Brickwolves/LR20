@@ -6,15 +6,14 @@ public class Dash_ServoDiagnostic {
     public static double SERVO_HOME = 0;
     public static double SERVO_MIN = 0;
     public static double SERVO_MAX = 0;
-    public static double SERVO_SPEED = 0;
 
     public static double LEFT_ARM_SERVO_HOME = 0.5;
     public static double LEFT_ARM_SERVO_MIN = 0.5;
-    public static double LEFT_ARM_SERVO_MAX = 0.99;
+    public static double LEFT_ARM_SERVO_MAX = 0.97;
 
-    public static double RIGHT_ARM_SERVO_HOME = 0.5;
-    public static double RIGHT_ARM_SERVO_MIN = 0.01;
-    public static double RIGHT_ARM_SERVO_MAX = 0.5;
+    public static double RIGHT_ARM_SERVO_HOME = 0.48;
+    public static double RIGHT_ARM_SERVO_MIN = 0.0;
+    public static double RIGHT_ARM_SERVO_MAX = 0.48;
 
     public static double SHOOT_SERVO_HOME = 0.9;
     public static double SHOOT_SERVO_MIN = 0.65;

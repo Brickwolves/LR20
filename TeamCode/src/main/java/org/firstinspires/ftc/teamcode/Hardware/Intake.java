@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
+import static android.os.SystemClock.sleep;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.LEFT_ARM_SERVO_HOME;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.LEFT_ARM_SERVO_MAX;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.LEFT_ARM_SERVO_MIN;
@@ -71,6 +72,11 @@ public class Intake {
     }
     public double getIntakePower(){
         return intake_motor.getPower();
+    }
+    public void shutdown(){
+        armUp();
+        setIntakePower(0);
+        sleep(1000);
     }
 
 }

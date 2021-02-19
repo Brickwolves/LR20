@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -19,6 +20,7 @@ import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoD
 
 
 @TeleOp(name = "IntakeTest", group="Linear TeleOp")
+@Disabled
 public class IntakeTest extends LinearOpMode {
 
     private MecanumRobot mecanumRobot;

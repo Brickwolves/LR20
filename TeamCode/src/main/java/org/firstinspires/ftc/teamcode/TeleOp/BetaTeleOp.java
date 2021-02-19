@@ -83,12 +83,10 @@ public class BetaTeleOp extends LinearOpMode {
             else mecanumRobot.claw.openFull();
 
             if(controller2.RB2_toggle) {
-                if(controller2.LB2_toggle) mecanumRobot.intake.setPower(-1);
-                else mecanumRobot.intake.setPower(1);
+                if(controller2.LB2_toggle) mecanumRobot.intake.setIntakePower(-1);
+                else mecanumRobot.intake.setIntakePower(1);
 
             }
-
-            mecanumRobot.intake.update();
 
         /*
 

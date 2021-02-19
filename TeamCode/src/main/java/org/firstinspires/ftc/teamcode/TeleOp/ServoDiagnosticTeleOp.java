@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
 import org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SERVO_HOME;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.*;
 
 
 
@@ -20,9 +20,8 @@ public class ServoDiagnosticTeleOp extends LinearOpMode {
     private Controller controller;
 
     private Servo servo;
-    private String servo_id = "servo_5";
-
-    private double servo_position = SERVO_HOME;
+    private String servo_id = "servo_3";
+    private String status = "HOME";
 
 
     public void initialize() {
@@ -59,19 +58,17 @@ public class ServoDiagnosticTeleOp extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            if (controller.src.triangle) {
-                servo_position += Dash_ServoDiagnostic.SERVO_SPEED;
-                Utils.multTelemetry.addData("Servo Status", "Forward");
+            if (controller.src.dpad_up) {
+                servo.setPosition(SERVO_MAX);
+                status = "MAX";
             }
-            if (controller.src.cross) {
-                servo_position -= Dash_ServoDiagnostic.SERVO_SPEED;
-                Utils.multTelemetry.addData("Servo Status", "Backward");
+            if (controller.src.dpad_down) {
+                servo.setPosition(SERVO_MIN);
+                status = "MIN";
             }
-
-            servo_position = Range.clip(servo_position, Dash_ServoDiagnostic.SERVO_MIN, Dash_ServoDiagnostic.SERVO_MAX);
-            servo.setPosition(servo_position);
 
             Utils.multTelemetry.addData("Servo ID", servo_id);
+            Utils.multTelemetry.addData("Servo Status", status);
             Utils.multTelemetry.addData("Servo Position", servo.getPosition());
             Utils.multTelemetry.update();
 
