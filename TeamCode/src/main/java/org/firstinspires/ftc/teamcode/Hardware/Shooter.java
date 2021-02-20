@@ -1,26 +1,39 @@
 package org.firstinspires.ftc.teamcode.Hardware;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter;
 import org.firstinspires.ftc.teamcode.Utilities.PID;
 import org.firstinspires.ftc.teamcode.Utilities.RingBuffer;
+import org.firstinspires.ftc.teamcode.Utilities.Utils;
+
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.LOCK_SERVO_HOME;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.LOCK_SERVO_MAX;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.LOCK_SERVO_MIN;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SHOOT_SERVO_HOME;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SHOOT_SERVO_MAX;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SHOOT_SERVO_MIN;
 
 public class Shooter {
 
-    private DcMotor shooterOne;
-    private DcMotor shooterTwo;
-    private Servo feeder;
-    private Servo feederLock;
-    public PID shooterPID = new PID(.0002, 0.000008, 0.000009, 0, false);
+    private DcMotor shooter1;
+    private DcMotor shooter2;
+    private Servo shoot_servo;
+    private Servo lock_servo;
+    //public PID shooterPID = new PID(.0002, 0.000008, 0.000009, 0, false);
+    public PID shooterPID = new PID(Dash_Shooter.p, Dash_Shooter.i, Dash_Shooter.d, 0, false);
 
     private static final double TICKS_PER_ROTATION = 28;
-    private static final double RING_FEED = 0.9; //feeder max
-    private static final double RESET = 0.65; //feeder min
-    private static final double FEEDER_LOCK = 0.5; //lock max
-    private static final double FEEDER_UNLOCK = 0.3; //lock min
+
+    private static final double SHOOT_POSITION =    SHOOT_SERVO_MIN;
+    private static final double RESET_POSITION =    SHOOT_SERVO_MAX;
+
+    private static final double LOCK_POSITION =     LOCK_SERVO_MAX;
+    private static final double UNLOCK_POSITION =   LOCK_SERVO_MIN;
 
     private static final int TOP_GOAL = 3250;
     private static final int POWER_SHOT = 3000;
@@ -42,33 +55,44 @@ public class Shooter {
 
     public ElapsedTime feederTime = new ElapsedTime();
 
-    public Shooter(DcMotor shooterOne, DcMotor shooterTwo, Servo feeder, Servo feederLock) {
+    public Shooter(String shooter1_id, String shooter2_id, String shooter_id, String lock_id) {
 
-        shooterOne.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        shooterTwo.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        this.shooterOne = shooterOne;
-        this.shooterTwo = shooterTwo;
-        this.feeder = feeder;
-        this.feederLock = feederLock;
+        shooter1 = Utils.hardwareMap.get(DcMotor.class, shooter1_id);
+        shooter1.setDirection(DcMotorSimple.Direction.REVERSE);
+        shooter1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        shooter2 = Utils.hardwareMap.get(DcMotor.class, shooter2_id);
+        shooter2.setDirection(DcMotorSimple.Direction.REVERSE);
+        shooter2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        shoot_servo = Utils.hardwareMap.get(Servo.class, shooter_id);
+        shoot_servo.setDirection(Servo.Direction.FORWARD);
+        shoot_servo.setPosition(SHOOT_SERVO_HOME);
+
+        lock_servo = Utils.hardwareMap.get(Servo.class, lock_id);
+        lock_servo.setDirection(Servo.Direction.FORWARD);
+        lock_servo.setPosition(LOCK_SERVO_HOME);
     }
 
-    public void feedRing(){
-        feeder.setPosition(RING_FEED);
+    public void shootRing(){
+        shoot_servo.setPosition(SHOOT_POSITION);
     }
 
-    public void resetFeeder(){
-        feeder.setPosition(RESET);
+    public void resetShooter(){
+        shoot_servo.setPosition(RESET_POSITION);
     }
 
     public void lockFeeder(){
-        feederLock.setPosition(FEEDER_LOCK);
+        lock_servo.setPosition(LOCK_POSITION);
+        isFeederLocked = true;
     }
 
-    public boolean isFeederLocked() { return feeder.getPosition() == FEEDER_LOCK; }
+    public boolean isFeederLocked() { return shoot_servo.getPosition() == LOCK_POSITION; }
 
     public void unlockFeeder(){
-        feederLock.setPosition(FEEDER_UNLOCK);
+        lock_servo.setPosition(UNLOCK_POSITION);
+        isFeederLocked = false;
     }
 
     public double feederCount(){ return feedCount; }
@@ -76,27 +100,38 @@ public class Shooter {
     public void feederState(boolean trigger){
         switch (currentFeederState) {
 
+            // Deprecated?
             case STATE_IDLE:
-                if(trigger && getPower() >= .1){ newState(FeederState.STATE_FEED); }
-                if(feederTime.seconds() > LOCK_TIME){ lockFeeder(); isFeederLocked = false; }
-                else{ unlockFeeder(); isFeederLocked = false; }
-                resetFeeder();
+
+                if (trigger && getPower() >= .1)        setState(FeederState.STATE_FEED);
+
+                if (feederTime.seconds() > LOCK_TIME)   lockFeeder();
+                else                                    unlockFeeder();
+
+                resetShooter();
                 break;
 
+
             case STATE_FEED:
-                if (isFeederLocked) {
-                    if (feederTime.seconds() > FEED_TIME + UNLOCK_TIME) { newState(FeederState.STATE_RESET); }
-                    if (feederTime.seconds() > UNLOCK_TIME) { feedRing(); }
-                }else{
-                    if (feederTime.seconds() > FEED_TIME) { newState(FeederState.STATE_RESET); }
-                    feedRing();
+
+                if (isFeederLocked) {                                                                                   // If feeder is locked then check if...
+                    if (feederTime.seconds() > UNLOCK_TIME + FEED_TIME) setState(FeederState.STATE_RESET);              // If we've had enough time to unlock and shoot a ring? Reset to shoot another
+                    if (feederTime.seconds() > UNLOCK_TIME) shootRing();                                                // If we've had time to unlock, we can shoot
                 }
-                unlockFeeder();
+                else {                                                                                                  // If we are unlocked and good to go
+                    if (feederTime.seconds() > FEED_TIME) setState(FeederState.STATE_RESET);                            // If we've shot we should reset
+                    shootRing();                                                                                        // Otherwise Shoot!!!
+                }
+                unlockFeeder();                                                                                         // End the state by unlocking
                 break;
 
             case STATE_RESET:
-                if (feederTime.seconds() > RESET_TIME) { newState(FeederState.STATE_IDLE); feedCount++; break; }
-                resetFeeder();
+                if (feederTime.seconds() > RESET_TIME) {
+                    setState(FeederState.STATE_IDLE);
+                    feedCount++;
+                    break;
+                }
+                resetShooter();
                 unlockFeeder();
                 break;
         }
@@ -104,24 +139,24 @@ public class Shooter {
 
 
     public void setPower(double power){
-        shooterOne.setPower(power);
-        shooterTwo.setPower(power);
+        shooter1.setPower(power);
+        shooter2.setPower(power);
     }
 
     public double getPower(){
-        return (shooterOne.getPower() + shooterTwo.getPower()) /2;
+        return (shooter1.getPower() + shooter2.getPower()) / 2;
     }
 
     public void resetEncoders(){
-        shooterOne.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        shooterTwo.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        shooter1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        shooter2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        shooterOne.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        shooterTwo.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        shooter1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        shooter2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     public long getPosition(){
-        return (shooterOne.getCurrentPosition() + shooterTwo.getCurrentPosition()) /  2;
+        return (shooter1.getCurrentPosition() + shooter2.getCurrentPosition()) /  2;
     }
 
     public double updateRPM(){
@@ -159,7 +194,7 @@ public class Shooter {
 
 
 
-    private void newState(FeederState newState) { currentFeederState = newState; feederTime.reset(); }
+    private void setState(FeederState newState) { currentFeederState = newState; feederTime.reset(); }
 
 
     private enum FeederState {
@@ -168,5 +203,12 @@ public class Shooter {
         STATE_FEED
     }
 
+
+    public double getShooterServoPosition(){
+        return shoot_servo.getPosition();
+    }
+    public double getLockServoPosition(){
+        return lock_servo.getPosition();
+    }
 
 }

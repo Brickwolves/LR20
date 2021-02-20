@@ -23,11 +23,6 @@ public class GammaTeleOp extends LinearOpMode {
     private Controller controller1;
     private Controller controller2;
 
-
-    private double Servo4_position = SHOOT_SERVO_HOME;
-    private double Servo5_position = LOCK_SERVO_HOME;
-
-
     private double locked_direction;
 
 
@@ -41,19 +36,21 @@ public class GammaTeleOp extends LinearOpMode {
 
 
 
-        Utils.multTelemetry.addData("Steering Controls", "--------");
+        Utils.multTelemetry.addData("USER 1", "----------------------------------");
         Utils.multTelemetry.addData("Toggle ACM", "[Right Stick Btn]");
         Utils.multTelemetry.addData("Velocity Ranger", "[Left Trigger]");
         Utils.multTelemetry.addData("Face Direction", "DPAD");
+        Utils.multTelemetry.addData("Shoot", "[R TRIGGER]");
 
-        Utils.multTelemetry.addData("Hardware Controls", "--------");
-        Utils.multTelemetry.addData("Shoot", "[CIRCLE]");
+        Utils.multTelemetry.addData("", "");
+        Utils.multTelemetry.addData("USER 2", "----------------------------------");
         Utils.multTelemetry.addData("Claw", "[CROSS]");
         Utils.multTelemetry.addData("Arm", "[TRIANGLE]");
         Utils.multTelemetry.addData("Intake ON/OFF", "[RB1]");
         Utils.multTelemetry.addData("Intake Direction", "[LB1]");
         Utils.multTelemetry.addData("Intake Arm Up", "[DPAD UP]");
         Utils.multTelemetry.addData("Intake Arm Down", "[DPAD DOWN]");
+        Utils.multTelemetry.addData("Shooter ON/OFF", "[CIRCLE]");
 
         Utils.multTelemetry.addData("Shutdown Keys", "[RB] & [LB] simultaneously");
         Utils.multTelemetry.update();
@@ -111,11 +108,10 @@ public class GammaTeleOp extends LinearOpMode {
             else if (controller2.src.dpad_down && !controller2.src.circle) robot.intake.armDown();
 
 
-            // SHOOTER SOMETHIN REALLLY WEIRD GOING ON? HOW USING STATE MACHINE AND THEN SETTING POWER?? HOW DOES THIS WORK? I KNOW THTE WHY
-            robot.shooter.feederState(controller2.src.circle);
-            if (controller2.triangle_toggle) {
+            robot.shooter.feederState(controller1.src.right_trigger > 0.75);
+            if (controller2.circle_toggle) {
+                robot.intake.armDown();
                 robot.shooter.setRPM(4500);
-                robot.intake.armDown();         // IS THIS REALLY NECESSARY? WHAT'S GOING ON?
             }
             else {
                 robot.shooter.setRPM(0);
@@ -179,13 +175,22 @@ public class GammaTeleOp extends LinearOpMode {
             Utils.multTelemetry.addData("ACM", controller1.right_stick_btn_toggle);
             Utils.multTelemetry.addData("Turn", turn);
             Utils.multTelemetry.addData("Velocity", velocity);
+
+            Utils.multTelemetry.addData("", "");
+
             Utils.multTelemetry.addData("HARDWARE", "---------------------------------------");
             Utils.multTelemetry.addData("Arm", robot.arm.getPosition());
             Utils.multTelemetry.addData("Claw", controller2.circle_toggle);
-            Utils.multTelemetry.addData("Intake ON/OFF", controller2.RB1_toggle);
+            Utils.multTelemetry.addData("Intake ON?", controller2.RB1_toggle);
             Utils.multTelemetry.addData("Intake Forward", controller2.LB1_toggle);
             Utils.multTelemetry.addData("Intake Left Arm", robot.intake.getLeftServoPosition());
             Utils.multTelemetry.addData("Intake Right Arm", robot.intake.getRightServoPosition());
+            Utils.multTelemetry.addData("Shooter ON?", controller2.circle_toggle);
+
+            Utils.multTelemetry.addData("", "");
+
+            Utils.multTelemetry.addData("Shoot Servo Position", robot.shooter.getShooterServoPosition());
+            Utils.multTelemetry.addData("Lock Servo Position", robot.shooter.getLockServoPosition());
             Utils.multTelemetry.update();
 
 

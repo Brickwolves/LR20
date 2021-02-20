@@ -66,25 +66,7 @@ public class MecanumRobot implements Robot {
       claw = new Claw("servo_1");
       arm = new Arm("servo_0");
       intake = new Intake("intake", "servo_2", "servo_3");
-
-
-      // S H O O T E R
-      shoot_servo = Utils.hardwareMap.get(Servo.class, "servo_4");
-      shoot_servo.setDirection(Servo.Direction.FORWARD);
-      shoot_servo.setPosition(SHOOT_SERVO_HOME);
-
-      lock_servo = Utils.hardwareMap.get(Servo.class, "servo_5");
-      lock_servo.setDirection(Servo.Direction.FORWARD);
-      lock_servo.setPosition(LOCK_SERVO_HOME);
-
-      spinny_1 = Utils.hardwareMap.get(DcMotor.class, "spinny_1");
-      spinny_1.setDirection(DcMotorSimple.Direction.REVERSE);
-      spinny_2 = Utils.hardwareMap.get(DcMotor.class, "spinny_2");
-      spinny_2.setDirection(DcMotorSimple.Direction.REVERSE);
-
-      shooter = new Shooter(spinny_1, spinny_2, shoot_servo, lock_servo);
-
-
+      shooter = new Shooter("spinny_1", "spinny_2", "servo_4", "servo_5");
 
       initAngle = imu.getAngle();
    }

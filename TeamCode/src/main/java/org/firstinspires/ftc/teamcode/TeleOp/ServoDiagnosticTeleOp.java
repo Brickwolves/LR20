@@ -20,7 +20,7 @@ public class ServoDiagnosticTeleOp extends LinearOpMode {
     private Controller controller;
 
     private Servo servo;
-    private String servo_id = "servo_3";
+    private String servo_id = "servo_4";
     private String status = "HOME";
 
 
