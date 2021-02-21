@@ -6,24 +6,41 @@ import androidx.annotation.RequiresApi;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.Hardware.Controller;
 import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SHOOT_SERVO_HOME;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.LOCK_SERVO_HOME;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Movement.turn_min;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Movement.turn_offset;
 
 
 @TeleOp(name = "Gamma TeleOp - Scrimmage", group="Linear TeleOp")
 public class GammaTeleOp extends LinearOpMode {
 
+    // Main Stuff
     private MecanumRobot robot;
     private Controller controller1;
     private Controller controller2;
 
-    private double locked_direction;
+    // Power Shot Angles
+    private int     ps_increment = 0;
+    private double  ps_delta_angle = 15;
+
+    // PID Stuff
+    private double  locked_direction;
+    private boolean pid_on = false;
+    private boolean last_cycle_pid_state = true;
+
+    // Time Variables
+    private double last_nanoseconds = 0.0;
+    private double current_nanoseconds = 0.0;
+    private double last_angle = 0.0;
+    private double current_angle = 0.0;
+    private ElapsedTime elapsedTime;
+
 
 
 
@@ -41,6 +58,7 @@ public class GammaTeleOp extends LinearOpMode {
         Utils.multTelemetry.addData("Velocity Ranger", "[Left Trigger]");
         Utils.multTelemetry.addData("Face Direction", "DPAD");
         Utils.multTelemetry.addData("Shoot", "[R TRIGGER]");
+        Utils.multTelemetry.addData("Power Shot Increment", "[TRIANGLE]");
 
         Utils.multTelemetry.addData("", "");
         Utils.multTelemetry.addData("USER 2", "----------------------------------");
@@ -52,7 +70,7 @@ public class GammaTeleOp extends LinearOpMode {
         Utils.multTelemetry.addData("Intake Arm Down", "[DPAD DOWN]");
         Utils.multTelemetry.addData("Shooter ON/OFF", "[CIRCLE]");
 
-        Utils.multTelemetry.addData("Shutdown Keys", "[RB] & [LB] simultaneously");
+        Utils.multTelemetry.addData("Shutdown Keys", "[TOUCHPAD] simultaneously");
         Utils.multTelemetry.update();
 
     }
@@ -73,8 +91,16 @@ public class GammaTeleOp extends LinearOpMode {
 
         initialize();
         waitForStart();
+        elapsedTime = new ElapsedTime();
+
 
         while (opModeIsActive()) {
+
+            // Calculate Angular Velocity
+            current_nanoseconds = elapsedTime.nanoseconds();
+            current_angle = robot.imu.getAngle();
+            double current_angular_velocity = current_angle - last_angle / current_nanoseconds - last_nanoseconds;
+
 
 
 
@@ -85,6 +111,7 @@ public class GammaTeleOp extends LinearOpMode {
          */
             controller1.updateToggles();
             controller2.updateToggles();
+
 
             // ARM
             if (controller2.triangle_toggle) robot.arm.down();
@@ -108,6 +135,7 @@ public class GammaTeleOp extends LinearOpMode {
             else if (controller2.src.dpad_down && !controller2.src.circle) robot.intake.armDown();
 
 
+            // SHOOTER
             robot.shooter.feederState(controller1.src.right_trigger > 0.75);
             if (controller2.circle_toggle) {
                 robot.intake.armDown();
@@ -154,11 +182,54 @@ public class GammaTeleOp extends LinearOpMode {
             }
 
 
-            // LOCKED DIRECTION MODE
-            if (controller1.src.left_stick_x != 0) locked_direction = robot.imu.getAngle();
-            else turn = robot.rotationPID.update(locked_direction - robot.imu.getAngle()) * -1;
 
-            robot.setDrivePower(drive * velocity, strafe * velocity, turn * 0.5, 1);
+
+            // Power Shot increment
+            if (controller1.triangle_tap){
+                if (ps_increment == 0)      locked_direction = MecanumRobot.turnTarget(-ps_delta_angle, robot.imu.getAngle());
+                else if (ps_increment == 1) locked_direction = MecanumRobot.turnTarget(0, robot.imu.getAngle());
+                else {
+                    locked_direction = MecanumRobot.turnTarget(ps_delta_angle, robot.imu.getAngle());
+                    ps_increment = -1;
+                }
+                ps_increment++;
+            }
+
+
+            /*
+
+                    | |   ______       _____      ________
+                    | |  |_   __ \    |_   _|    |_   ___ `.
+                    | |    | |__) |     | |        | |   `. \
+                    | |    |  ___/      | |        | |    | |
+                    | |   _| |_        _| |_      _| |___.' /
+                    | |  |_____|      |_____|    |________.'
+                    | |
+
+             */
+            if (controller1.src.left_stick_x != 0) {
+                pid_on = false;
+
+            }
+            else if (Math.abs(current_angular_velocity) < turn_min ) {
+                pid_on = true;
+            }
+
+            if (pid_on && !last_cycle_pid_state) {
+                locked_direction = robot.imu.getAngle();
+            }
+            else if (pid_on) {
+                turn = robot.rotationPID.update(locked_direction - current_angle) * -1;
+            }
+            last_cycle_pid_state = pid_on;
+
+
+
+
+            // LAST STEP
+            robot.setDrivePower(drive, strafe, turn, velocity);
+
+
 
 
 
@@ -169,8 +240,10 @@ public class GammaTeleOp extends LinearOpMode {
          ----------- L O G G I N G -----------
 
          */
+        /*
             Utils.multTelemetry.addData("IMU", robot.imu.getAngle());
             Utils.multTelemetry.addData("Locked Direction", locked_direction);
+            Utils.multTelemetry.addData("PS Increment", ps_increment);
 
             Utils.multTelemetry.addData("ACM", controller1.right_stick_btn_toggle);
             Utils.multTelemetry.addData("Turn", turn);
@@ -191,6 +264,19 @@ public class GammaTeleOp extends LinearOpMode {
 
             Utils.multTelemetry.addData("Shoot Servo Position", robot.shooter.getShooterServoPosition());
             Utils.multTelemetry.addData("Lock Servo Position", robot.shooter.getLockServoPosition());
+
+
+
+         */
+
+            last_nanoseconds = current_nanoseconds;
+            last_angle              = current_angle;
+
+            Utils.multTelemetry.addData("PID OFF", controller1.square_toggle);
+            Utils.multTelemetry.addData("Time", current_nanoseconds);
+            Utils.multTelemetry.addData("Angular Velocity", current_angular_velocity);
+            Utils.multTelemetry.addData("Current Angle", robot.imu.getAngle());
+            Utils.multTelemetry.addData("Locked Angle", locked_direction);
             Utils.multTelemetry.update();
 
 
@@ -202,7 +288,7 @@ public class GammaTeleOp extends LinearOpMode {
 
          */
 
-        if ((controller1.src.right_bumper && controller1.src.left_bumper) || (controller2.src.right_bumper && controller2.src.left_bumper)){
+        if ((controller1.src.touchpad) || (controller2.src.touchpad)){
             shutdown();
             break;
         }

@@ -17,6 +17,7 @@ import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoD
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SHOOT_SERVO_MAX;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SHOOT_SERVO_MIN;
 
+@Disabled
 @TeleOp(name = "ShooterDiagnostic TeleOp", group="Linear TeleOp")
 public class ShooterDiagnosticTeleOp extends LinearOpMode {
 
