@@ -73,26 +73,25 @@ public class MecanumRobot implements Robot {
     * (Re)Init Motors
     */
    public void resetMotors(){
-      try {
+      fr.setDirection(DcMotorSimple.Direction.FORWARD);
+      fl.setDirection(DcMotorSimple.Direction.REVERSE);
+      br.setDirection(DcMotorSimple.Direction.FORWARD);
+      bl.setDirection(DcMotorSimple.Direction.REVERSE);
 
-         fr.setDirection(DcMotorSimple.Direction.FORWARD);
-         fl.setDirection(DcMotorSimple.Direction.REVERSE);
-         br.setDirection(DcMotorSimple.Direction.FORWARD);
-         bl.setDirection(DcMotorSimple.Direction.REVERSE);
+      fl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+      fr.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+      bl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+      br.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-         fl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-         fr.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-         bl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-         br.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+      fl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+      fr.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+      bl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+      br.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-         fl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-         fr.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-         bl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-         br.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-      }
-      catch (Exception e){
-         throw new Error("Could not initialize motors, and therefore cannot set mode");
-      }
+      fr.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+      fl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+      br.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+      bl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
    }
 
 

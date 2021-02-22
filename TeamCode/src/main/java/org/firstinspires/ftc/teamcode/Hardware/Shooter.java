@@ -61,10 +61,12 @@ public class Shooter {
         shooter1 = Utils.hardwareMap.get(DcMotor.class, shooter1_id);
         shooter1.setDirection(DcMotorSimple.Direction.REVERSE);
         shooter1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shooter1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         shooter2 = Utils.hardwareMap.get(DcMotor.class, shooter2_id);
         shooter2.setDirection(DcMotorSimple.Direction.REVERSE);
         shooter2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shooter2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         shoot_servo = Utils.hardwareMap.get(Servo.class, shooter_id);
         shoot_servo.setDirection(Servo.Direction.FORWARD);
