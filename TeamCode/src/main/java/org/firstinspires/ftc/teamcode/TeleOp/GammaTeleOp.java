@@ -11,8 +11,10 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.Hardware.Controller;
 import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
+import org.firstinspires.ftc.teamcode.Utilities.RingBuffer;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
+import static java.lang.Math.abs;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Movement.turn_min;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Movement.turn_offset;
 
@@ -37,11 +39,19 @@ public class GammaTeleOp extends LinearOpMode {
     // Time Variables
     private double last_nanoseconds = 0.0;
     private double current_nanoseconds = 0.0;
-    private double last_angle = 0.0;
-    private double current_angle = 0.0;
     private ElapsedTime elapsedTime;
 
+    // Hardware Positions
+    private double current_angle = 0.0;
+    private double last_angle = 0.0;
 
+    private double current_intake_position = 0.0;
+    private double last_intake_position = 0.0;
+
+    private ElapsedTime intake_time = new ElapsedTime();
+
+    private RingBuffer<Double> angle_ring_buffer = new RingBuffer<>(5, 0.0);
+    private RingBuffer<Double> time_ring_buffer = new RingBuffer<>(5,  0.0);
 
 
     public void initialize() {
@@ -99,8 +109,11 @@ public class GammaTeleOp extends LinearOpMode {
             // Calculate Angular Velocity
             current_nanoseconds = elapsedTime.nanoseconds();
             current_angle = robot.imu.getAngle();
-            double current_angular_velocity = current_angle - last_angle / current_nanoseconds - last_nanoseconds;
 
+            double delta_angle = current_angle - angle_ring_buffer.getValue(current_angle);
+            double delta_time = current_nanoseconds - time_ring_buffer.getValue(current_nanoseconds);
+
+            double current_angular_velocity = delta_angle / delta_time;
 
 
 
@@ -124,11 +137,24 @@ public class GammaTeleOp extends LinearOpMode {
 
 
             // INTAKE CODE
+            current_intake_position = robot.intake.getIntakePosition();
+            double intake_velocity = (current_intake_position - last_intake_position) / (current_nanoseconds - last_nanoseconds);
+
             if (controller2.RB1_toggle && !controller2.src.circle) {
-                if (controller2.LB1_toggle) robot.intake.setIntakePower(-1);
-                else robot.intake.setIntakePower(1);
+
+                // CHECK INTAKE STALLING
+                if (abs(robot.intake.getIntakePower()) == 1 && abs(intake_velocity) < 0.01 && intake_time.seconds() < 1) {
+                    intake_time.reset();
+                    robot.intake.setIntakePower(-1);
+                }
+                else {
+                    if (controller2.LB1_toggle) robot.intake.setIntakePower(-1);
+                    else robot.intake.setIntakePower(1);
+                }
             }
             else robot.intake.setIntakePower(0);
+
+
 
             // INTAKE ARM
             if (controller2.src.dpad_up && !controller2.src.circle) robot.intake.armUp();
@@ -139,9 +165,11 @@ public class GammaTeleOp extends LinearOpMode {
             robot.shooter.feederState(controller1.src.right_trigger > 0.75);
             if (controller2.circle_toggle) {
                 robot.intake.armDown();
-                robot.shooter.setRPM(4500);
+                //robot.shooter.setRPM(4500);
+                robot.shooter.setPower(0.7);
             }
             else {
+                robot.shooter.setPower(0);
                 robot.shooter.setRPM(0);
             }
 
@@ -209,9 +237,8 @@ public class GammaTeleOp extends LinearOpMode {
              */
             if (controller1.src.left_stick_x != 0) {
                 pid_on = false;
-
             }
-            else if (Math.abs(current_angular_velocity) < turn_min ) {
+            else if (current_angular_velocity == 0.0 ) {
                 pid_on = true;
             }
 
@@ -231,7 +258,8 @@ public class GammaTeleOp extends LinearOpMode {
 
 
 
-
+            last_nanoseconds = current_nanoseconds;
+            last_angle       = current_angle;
 
 
 
@@ -240,14 +268,17 @@ public class GammaTeleOp extends LinearOpMode {
          ----------- L O G G I N G -----------
 
          */
-        /*
-            Utils.multTelemetry.addData("IMU", robot.imu.getAngle());
-            Utils.multTelemetry.addData("Locked Direction", locked_direction);
-            Utils.multTelemetry.addData("PS Increment", ps_increment);
+            Utils.multTelemetry.addData("PID OFF", pid_on);
 
             Utils.multTelemetry.addData("ACM", controller1.right_stick_btn_toggle);
+            Utils.multTelemetry.addData("Angle", robot.imu.getAngle());
+            Utils.multTelemetry.addData("Locked Angle", locked_direction);
+            Utils.multTelemetry.addData("PS Increment", ps_increment);
+
+            Utils.multTelemetry.addData("Time", current_nanoseconds);
             Utils.multTelemetry.addData("Turn", turn);
-            Utils.multTelemetry.addData("Velocity", velocity);
+            Utils.multTelemetry.addData("Velocity Constant", velocity);
+            Utils.multTelemetry.addData("Angular Velocity", current_angular_velocity);
 
             Utils.multTelemetry.addData("", "");
 
@@ -260,23 +291,8 @@ public class GammaTeleOp extends LinearOpMode {
             Utils.multTelemetry.addData("Intake Right Arm", robot.intake.getRightServoPosition());
             Utils.multTelemetry.addData("Shooter ON?", controller2.circle_toggle);
 
-            Utils.multTelemetry.addData("", "");
-
-            Utils.multTelemetry.addData("Shoot Servo Position", robot.shooter.getShooterServoPosition());
-            Utils.multTelemetry.addData("Lock Servo Position", robot.shooter.getLockServoPosition());
 
 
-
-         */
-
-            last_nanoseconds = current_nanoseconds;
-            last_angle              = current_angle;
-
-            Utils.multTelemetry.addData("PID OFF", controller1.square_toggle);
-            Utils.multTelemetry.addData("Time", current_nanoseconds);
-            Utils.multTelemetry.addData("Angular Velocity", current_angular_velocity);
-            Utils.multTelemetry.addData("Current Angle", robot.imu.getAngle());
-            Utils.multTelemetry.addData("Locked Angle", locked_direction);
             Utils.multTelemetry.update();
 
 

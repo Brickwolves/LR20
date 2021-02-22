@@ -100,7 +100,6 @@ public class Shooter {
     public void feederState(boolean trigger){
         switch (currentFeederState) {
 
-            // Deprecated?
             case STATE_IDLE:
 
                 if (trigger && getPower() >= .1)        setState(FeederState.STATE_FEED);

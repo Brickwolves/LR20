@@ -10,10 +10,10 @@ public class Dash_Movement {
     public static double d = .005;
      */
 
-    public static double turn_min = 0.000000001;
+    public static double turn_min = 0.00000001; // 10e-8
     public static double p = .08;
     public static double i = .0;
-    public static double d = .0035;
+    public static double d = .003;
     public static double velocity = 1;
     public static double turn_offset = 5;
 

@@ -16,8 +16,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import static android.os.SystemClock.sleep;
 import static java.lang.Math.floorMod;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SHOOT_SERVO_HOME;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.LOCK_SERVO_HOME;
 import static org.firstinspires.ftc.teamcode.Utilities.Utils.convertInches2Ticks;
 import static org.firstinspires.ftc.teamcode.Utilities.Utils.map;
 

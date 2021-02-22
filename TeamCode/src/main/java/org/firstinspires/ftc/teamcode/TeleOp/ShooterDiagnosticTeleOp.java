@@ -3,7 +3,10 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Hardware.Controller;
 import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
@@ -16,17 +19,26 @@ import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoD
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SHOOT_SERVO_HOME;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SHOOT_SERVO_MAX;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SHOOT_SERVO_MIN;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.p1;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.p2;
 
-@Disabled
-@TeleOp(name = "ShooterDiagnostic TeleOp", group="Linear TeleOp")
+@TeleOp(name = "Shooter Motors Diagnostic TeleOp", group="Linear TeleOp")
 public class ShooterDiagnosticTeleOp extends LinearOpMode {
 
     private MecanumRobot mecanumRobot;
     private Controller controller;
 
-    private Servo shoot_servo, lock_servo;
-    private String status_shoot_servo = "HOME";
-    private String status_lock_servo = "HOME";
+    private DcMotor shooter1, shooter2;
+    private String shooter1_id = "spinny_1";
+    private String shooter2_id = "spinny_2";
+
+
+    private double shooter1_current_position = 0.0;
+    private double shooter2_current_position = 0.0;
+    private double shooter1_last_position = 0.0;
+    private double shooter2_last_position = 0.0;
+
+    private ElapsedTime time;
 
 
     public void initialize() {
@@ -35,13 +47,13 @@ public class ShooterDiagnosticTeleOp extends LinearOpMode {
         controller = new Controller(gamepad1);
 
 
-        shoot_servo = Utils.hardwareMap.get(Servo.class, "servo_4");
-        shoot_servo.setDirection(Servo.Direction.FORWARD);
-        shoot_servo.setPosition(SHOOT_SERVO_HOME);
+        shooter1 = Utils.hardwareMap.get(DcMotor.class, shooter1_id);
+        shooter1.setDirection(DcMotorSimple.Direction.REVERSE);
+        shooter1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        lock_servo = Utils.hardwareMap.get(Servo.class, "servo_5");
-        lock_servo.setDirection(Servo.Direction.FORWARD);
-        lock_servo.setPosition(LOCK_SERVO_HOME);
+        shooter2 = Utils.hardwareMap.get(DcMotor.class, shooter2_id);
+        shooter2.setDirection(DcMotorSimple.Direction.REVERSE);
+        shooter2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
         Utils.multTelemetry.addData("Status", "Initialized");
@@ -53,11 +65,12 @@ public class ShooterDiagnosticTeleOp extends LinearOpMode {
     public void shutdown(){
         Utils.multTelemetry.addData("Status", "Shutting Down");
         Utils.multTelemetry.update();
-        shoot_servo.setPosition(SHOOT_SERVO_HOME);
-        lock_servo.setPosition(LOCK_SERVO_HOME);
         sleep(3000);
     }
 
+    public double getRPM(DcMotor shooter, double delta_time, double last_pos, double cur_pos){
+        return (cur_pos - last_pos) / delta_time;
+    }
 
     @Override
     public void runOpMode() {
@@ -65,44 +78,58 @@ public class ShooterDiagnosticTeleOp extends LinearOpMode {
 
         initialize();
         waitForStart();
+        time = new ElapsedTime();
 
         while (opModeIsActive()) {
-
             controller.updateToggles();
 
-            if (controller.LB1_toggle) {
-                shoot_servo.setPosition(SHOOT_SERVO_MIN);
-                status_shoot_servo = "MIN";
+            time.reset();
+            double delta_time = time.milliseconds();
+            shooter1_current_position = shooter1.getCurrentPosition();
+            shooter2_current_position = shooter2.getCurrentPosition();
+
+
+            shooter1.setPower(p1);
+            shooter2.setPower(p2);
+
+
+
+            double shooter1_RPM = getRPM(shooter1, delta_time, shooter1_last_position, shooter1_current_position);
+            double shooter2_RPM = getRPM(shooter1, delta_time, shooter2_last_position, shooter2_current_position);
+
+
+
+            shooter1_last_position = shooter1_current_position;
+            shooter2_last_position = shooter2_current_position;
+
+
+            /*
+            shooter.feederState(controller.src.right_trigger > 0.75);
+            if (controller1.circle_toggle) {
+                robot.intake.armDown();
+                //robot.shooter.setRPM(4500);
+                robot.shooter.setPower(0.7);
             }
             else {
-                shoot_servo.setPosition(SHOOT_SERVO_MAX);
-                status_shoot_servo = "MAX";
+                robot.shooter.setPower(0);
+                robot.shooter.setRPM(0);
             }
 
+             */
 
 
-            if (controller.RB1_toggle) {
-                lock_servo.setPosition(LOCK_SERVO_MIN);
-                status_lock_servo = "MIN";
-            }
-            else {
-                lock_servo.setPosition(LOCK_SERVO_MAX);
-                status_lock_servo = "MAX";
-            }
 
-            Utils.multTelemetry.addData("Shoot Position", shoot_servo.getPosition());
-            Utils.multTelemetry.addData("Shoot Status", status_shoot_servo);
-            Utils.multTelemetry.addData("LB1_Toggle", controller.LB1_toggle);
 
-            Utils.multTelemetry.addData("", "");
 
-            Utils.multTelemetry.addData("Lock Position", lock_servo.getPosition());
-            Utils.multTelemetry.addData("Lock Status", status_lock_servo);
-            Utils.multTelemetry.addData("RB1_Toggle", controller.RB1_toggle);
 
-            Utils.multTelemetry.addData("", "");
+            Utils.multTelemetry.addData("Shooter1 Position", shooter1.getCurrentPosition());
+            Utils.multTelemetry.addData("Shooter2 Position", shooter2.getCurrentPosition());
 
-            Utils.multTelemetry.addData("RTrig", controller.src.right_trigger > 0.75);
+            Utils.multTelemetry.addData("Shooter1 Power", shooter1.getPower());
+            Utils.multTelemetry.addData("Shooter2 Power", shooter2.getPower());
+
+            Utils.multTelemetry.addData("Shooter1 RPMillis", shooter1_RPM);
+            Utils.multTelemetry.addData("Shooter2 RPMillis", shooter2_RPM);
 
             Utils.multTelemetry.update();
 
