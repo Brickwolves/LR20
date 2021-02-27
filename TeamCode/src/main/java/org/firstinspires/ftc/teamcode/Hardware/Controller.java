@@ -34,7 +34,7 @@ public class Controller {
     public boolean RB2_toggle                   = false;
 
     public boolean triangle_toggle              = false;
-    public boolean square_toggle                = false;
+    public boolean square_toggle                = true;
     public boolean circle_toggle                = false;
     public boolean cross_toggle                 = false;
 

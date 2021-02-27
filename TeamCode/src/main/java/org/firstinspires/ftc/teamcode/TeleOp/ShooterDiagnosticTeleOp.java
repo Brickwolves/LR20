@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Util;
 
 import org.firstinspires.ftc.teamcode.Hardware.Controller;
 import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
@@ -16,7 +17,7 @@ import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shoote
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.rpm;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.shooter_power;
 
-@Disabled
+//@Disabled
 @TeleOp(name = "Shooter Diagnostic TeleOp", group="Linear TeleOp")
 public class ShooterDiagnosticTeleOp extends LinearOpMode {
 
@@ -33,6 +34,7 @@ public class ShooterDiagnosticTeleOp extends LinearOpMode {
         Utils.setOpMode(this);
         robot = new MecanumRobot();
         controller = new Controller(gamepad1);
+
 
         Utils.multTelemetry.addData("Status", "Initialized");
         Utils.multTelemetry.addData("Start Keys", "Press [>] to begin");
@@ -69,8 +71,8 @@ public class ShooterDiagnosticTeleOp extends LinearOpMode {
                 robot.shooter.setRPM(rpm);
             }
             else {
-                //robot.shooter.setPower(0);
-                robot.shooter.setRPM(0);
+                robot.shooter.setPower(0);
+               // robot.shooter.setRPM(0);
             }
 
 
@@ -82,6 +84,7 @@ public class ShooterDiagnosticTeleOp extends LinearOpMode {
             Utils.multTelemetry.addData("RPM", robot.shooter.getRPM());
             Utils.multTelemetry.addData("Power", robot.shooter.getPower());
             Utils.multTelemetry.addData("Position", robot.shooter.getPosition());
+            Utils.multTelemetry.addData("Imu", robot.imu.getAngle());
 
             Utils.multTelemetry.update();
 

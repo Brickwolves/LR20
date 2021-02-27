@@ -17,6 +17,7 @@ import org.firstinspires.ftc.teamcode.Utilities.Utils;
 import static java.lang.Math.abs;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Movement.turn_min;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Movement.turn_offset;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.rpm;
 
 
 @TeleOp(name = "Gamma TeleOp - Scrimmage", group="Linear TeleOp")
@@ -164,13 +165,12 @@ public class GammaTeleOp extends LinearOpMode {
             // SHOOTER
             robot.shooter.feederState(controller1.src.right_trigger > 0.75);
             if (controller2.circle_toggle) {
-                robot.intake.armDown();
+                //robot.intake.armDown();
                 //robot.shooter.setRPM(4500);
-                robot.shooter.setPower(0.7);
+                robot.shooter.setRPM(rpm);
             }
             else {
                 robot.shooter.setPower(0);
-                robot.shooter.setRPM(0);
             }
 
 
@@ -189,7 +189,7 @@ public class GammaTeleOp extends LinearOpMode {
             Controller.Thumbstick leftThumbstick = controller1.getLeftThumbstick();
 
             // ABSOLUTE CONTROL MODE
-            if (controller1.right_stick_btn_toggle) rightThumbstick.setShift(robot.imu.getAngle() % 360);
+            if (controller1.square_toggle) rightThumbstick.setShift(robot.imu.getAngle() % 360);
             else rightThumbstick.setShift(0);
 
             // DRIVER VALUES
@@ -198,11 +198,11 @@ public class GammaTeleOp extends LinearOpMode {
             double turn = leftThumbstick.getX();
 
             // VELOCITY RANGER
-            double velocity = Range.clip((1 - controller1.src.left_trigger), 0.3, 1);
+            double velocity = Range.clip((1 - controller1.src.left_trigger), 0.5, 1);
 
 
             // DPAD Auto Turn
-            if (controller1.DPADPress()){
+            if (controller1.DPADPress() && !(controller1.src.left_trigger > 0)){
                 if (controller1.src.dpad_up) locked_direction               = MecanumRobot.turnTarget(0, robot.imu.getAngle());
                 else if (controller1.src.dpad_right) locked_direction       = MecanumRobot.turnTarget(-90, robot.imu.getAngle());
                 else if (controller1.src.dpad_left) locked_direction        = MecanumRobot.turnTarget(90, robot.imu.getAngle());

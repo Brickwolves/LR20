@@ -50,7 +50,7 @@ public class IMU {
 
         // Update the previous angle
         previousAngle = currentAngle;
-        return currentAngle + deltaAngle;
+        return currentAngle + deltaAngle + 90;
     }
 
     /**

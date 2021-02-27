@@ -180,7 +180,7 @@ public class Shooter {
     }
 
     public void setRPM(int targetRPM){
-        shooterPower = shooterPID.update( targetRPM - updateRPM());
+        shooterPower = shooterPID.update( targetRPM + 1500 - updateRPM());
 
         shooterPower = Range.clip(shooterPower,0.0, 1.0);
         setPower(shooterPower);
