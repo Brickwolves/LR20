@@ -116,6 +116,10 @@ public class GammaTeleOp extends LinearOpMode {
             double current_angular_velocity = delta_angle / delta_time;
 
 
+            last_nanoseconds = current_nanoseconds;
+            last_angle       = current_angle;
+
+
 
         /*
 
@@ -255,12 +259,6 @@ public class GammaTeleOp extends LinearOpMode {
 
             // LAST STEP
             robot.setDrivePower(drive, strafe, turn, velocity);
-
-
-
-            last_nanoseconds = current_nanoseconds;
-            last_angle       = current_angle;
-
 
 
         /*

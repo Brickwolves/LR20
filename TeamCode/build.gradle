@@ -20,5 +20,7 @@ repositories {
 
 dependencies {
     annotationProcessor files('lib/OpModeAnnotationProcessor.jar')
+    androidTestImplementation 'org.junit.jupiter:junit-jupiter:5.4.2'
+    androidTestImplementation 'junit:junit:4.12'
     implementation 'org.openftc:easyopencv:1.4.1'
 }
