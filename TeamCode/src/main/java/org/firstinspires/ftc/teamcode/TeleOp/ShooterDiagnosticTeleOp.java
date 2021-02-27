@@ -1,21 +1,14 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Util;
 
-import org.firstinspires.ftc.teamcode.Hardware.Controller;
+import org.firstinspires.ftc.teamcode.Hardware.Controller.Controller;
 import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.p1;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.p2;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.rpm;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.shooter_power;
 
 //@Disabled
 @TeleOp(name = "Shooter Diagnostic TeleOp", group="Linear TeleOp")

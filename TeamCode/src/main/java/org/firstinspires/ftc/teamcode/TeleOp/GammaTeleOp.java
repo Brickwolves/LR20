@@ -9,14 +9,12 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.teamcode.Hardware.Controller;
+import org.firstinspires.ftc.teamcode.Hardware.Controller.Controller;
 import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
 import org.firstinspires.ftc.teamcode.Utilities.RingBuffer;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
 import static java.lang.Math.abs;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Movement.turn_min;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Movement.turn_offset;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.rpm;
 
 
@@ -254,7 +252,7 @@ public class GammaTeleOp extends LinearOpMode {
 
 
             // LAST STEP
-            robot.setDrivePower(drive, strafe, turn, velocity);
+            robot.setDrivePower(drive, strafe, turn, 1);
 
 
 
