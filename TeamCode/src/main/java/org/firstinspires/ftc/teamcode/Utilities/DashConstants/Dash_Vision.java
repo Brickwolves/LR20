@@ -5,12 +5,12 @@ import com.acmerobotics.dashboard.config.Config;
 public class Dash_Vision {
     /* ------- VISION --------- */
     // Top rectangle starting percentages
-    public static double rectTopX1Percent = 0.62; public static double rectTopX2Percent = 0.84;
-    public static double rectTopY1Percent = 0.5; public static double rectTopY2Percent = .58;
+    public static double rectTopX1Percent = 0.0; public static double rectTopX2Percent = 0.06;
+    public static double rectTopY1Percent = 0.4; public static double rectTopY2Percent = .52;
 
     // Bottom rectangle starting percentages
-    public static double rectBottomX1Percent = 0.62; public static double rectBottomX2Percent = 0.84;
-    public static double rectBottomY1Percent = 0.58; public static double rectBottomY2Percent = 0.62;
+    public static double rectBottomX1Percent = 0.0; public static double rectBottomX2Percent = 0.06;
+    public static double rectBottomY1Percent = 0.52; public static double rectBottomY2Percent = 0.56;
 
     // Generally, orange should be around 90-100
     public static double orangeMax = 110;

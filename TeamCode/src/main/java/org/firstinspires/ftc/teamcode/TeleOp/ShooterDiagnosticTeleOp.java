@@ -8,6 +8,7 @@ import org.firstinspires.ftc.teamcode.Hardware.Controls.Controller2;
 import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.ps_rpm;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.rpm;
 
 //@Disabled
@@ -61,7 +62,7 @@ public class ShooterDiagnosticTeleOp extends LinearOpMode {
                 robot.intake.armDown();
 
                 //robot.shooter.setPower(shooter_power);
-                robot.shooter.setRPM(rpm);
+                robot.shooter.setRPM(ps_rpm);
             }
             else {
                 robot.shooter.setPower(0);

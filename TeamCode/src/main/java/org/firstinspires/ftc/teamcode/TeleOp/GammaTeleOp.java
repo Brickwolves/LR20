@@ -265,6 +265,7 @@ public class GammaTeleOp extends LinearOpMode {
          ----------- L O G G I N G -----------
 
          */
+            Utils.multTelemetry.addData("RPM", rpm);
             Utils.multTelemetry.addData("PID OFF", pid_on);
 
             Utils.multTelemetry.addData("ACM", controller1.right_stick_btn_toggle);

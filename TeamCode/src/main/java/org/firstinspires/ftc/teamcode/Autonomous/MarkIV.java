@@ -8,9 +8,12 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
+import org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Movement;
+import org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter;
 import org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Vision;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 import org.opencv.core.Core;
@@ -40,6 +43,15 @@ public class MarkIV extends LinearOpMode
     public void initialize(){
         Utils.setOpMode(this);
         robot = new MecanumRobot();
+    }
+
+
+    public void shoot(double millis){
+        ElapsedTime time = new ElapsedTime();
+        time.reset();
+        while (time.milliseconds() < millis){
+            robot.shooter.feederState(true);
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -79,9 +91,51 @@ public class MarkIV extends LinearOpMode
 
         int sec = 1000;
 
-        robot.strafe(7.85, 58.55, 0, 0.01, null);
+        // strafe (-26, 60")
+
+        /*
+        robot.strafe(-26, 60, 90, 0.08, null);
         sleep(sec);
 
+
+
+
+         */
+
+        double startAngle = 82;
+
+        while (robot.shooter.getRPM() < Dash_Shooter.ps_rpm){
+            robot.shooter.setRPM(Dash_Shooter.ps_rpm);
+            multTelemetry.addData("RPM", robot.shooter.getRPM());
+            multTelemetry.update();
+        };
+        robot.turn(startAngle, 0.01);
+        shoot(Dash_Shooter.millis);
+
+        while (robot.shooter.getRPM() < Dash_Shooter.ps_rpm){
+            robot.shooter.setRPM(Dash_Shooter.ps_rpm);
+            multTelemetry.addData("RPM", robot.shooter.getRPM());
+            multTelemetry.update();
+        };
+        robot.turn(startAngle + 7, 0.01);
+        shoot(Dash_Shooter.millis);
+
+        while (robot.shooter.getRPM() < Dash_Shooter.ps_rpm){
+            robot.shooter.setRPM(Dash_Shooter.ps_rpm);
+            multTelemetry.addData("RPM", robot.shooter.getRPM());
+            multTelemetry.update();
+        };
+        robot.turn(startAngle + (7 * 2), 0.01);
+        shoot(Dash_Shooter.millis);
+
+
+
+
+
+        sleep(sec);
+        //robot.strafe(Dash_Movement.diag_deg, Dash_Movement.diagnostic_inches, 90, 0.01, null);
+
+        /*
         robot.shooter.setRPM(3700);
         double start_PS_angle = 85;
         for (int i=0; i < 3; i++){
@@ -117,76 +171,7 @@ public class MarkIV extends LinearOpMode
             robot.strafe(-240.52, 26.42, -130, 0.01, null);
             sleep(sec);
         }
-
-
-        /*
-        if (opModeIsActive()){
-
-
-            mecanumRobot.strafe(0, 12, 0, 0.09, null);
-            sleep(5000);
-
-
-            double MOE = 1;
-            if (Dash_Vision.diagnostic_ring_count == 1.0 || Dash_Vision.diagnostic_ring_count == 4.0) ringsFound = true;
-
-            // Go to 1st Position
-            multTelemetry.addData("Status", "Strafing to Deposit Wobble Goal Position");
-            multTelemetry.update();
-            //mecanumRobot.strafe(90, 7, 0, 0.075, null);
-            //mecanumRobot.strafe(0, 37, 0, 0.075, null);
-            mecanumRobot.strafe(13.7, 38, 0, 0.075, null);
-
-
-            if (Dash_Vision.diagnostic_ring_count == 0.0){
-
-                // Go to A
-                multTelemetry.addData("Status", "Moving to A");
-                multTelemetry.update();
-                //mecanumRobot.strafe(0, 34, 0, 0.075, null);
-                //mecanumRobot.strafe(-90, 2, 0, 0.05, null);
-                mecanumRobot.strafe(-3.37, 34, 0, 0.05, null);
-            }
-            else if (Dash_Vision.diagnostic_ring_count == 1.0){
-
-                // Go to B
-                multTelemetry.addData("Status", "Moving to B");
-                multTelemetry.update();
-                //mecanumRobot.strafe(0, 59, 0, 0.075, null);
-                //mecanumRobot.strafe(-90, 25, 0, 0.075, null);
-                mecanumRobot.strafe(-23, 64.08, 0, 0.1, null);
-
-            }
-            else {
-
-                // Go to C
-                multTelemetry.addData("Status", "Moving to C");
-                multTelemetry.update();
-                //mecanumRobot.strafe(0, 84, 0, 0.075, null);
-                //mecanumRobot.strafe(-90, 2, 0, 0.075, null);
-                mecanumRobot.strafe(-1.36, 84.02, 0, 0.1, null);
-            }
-
-
-            // Drop Wobble Goal
-            multTelemetry.addData("Status", "Dropping Wobble Goal");
-            multTelemetry.update();
-            mecanumRobot.arm.down();
-            mecanumRobot.claw.openFull();
-            mecanumRobot.arm.up();
-            sleep(1000);
-
-
-            // Go to next Wobble Goal
-            multTelemetry.addData("Status", "Strafing to pickup next Wobble Goal");
-            multTelemetry.update();
-            //mecanumRobot.strafe(-90, 18, 0, 0.075, null);
-            //mecanumRobot.strafe(180, 30, 0, 0.075, null);
-            mecanumRobot.strafe(-149.04, 35, 0, 0.075, null);
-
-
-        }
-         */
+        */
     }
 
     class RingDetectingPipeline extends OpenCvPipeline
