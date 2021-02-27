@@ -1,7 +1,10 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -22,7 +25,7 @@ import org.openftc.easyopencv.OpenCvPipeline;
 public class MarkIV extends LinearOpMode
 {
 
-    private MecanumRobot mecanumRobot;
+    private MecanumRobot robot;
 
     OpenCvCamera webcam;
 
@@ -36,9 +39,10 @@ public class MarkIV extends LinearOpMode
 
     public void initialize(){
         Utils.setOpMode(this);
-        mecanumRobot = new MecanumRobot();
+        robot = new MecanumRobot();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void runOpMode()
     {
@@ -72,6 +76,49 @@ public class MarkIV extends LinearOpMode
         /*
         ACTION
          */
+
+        int sec = 1000;
+
+        robot.strafe(7.85, 58.55, 0, 0.01, null);
+        sleep(sec);
+
+        robot.shooter.setRPM(3700);
+        double start_PS_angle = 85;
+        for (int i=0; i < 3; i++){
+            robot.turn(start_PS_angle - (5 * i), 0.01);
+            robot.shooter.feederState(true);
+            sleep(sec);
+        }
+        robot.shooter.setPower(0);
+
+        robot.turn(0, 0.01);
+
+        if (ringCount == 0){
+            robot.strafe(-240.52, 26.42, -130, 0.01, null);
+            robot.arm.down();
+            robot.claw.openFull();
+            robot.strafe(-128.87, 26.42, -130, 0.01, null);
+        }
+        else if (ringCount == 1){
+            robot.strafe(68.2, 16.16, 180, 0.01, null);
+            sleep(sec);
+            robot.arm.down();
+            sleep(500);
+            robot.claw.openFull();
+            robot.strafe(-240.52, 26.42, -130, 0.01, null);
+            sleep(sec);
+        }
+        else {
+            robot.strafe(45, 43.84, 166.39, 0.01, null);
+            sleep(sec);
+            robot.arm.down();
+            sleep(500);
+            robot.claw.openFull();
+            robot.strafe(-240.52, 26.42, -130, 0.01, null);
+            sleep(sec);
+        }
+
+
         /*
         if (opModeIsActive()){
 
