@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.Hardware.Controller.Controller;
+import org.firstinspires.ftc.teamcode.Hardware.Controls.Controller2;
 import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
@@ -17,7 +17,7 @@ import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shoote
 public class DcMotorDiagnostictTeleOp extends LinearOpMode {
 
     private MecanumRobot mecanumRobot;
-    private Controller controller;
+    private Controller2 controller;
 
     private DcMotor shooter1, shooter2;
     private String shooter1_id = "spinny_1";
@@ -35,7 +35,7 @@ public class DcMotorDiagnostictTeleOp extends LinearOpMode {
     public void initialize() {
         Utils.setOpMode(this);
         mecanumRobot = new MecanumRobot();
-        controller = new Controller(gamepad1);
+        controller = new Controller2(gamepad1);
 
 
         shooter1 = Utils.hardwareMap.get(DcMotor.class, shooter1_id);

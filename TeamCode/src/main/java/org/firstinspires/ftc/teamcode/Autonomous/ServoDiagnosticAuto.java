@@ -33,7 +33,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.Hardware.Controller.Controller;
+import org.firstinspires.ftc.teamcode.Hardware.Controls.Controller2;
 import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
@@ -42,7 +42,7 @@ public class ServoDiagnosticAuto extends LinearOpMode {
 
 
     private MecanumRobot mecanumRobot;
-    private Controller controller;
+    private Controller2 controller;
 
     private double currentPosition, currentAngle;
 

@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.Hardware.Controller.Controller;
+import org.firstinspires.ftc.teamcode.Hardware.Controls.Controller2;
 import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
@@ -15,7 +15,7 @@ import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shoote
 public class ShooterDiagnosticTeleOp extends LinearOpMode {
 
     private MecanumRobot robot;
-    private Controller controller;
+    private Controller2 controller;
 
     private String shooter1_id = "spinny_1";
     private String shooter2_id = "spinny_2";
@@ -26,7 +26,7 @@ public class ShooterDiagnosticTeleOp extends LinearOpMode {
     public void initialize() {
         Utils.setOpMode(this);
         robot = new MecanumRobot();
-        controller = new Controller(gamepad1);
+        controller = new Controller2(gamepad1);
 
 
         Utils.multTelemetry.addData("Status", "Initialized");

@@ -9,7 +9,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.teamcode.Hardware.Controller.Controller;
+import org.firstinspires.ftc.teamcode.Hardware.Controls.Controller2;
+import org.firstinspires.ftc.teamcode.Hardware.Controls.Joystick;
 import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
 import org.firstinspires.ftc.teamcode.Utilities.RingBuffer;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
@@ -23,8 +24,8 @@ public class GammaTeleOp extends LinearOpMode {
 
     // Main Stuff
     private MecanumRobot robot;
-    private Controller controller1;
-    private Controller controller2;
+    private Controller2 controller1;
+    private Controller2 controller2;
 
     // Power Shot Angles
     private int     ps_increment = 0;
@@ -56,8 +57,8 @@ public class GammaTeleOp extends LinearOpMode {
     public void initialize() {
         Utils.setOpMode(this);
         robot = new MecanumRobot();
-        controller1 = new Controller(gamepad1);
-        controller2 = new Controller(gamepad2);
+        controller1 = new Controller2(gamepad1);
+        controller2 = new Controller2(gamepad2);
 
 
 
@@ -183,8 +184,8 @@ public class GammaTeleOp extends LinearOpMode {
          */
 
             // Get Thumbsticks
-            Controller.Thumbstick rightThumbstick = controller1.getRightThumbstick();
-            Controller.Thumbstick leftThumbstick = controller1.getLeftThumbstick();
+            Controller2.Thumbstick rightThumbstick = controller1.getRightThumbstick();
+            Controller2.Thumbstick leftThumbstick = controller1.getLeftThumbstick();
 
             // ABSOLUTE CONTROL MODE
             if (controller1.square_toggle) rightThumbstick.setShift(robot.imu.getAngle() % 360);
@@ -200,12 +201,10 @@ public class GammaTeleOp extends LinearOpMode {
 
 
             // DPAD Auto Turn
-            if (controller1.DPADPress() && !(controller1.src.left_trigger > 0)){
-                if (controller1.src.dpad_up) locked_direction               = MecanumRobot.turnTarget(0, robot.imu.getAngle());
-                else if (controller1.src.dpad_right) locked_direction       = MecanumRobot.turnTarget(-90, robot.imu.getAngle());
-                else if (controller1.src.dpad_left) locked_direction        = MecanumRobot.turnTarget(90, robot.imu.getAngle());
-                else if (controller1.src.dpad_down) locked_direction        = MecanumRobot.turnTarget(180, robot.imu.getAngle());
-            }
+            if (controller1.src.dpad_up) locked_direction               = MecanumRobot.turnTarget(0, robot.imu.getAngle());
+            else if (controller1.src.dpad_right) locked_direction       = MecanumRobot.turnTarget(-90, robot.imu.getAngle());
+            else if (controller1.src.dpad_left) locked_direction        = MecanumRobot.turnTarget(90, robot.imu.getAngle());
+            else if (controller1.src.dpad_down) locked_direction        = MecanumRobot.turnTarget(180, robot.imu.getAngle());
 
 
 

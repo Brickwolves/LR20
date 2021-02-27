@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.Hardware.Controller.Controller;
+import org.firstinspires.ftc.teamcode.Hardware.Controls.Controller2;
 import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
@@ -16,7 +16,7 @@ import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoD
 public class ServoDiagnosticTeleOp extends LinearOpMode {
 
     private MecanumRobot mecanumRobot;
-    private Controller controller;
+    private Controller2 controller;
 
     private Servo servo;
     private String servo_id = "servo_4";
@@ -26,7 +26,7 @@ public class ServoDiagnosticTeleOp extends LinearOpMode {
     public void initialize() {
         Utils.setOpMode(this);
         mecanumRobot = new MecanumRobot();
-        controller = new Controller(gamepad1);
+        controller = new Controller2(gamepad1);
 
 
         servo = Utils.hardwareMap.get(Servo.class, servo_id);

@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.Hardware.Controller.Controller;
+import org.firstinspires.ftc.teamcode.Hardware.Controls.Controller2;
 import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.Utilities.Utils;
 public class AlphaTeleOp extends LinearOpMode {
 
     private MecanumRobot mecanumRobot;
-    private Controller controller;
+    private Controller2 controller;
 
 
     private int buttonWaitSeconds = 200;
@@ -31,7 +31,7 @@ public class AlphaTeleOp extends LinearOpMode {
     public void initialize() {
         Utils.setOpMode(this);
         mecanumRobot = new MecanumRobot();
-        controller = new Controller(gamepad1);
+        controller = new Controller2(gamepad1);
 
         Utils.multTelemetry.addData("Steering Controls", "--------");
         Utils.multTelemetry.addData("Toggle ACM", "[LB]");
@@ -135,8 +135,8 @@ public class AlphaTeleOp extends LinearOpMode {
          */
 
             // Get Thumbsticks
-            Controller.Thumbstick rightThumbstick = controller.getRightThumbstick();
-            Controller.Thumbstick leftThumbstick = controller.getLeftThumbstick();
+            Controller2.Thumbstick rightThumbstick = controller.getRightThumbstick();
+            Controller2.Thumbstick leftThumbstick = controller.getLeftThumbstick();
 
             if (absolute_control_mode) rightThumbstick.setShift(mecanumRobot.imu.getAngle() % 360);
             else rightThumbstick.setShift(0);

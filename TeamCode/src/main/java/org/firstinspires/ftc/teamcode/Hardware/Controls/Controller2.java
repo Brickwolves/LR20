@@ -1,11 +1,11 @@
-package org.firstinspires.ftc.teamcode.Hardware.Controller;
+package org.firstinspires.ftc.teamcode.Hardware.Controls;
 
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import static java.lang.Thread.sleep;
 
-public class Controller {
+public class Controller2 {
 
     /*
     --------------- S I N G L E   P R E S S E S -------------
@@ -56,7 +56,7 @@ public class Controller {
 
     // Default Vars
     public Gamepad src;
-    public Controller(Gamepad src){
+    public Controller2(Gamepad src){
         this.src = src;
     }
 
@@ -139,6 +139,8 @@ public class Controller {
             return (this.rawX * Math.sin(Math.toRadians(shiftAngle))) + (this.rawY * Math.cos(Math.toRadians(shiftAngle))) * -1;
         }
     }
+
+
     public boolean DPADPress() {return src.dpad_down || src.dpad_left || src.dpad_right || src.dpad_up;}
 
 
