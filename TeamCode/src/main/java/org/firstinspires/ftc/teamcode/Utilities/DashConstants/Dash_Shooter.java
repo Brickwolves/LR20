@@ -14,5 +14,5 @@ public class Dash_Shooter {
     public static int rpm = 3700;
     public static int ps_rpm = 3200;
 
-    public static double millis = 500;
+    public static double millis = 400;
 }
