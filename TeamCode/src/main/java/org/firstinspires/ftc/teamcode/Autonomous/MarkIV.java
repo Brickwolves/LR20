@@ -24,6 +24,8 @@ import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvPipeline;
 
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.ps_rpm;
+
 @Autonomous(name="MarkIV - Scrimmage", group="Autonomous Linear Opmode")
 public class MarkIV extends LinearOpMode
 {
@@ -46,11 +48,33 @@ public class MarkIV extends LinearOpMode
     }
 
 
-    public void shoot(double millis){
-        ElapsedTime time = new ElapsedTime();
-        time.reset();
-        while (time.milliseconds() < millis){
-            robot.shooter.feederState(true);
+    public void shoot(int rings){
+        boolean shooter_on = true;
+        boolean reached_RPM = false;
+        double shoot_time = Dash_Shooter.millis * rings;
+        ElapsedTime t = new ElapsedTime();
+
+        while (shooter_on){
+            robot.shooter.setRPM(ps_rpm);
+            double rpm_error = Math.abs(ps_rpm - robot.shooter.getRPM());
+            if (rpm_error < 500){
+                reached_RPM = true;
+                t.reset();
+            }
+            if (reached_RPM && t.milliseconds() < shoot_time){
+                robot.shooter.feederState(true);
+            }
+            else if (t.milliseconds() >= shoot_time) shooter_on = false;
+        }
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public void powerShot(double startAngle){
+        startAngle = 82;
+        for (int i=0; i < 3; i++){
+            robot.turn(startAngle * (7 + i), 0.01);
+            shoot(1);
         }
     }
 
@@ -80,8 +104,8 @@ public class MarkIV extends LinearOpMode
         */
 
 
-        telemetry.addLine("Waiting for start");
-        telemetry.update();
+        multTelemetry.addLine("Waiting for start");
+        multTelemetry.update();
         waitForStart();
 
 
@@ -89,89 +113,34 @@ public class MarkIV extends LinearOpMode
         ACTION
          */
 
-        int sec = 1000;
+        robot.strafe(-26, 60, 90, 0.1, null);
+        powerShot(82);
 
-        // strafe (-26, 60")
+/*        double startAngle = 82;
 
-        /*
-        robot.strafe(-26, 60, 90, 0.08, null);
-        sleep(sec);
-
-
-
-
-         */
-
-        double startAngle = 82;
-
-        while (robot.shooter.getRPM() < Dash_Shooter.ps_rpm){
-            robot.shooter.setRPM(Dash_Shooter.ps_rpm);
+        while (robot.shooter.getRPM() < ps_rpm){
+            robot.shooter.setRPM(ps_rpm);
             multTelemetry.addData("RPM", robot.shooter.getRPM());
             multTelemetry.update();
         };
         robot.turn(startAngle, 0.01);
         shoot(Dash_Shooter.millis);
 
-        while (robot.shooter.getRPM() < Dash_Shooter.ps_rpm){
-            robot.shooter.setRPM(Dash_Shooter.ps_rpm);
+        while (robot.shooter.getRPM() < ps_rpm){
+            robot.shooter.setRPM(ps_rpm);
             multTelemetry.addData("RPM", robot.shooter.getRPM());
             multTelemetry.update();
         };
         robot.turn(startAngle + 7, 0.01);
         shoot(Dash_Shooter.millis);
 
-        while (robot.shooter.getRPM() < Dash_Shooter.ps_rpm){
-            robot.shooter.setRPM(Dash_Shooter.ps_rpm);
+        while (robot.shooter.getRPM() < ps_rpm){
+            robot.shooter.setRPM(ps_rpm);
             multTelemetry.addData("RPM", robot.shooter.getRPM());
             multTelemetry.update();
         };
         robot.turn(startAngle + (7 * 2), 0.01);
-        shoot(Dash_Shooter.millis);
-
-
-
-
-
-        sleep(sec);
-        //robot.strafe(Dash_Movement.diag_deg, Dash_Movement.diagnostic_inches, 90, 0.01, null);
-
-        /*
-        robot.shooter.setRPM(3700);
-        double start_PS_angle = 85;
-        for (int i=0; i < 3; i++){
-            robot.turn(start_PS_angle - (5 * i), 0.01);
-            robot.shooter.feederState(true);
-            sleep(sec);
-        }
-        robot.shooter.setPower(0);
-
-        robot.turn(0, 0.01);
-
-        if (ringCount == 0){
-            robot.strafe(-240.52, 26.42, -130, 0.01, null);
-            robot.arm.down();
-            robot.claw.openFull();
-            robot.strafe(-128.87, 26.42, -130, 0.01, null);
-        }
-        else if (ringCount == 1){
-            robot.strafe(68.2, 16.16, 180, 0.01, null);
-            sleep(sec);
-            robot.arm.down();
-            sleep(500);
-            robot.claw.openFull();
-            robot.strafe(-240.52, 26.42, -130, 0.01, null);
-            sleep(sec);
-        }
-        else {
-            robot.strafe(45, 43.84, 166.39, 0.01, null);
-            sleep(sec);
-            robot.arm.down();
-            sleep(500);
-            robot.claw.openFull();
-            robot.strafe(-240.52, 26.42, -130, 0.01, null);
-            sleep(sec);
-        }
-        */
+        shoot(Dash_Shooter.millis);*/
     }
 
     class RingDetectingPipeline extends OpenCvPipeline
