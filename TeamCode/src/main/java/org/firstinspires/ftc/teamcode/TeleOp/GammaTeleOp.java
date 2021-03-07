@@ -64,7 +64,7 @@ public class GammaTeleOp extends LinearOpMode {
 
 
         Utils.multTelemetry.addData("USER 1", "----------------------------------");
-        Utils.multTelemetry.addData("Toggle ACM", "[Right Stick Btn]");
+        Utils.multTelemetry.addData("Toggle ACM", "[SQUARE]");
         Utils.multTelemetry.addData("Velocity Ranger", "[Left Trigger]");
         Utils.multTelemetry.addData("Face Direction", "DPAD");
         Utils.multTelemetry.addData("Shoot", "[R TRIGGER]");
@@ -131,13 +131,13 @@ public class GammaTeleOp extends LinearOpMode {
 
 
             // ARM
-            //if (controller2.triangle_toggle) robot.arm.down();
-            //else robot.arm.up();
+            //if (controller2.triangle_toggle) robot.gripper.armDown();
+            //else robot.gripper.armUp();
 
 
             // CLAW
-            //if (controller2.cross_toggle) robot.claw.closeFull();
-            //else robot.claw.openFull();
+            //if (controller2.cross_toggle) robot.gripper.closeClaw();
+            //else robot.gripper.openClaw();
 
 
             // INTAKE CODE

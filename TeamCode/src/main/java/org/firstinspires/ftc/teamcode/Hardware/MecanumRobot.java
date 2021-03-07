@@ -31,10 +31,7 @@ public class MecanumRobot implements Robot {
    public Arm arm;
    public Intake intake;
    public Shooter shooter;
-   private DcMotor spinny_1, spinny_2;
-   private Servo lock_servo, shoot_servo;
-
-   private LinearOpMode opMode;
+   public Gripper gripper;
 
    private double initAngle;
    private double currentPosition;
@@ -61,8 +58,7 @@ public class MecanumRobot implements Robot {
       //colorSensorBase = Utils.hardwareMap.get(ColorSensor.class, "color_sensor");
       //colorSensor = new ColorSensorImpl(colorSensorBase);
       imu = new IMU("imu");
-      claw = new Claw("claw");
-      arm = new Arm("arm");
+      gripper = new Gripper("claw", "arm");
       intake = new Intake("intake", "servo_0", "servo_1");
       shooter = new Shooter("spinny_1", "spinny_2", "servo_4", "servo_5");
 
