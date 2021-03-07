@@ -28,7 +28,7 @@ public class GammaTeleOp extends LinearOpMode {
     private Controller2 controller2;
 
     // Power Shot Angles
-    private int     ps_increment = 0;
+    private int     ps_increment = 2;
     private double  ps_delta_angle = 15;
 
     // PID Stuff
@@ -214,15 +214,18 @@ public class GammaTeleOp extends LinearOpMode {
 
 
             // Power Shot increment
-            if (controller1.triangle_tap){
+            if (controller1.RB1_tap){
+                if (ps_increment == 2) ps_increment = 0;
+                else ps_increment++;
+            }
+            else if (controller1.LB1_tap) {
+                if (ps_increment == 0) ps_increment = 2;
+                else ps_increment--;
+            }
+            if (controller1.RB1_tap || controller1.LB1_tap)
                 if (ps_increment == 0)      locked_direction = MecanumRobot.turnTarget(-ps_delta_angle, robot.imu.getAngle());
                 else if (ps_increment == 1) locked_direction = MecanumRobot.turnTarget(0, robot.imu.getAngle());
-                else {
-                    locked_direction = MecanumRobot.turnTarget(ps_delta_angle, robot.imu.getAngle());
-                    ps_increment = -1;
-                }
-                ps_increment++;
-            }
+                else if (ps_increment == 2) locked_direction = MecanumRobot.turnTarget(ps_delta_angle, robot.imu.getAngle());
 
 
             /*

@@ -65,6 +65,10 @@ public class CRServoDiag extends LinearOpMode {
                 power = CRSERVO_POWER * -1;
                 status = "CLOSING";
             }
+            if (controller.src.square) {
+                power = 0;
+                status = "STOPPED";
+            }
             servo.setPower(power);
 
             Utils.multTelemetry.addData("Servo ID", servo_id);
