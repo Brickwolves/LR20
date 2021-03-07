@@ -66,7 +66,6 @@ public class MarkIV extends LinearOpMode
             }
             else if (t.milliseconds() >= shoot_time) shooter_on = false;
         }
-
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)

@@ -34,8 +34,8 @@ public class Controller {
 
         instances.add(this);
 
-        buttons.put(TRIANGLE, new Button(() -> gamepad.a));
-        buttons.put(SQUARE, new Button(() -> gamepad.b));
+        buttons.put(TRIANGLE, new Button(() -> gamepad.triangle));
+        buttons.put(SQUARE, new Button(() -> gamepad.square));
         buttons.put(X, new Button(() -> gamepad.x));
         buttons.put(CIRCLE, new Button(() -> gamepad.y));
         buttons.put(L_BUMPER, new Button(() -> gamepad.left_bumper));

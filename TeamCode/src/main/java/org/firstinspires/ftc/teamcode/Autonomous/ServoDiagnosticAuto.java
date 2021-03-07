@@ -54,7 +54,7 @@ public class ServoDiagnosticAuto extends LinearOpMode {
         Utils.setOpMode(this);
         mecanumRobot = new MecanumRobot();
 
-        servo = hardwareMap.get(Servo.class, "servo_3");
+        servo = hardwareMap.get(Servo.class, "servo_4");
         servo.setDirection(Servo.Direction.FORWARD);
 
     }
@@ -65,7 +65,7 @@ public class ServoDiagnosticAuto extends LinearOpMode {
 
         initialize();
         waitForStart();
-        telemetry.addData("started", true);
+        telemetry.addData("Started", true);
 
 
         double power = 1;

@@ -48,8 +48,8 @@ public class Shooter {
     private double shooterRPM;
     private int feedCount = 0;
 
-    RingBuffer<Long> timeRing = new RingBuffer<Long>(20, (long)0);
-    RingBuffer<Long> positionRing = new RingBuffer<Long>(20, (long)0);
+    RingBuffer<Long> timeRing = new RingBuffer<Long>(5, (long)0);
+    RingBuffer<Long> positionRing = new RingBuffer<Long>(5, (long)0);
     private FeederState currentFeederState = FeederState.STATE_IDLE;
 
 
