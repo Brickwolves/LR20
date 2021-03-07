@@ -54,20 +54,22 @@ public class CRServoDiag extends LinearOpMode {
         initialize();
         waitForStart();
 
+        double power = 0.0;
         while (opModeIsActive()) {
 
             if (controller.src.dpad_up) {
-                servo.setPower(CRSERVO_POWER);
-                status = "MAX";
+                power = CRSERVO_POWER;
+                status = "OPENING";
             }
             if (controller.src.dpad_down) {
-                servo.setPower(-CRSERVO_POWER);
-                status = "MIN";
+                power = -CRSERVO_POWER;
+                status = "CLOSING";
             }
+            servo.setPower(CRSERVO_POWER);
 
             Utils.multTelemetry.addData("Servo ID", servo_id);
             Utils.multTelemetry.addData("Servo Status", status);
-            Utils.multTelemetry.addData("Servo Position", servo.getPower());
+            Utils.multTelemetry.addData("Servo Power", servo.getPower());
             Utils.multTelemetry.update();
 
 
