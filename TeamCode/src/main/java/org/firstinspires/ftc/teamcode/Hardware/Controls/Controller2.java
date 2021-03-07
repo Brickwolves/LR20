@@ -1,11 +1,11 @@
-package org.firstinspires.ftc.teamcode.Hardware;
+package org.firstinspires.ftc.teamcode.Hardware.Controls;
 
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 
-import static android.os.SystemClock.sleep;
+import static java.lang.Thread.sleep;
 
-public class Controller {
+public class Controller2 {
 
     /*
     --------------- S I N G L E   P R E S S E S -------------
@@ -34,7 +34,7 @@ public class Controller {
     public boolean RB2_toggle                   = false;
 
     public boolean triangle_toggle              = false;
-    public boolean square_toggle                = false;
+    public boolean square_toggle                = true;
     public boolean circle_toggle                = false;
     public boolean cross_toggle                 = false;
 
@@ -51,12 +51,12 @@ public class Controller {
     double left_stick_deadzone                  = 0.3;
     double default_deadzone                     = 0.3;
 
-    private int buttonWaitSeconds               = 200;
+    private int buttonWaitMillis                = 200;
 
 
     // Default Vars
     public Gamepad src;
-    public Controller(Gamepad src){
+    public Controller2(Gamepad src){
         this.src = src;
     }
 
@@ -139,6 +139,8 @@ public class Controller {
             return (this.rawX * Math.sin(Math.toRadians(shiftAngle))) + (this.rawY * Math.cos(Math.toRadians(shiftAngle))) * -1;
         }
     }
+
+
     public boolean DPADPress() {return src.dpad_down || src.dpad_left || src.dpad_right || src.dpad_up;}
 
 
@@ -162,47 +164,37 @@ public class Controller {
         // Update toggles accordingly
         if (RB1_tap) {
             RB1_toggle = !RB1_toggle;
-            sleep(buttonWaitSeconds);
         }
         if (LB1_tap) {
             LB1_toggle = !LB1_toggle;
-            sleep(buttonWaitSeconds);
         }
         if (RB2_tap) {
             RB2_toggle = !RB2_toggle;
-            sleep(buttonWaitSeconds);
         }
         if (LB2_tap) {
             LB2_toggle = !LB2_toggle;
-            sleep(buttonWaitSeconds);
         }
 
 
         if (triangle_tap) {
             triangle_toggle = !triangle_toggle;
-            sleep(buttonWaitSeconds);
         }
         if (square_tap) {
             square_toggle = !square_toggle;
-            sleep(buttonWaitSeconds);
         }
         if (circle_tap) {
             circle_toggle = !circle_toggle;
-            sleep(buttonWaitSeconds);
         }
         if (cross_tap) {
             cross_toggle = !cross_toggle;
-            sleep(buttonWaitSeconds);
         }
 
 
         if (right_stick_btn_tap) {
             right_stick_btn_toggle = !right_stick_btn_toggle;
-            sleep(buttonWaitSeconds);
         }
         if (left_stick_btn_tap) {
             left_stick_btn_toggle = !left_stick_btn_toggle;
-            sleep(buttonWaitSeconds);
         }
 
     }
@@ -215,7 +207,7 @@ public class Controller {
      * @return
      */
     public Boolean buttonTapped(boolean current, boolean previous){
-        if (current && !previous )return true;
+        if (current && !previous ) return true;
         else if (!current) return false;
         else return previous;
     }

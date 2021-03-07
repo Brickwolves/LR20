@@ -29,13 +29,11 @@ package org.firstinspires.ftc.teamcode.Autonomous;
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.Hardware.Controller;
+import org.firstinspires.ftc.teamcode.Hardware.Controls.Controller2;
 import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
@@ -44,7 +42,7 @@ public class ServoDiagnosticAuto extends LinearOpMode {
 
 
     private MecanumRobot mecanumRobot;
-    private Controller controller;
+    private Controller2 controller;
 
     private double currentPosition, currentAngle;
 
@@ -56,7 +54,7 @@ public class ServoDiagnosticAuto extends LinearOpMode {
         Utils.setOpMode(this);
         mecanumRobot = new MecanumRobot();
 
-        servo = hardwareMap.get(Servo.class, "servo_3");
+        servo = hardwareMap.get(Servo.class, "servo_4");
         servo.setDirection(Servo.Direction.FORWARD);
 
     }
@@ -67,7 +65,7 @@ public class ServoDiagnosticAuto extends LinearOpMode {
 
         initialize();
         waitForStart();
-        telemetry.addData("started", true);
+        telemetry.addData("Started", true);
 
 
         double power = 1;

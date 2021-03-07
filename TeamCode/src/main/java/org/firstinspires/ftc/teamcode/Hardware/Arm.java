@@ -9,71 +9,31 @@ public class Arm {
 
     private Servo servo;
 
-    private final static double SERVO_ARM_HOME = 0.5;
-    private final static double SERVO_ARM_MIN_RANGE = 0.05;
-    private final static double SERVO_ARM_MAX_RANGE = 0.5;
-    private double SERVO_ARM_SPEED = 0.75;
-    private double servo_arm_position = SERVO_ARM_HOME;
+    private final static double SERVO_ARM_HOME = 0.9;
+    private final static double SERVO_ARM_MIN_RANGE = 0.0;
+    private final static double SERVO_ARM_MAX_RANGE = 0.9;
 
     public Arm(String id) {
-
-        try {
-            servo = Utils.hardwareMap.get(Servo.class, id);
-            servo.setDirection(Servo.Direction.FORWARD);
-            servo.setPosition(SERVO_ARM_HOME);
-
-        } catch (Exception e) {
-            //throw new Error("Cannot find servo with id: " + id + "\n. Could not initialize arm.");
-            Utils.telemetry.addData("Status","Could not set position of non-existant arm.");
-            Utils.telemetry.update();
-        }
-
+        servo = Utils.hardwareMap.get(Servo.class, id);
+        servo.setDirection(Servo.Direction.FORWARD);
+        servo.setPosition(SERVO_ARM_HOME);
     }
 
     public void setArmPosition(double position){
-        try {
-            servo_arm_position = Range.clip(position, SERVO_ARM_MIN_RANGE, SERVO_ARM_MAX_RANGE);
-            servo.setPosition(servo_arm_position);
-        } catch (Exception e) {
-            //throw new Error("Could not set position of non-existant arm.");
-            Utils.telemetry.addData("Status","Could not set position of non-existant arm.");
-            Utils.telemetry.update();
-        }
+        double servo_arm_position = Range.clip(position, SERVO_ARM_MIN_RANGE, SERVO_ARM_MAX_RANGE);
+        servo.setPosition(servo_arm_position);
     }
 
     public void up() {
-        try {
-            servo_arm_position += SERVO_ARM_SPEED;
-            servo_arm_position = Range.clip(servo_arm_position, SERVO_ARM_MIN_RANGE, SERVO_ARM_MAX_RANGE);
-            servo.setPosition(servo_arm_position);
-        } catch (Exception e) {
-            //throw new Error("Could not set position of non-existant arm.");
-            Utils.telemetry.addData("Status","Could not set position of non-existant arm.");
-            Utils.telemetry.update();
-        }
+        servo.setPosition(SERVO_ARM_MAX_RANGE);
     }
 
     public void down() {
-        try {
-            servo_arm_position -= SERVO_ARM_SPEED;
-            servo_arm_position = Range.clip(servo_arm_position, SERVO_ARM_MIN_RANGE, SERVO_ARM_MAX_RANGE);
-            servo.setPosition(servo_arm_position);
-        } catch (Exception e) {
-            //throw new Error("Could not set position of non-existant arm.");
-            Utils.telemetry.addData("Status","Could not set position of non-existant arm.");
-            Utils.telemetry.update();
-        }
-
+        servo.setPosition(SERVO_ARM_MIN_RANGE);
     }
 
     public void shutdown(){
-        try {
-            servo.setPosition(SERVO_ARM_HOME);
-        } catch (Exception e) {
-            //throw new Error("Could not set position of non-existant arm.");
-            Utils.telemetry.addData("Status","Could not set position of non-existant arm.");
-            Utils.telemetry.update();
-        }
+        servo.setPosition(SERVO_ARM_HOME);
     }
 
     public void setPosition(double position){
@@ -82,9 +42,5 @@ public class Arm {
 
     public double getPosition(){
         return servo.getPosition();
-    }
-
-    public void setSpeed(double speed) {
-        SERVO_ARM_SPEED = speed;
     }
 }

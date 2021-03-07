@@ -2,22 +2,25 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Hardware.Controls.Controller2;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.*;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.CRSERVO_POWER;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SERVO_HOME;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SERVO_MAX;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SERVO_MIN;
 
 
-
-@TeleOp(name = "ServoDiagnostic TeleOp", group="Linear TeleOp")
-public class ServoDiagnosticTeleOp extends LinearOpMode {
+@TeleOp(name = "CRServoDiag TeleOp", group="Linear TeleOp")
+public class CRServoDiag extends LinearOpMode {
 
     private Controller2 controller;
 
-    private Servo servo;
-    private String servo_id = SERVO_ID;
+    private CRServo servo;
+    private String servo_id = "claw";
     private String status = "HOME";
 
 
@@ -26,9 +29,9 @@ public class ServoDiagnosticTeleOp extends LinearOpMode {
         controller = new Controller2(gamepad1);
 
 
-        servo = Utils.hardwareMap.get(Servo.class, servo_id);
-        servo.setDirection(Servo.Direction.FORWARD);
-        servo.setPosition(SERVO_HOME);
+        servo = Utils.hardwareMap.get(CRServo.class, servo_id);
+        servo.setDirection(CRServo.Direction.FORWARD);
+        servo.setPower(0);
 
         Utils.multTelemetry.addData("Status", "Initialized");
         Utils.multTelemetry.addData("Start Keys", "Press [>] to begin");
@@ -39,7 +42,7 @@ public class ServoDiagnosticTeleOp extends LinearOpMode {
     public void shutdown(){
         Utils.multTelemetry.addData("Status", "Shutting Down");
         Utils.multTelemetry.update();
-        servo.setPosition(SERVO_HOME);
+        servo.setPower(0);
         sleep(3000);
     }
 
@@ -51,20 +54,22 @@ public class ServoDiagnosticTeleOp extends LinearOpMode {
         initialize();
         waitForStart();
 
+        double power = 0.0;
         while (opModeIsActive()) {
 
             if (controller.src.dpad_up) {
-                servo.setPosition(SERVO_MAX);
-                status = "MAX";
+                power = CRSERVO_POWER;
+                status = "OPENING";
             }
             if (controller.src.dpad_down) {
-                servo.setPosition(SERVO_MIN);
-                status = "MIN";
+                power = -CRSERVO_POWER;
+                status = "CLOSING";
             }
+            servo.setPower(CRSERVO_POWER);
 
             Utils.multTelemetry.addData("Servo ID", servo_id);
             Utils.multTelemetry.addData("Servo Status", status);
-            Utils.multTelemetry.addData("Servo Position", servo.getPosition());
+            Utils.multTelemetry.addData("Servo Power", servo.getPower());
             Utils.multTelemetry.update();
 
 

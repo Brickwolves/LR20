@@ -9,14 +9,14 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.teamcode.Hardware.Controller;
+import org.firstinspires.ftc.teamcode.Hardware.Controls.Controller2;
+import org.firstinspires.ftc.teamcode.Hardware.Controls.Joystick;
 import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
 import org.firstinspires.ftc.teamcode.Utilities.RingBuffer;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
 import static java.lang.Math.abs;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Movement.turn_min;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Movement.turn_offset;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.rpm;
 
 
 @TeleOp(name = "Gamma TeleOp - Scrimmage", group="Linear TeleOp")
@@ -24,8 +24,8 @@ public class GammaTeleOp extends LinearOpMode {
 
     // Main Stuff
     private MecanumRobot robot;
-    private Controller controller1;
-    private Controller controller2;
+    private Controller2 controller1;
+    private Controller2 controller2;
 
     // Power Shot Angles
     private int     ps_increment = 0;
@@ -57,8 +57,8 @@ public class GammaTeleOp extends LinearOpMode {
     public void initialize() {
         Utils.setOpMode(this);
         robot = new MecanumRobot();
-        controller1 = new Controller(gamepad1);
-        controller2 = new Controller(gamepad2);
+        controller1 = new Controller2(gamepad1);
+        controller2 = new Controller2(gamepad2);
 
 
 
@@ -131,13 +131,13 @@ public class GammaTeleOp extends LinearOpMode {
 
 
             // ARM
-            if (controller2.triangle_toggle) robot.arm.down();
-            else robot.arm.up();
+            //if (controller2.triangle_toggle) robot.arm.down();
+            //else robot.arm.up();
 
 
             // CLAW
-            if (controller2.cross_toggle) robot.claw.closeFull();
-            else robot.claw.openFull();
+            //if (controller2.cross_toggle) robot.claw.closeFull();
+            //else robot.claw.openFull();
 
 
             // INTAKE CODE
@@ -168,13 +168,12 @@ public class GammaTeleOp extends LinearOpMode {
             // SHOOTER
             robot.shooter.feederState(controller1.src.right_trigger > 0.75);
             if (controller2.circle_toggle) {
-                robot.intake.armDown();
+                //robot.intake.armDown();
                 //robot.shooter.setRPM(4500);
-                robot.shooter.setPower(0.7);
+                robot.shooter.setRPM(rpm);
             }
             else {
                 robot.shooter.setPower(0);
-                robot.shooter.setRPM(0);
             }
 
 
@@ -189,11 +188,11 @@ public class GammaTeleOp extends LinearOpMode {
          */
 
             // Get Thumbsticks
-            Controller.Thumbstick rightThumbstick = controller1.getRightThumbstick();
-            Controller.Thumbstick leftThumbstick = controller1.getLeftThumbstick();
+            Controller2.Thumbstick rightThumbstick = controller1.getRightThumbstick();
+            Controller2.Thumbstick leftThumbstick = controller1.getLeftThumbstick();
 
             // ABSOLUTE CONTROL MODE
-            if (controller1.right_stick_btn_toggle) rightThumbstick.setShift(robot.imu.getAngle() % 360);
+            if (controller1.square_toggle) rightThumbstick.setShift(robot.imu.getAngle() % 360);
             else rightThumbstick.setShift(0);
 
             // DRIVER VALUES
@@ -202,16 +201,14 @@ public class GammaTeleOp extends LinearOpMode {
             double turn = leftThumbstick.getX();
 
             // VELOCITY RANGER
-            double velocity = Range.clip((1 - controller1.src.left_trigger), 0.3, 1);
+            double velocity = Range.clip((1 - controller1.src.left_trigger), 0.5, 1);
 
 
             // DPAD Auto Turn
-            if (controller1.DPADPress()){
-                if (controller1.src.dpad_up) locked_direction               = MecanumRobot.turnTarget(0, robot.imu.getAngle());
-                else if (controller1.src.dpad_right) locked_direction       = MecanumRobot.turnTarget(-90, robot.imu.getAngle());
-                else if (controller1.src.dpad_left) locked_direction        = MecanumRobot.turnTarget(90, robot.imu.getAngle());
-                else if (controller1.src.dpad_down) locked_direction        = MecanumRobot.turnTarget(180, robot.imu.getAngle());
-            }
+            if (controller1.src.dpad_up) locked_direction               = MecanumRobot.turnTarget(0, robot.imu.getAngle());
+            else if (controller1.src.dpad_right) locked_direction       = MecanumRobot.turnTarget(-90, robot.imu.getAngle());
+            else if (controller1.src.dpad_left) locked_direction        = MecanumRobot.turnTarget(90, robot.imu.getAngle());
+            else if (controller1.src.dpad_down) locked_direction        = MecanumRobot.turnTarget(180, robot.imu.getAngle());
 
 
 
@@ -258,7 +255,7 @@ public class GammaTeleOp extends LinearOpMode {
 
 
             // LAST STEP
-            robot.setDrivePower(drive, strafe, turn, velocity);
+            robot.setDrivePower(drive, strafe, turn, 1);
 
 
         /*
@@ -266,6 +263,7 @@ public class GammaTeleOp extends LinearOpMode {
          ----------- L O G G I N G -----------
 
          */
+            Utils.multTelemetry.addData("RPM", rpm);
             Utils.multTelemetry.addData("PID OFF", pid_on);
 
             Utils.multTelemetry.addData("ACM", controller1.right_stick_btn_toggle);
