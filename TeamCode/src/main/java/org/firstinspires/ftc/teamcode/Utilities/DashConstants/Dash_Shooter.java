@@ -8,8 +8,7 @@ public class Dash_Shooter {
     public static double i = 0.00000001;
     public static double d = 0.0001;
 
-    public static double p1 = 0.0;
-    public static double p2 = 0.0;
+    public static double power = 0.0;
     public static double shooter_power = 0.0;
     public static int rpm = 3700;
     public static int ps_rpm = 3200;
