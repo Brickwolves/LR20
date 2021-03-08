@@ -4,8 +4,10 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Hardware.Controls.Controller2;
+import org.firstinspires.ftc.teamcode.Hardware.Shooter;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.CRSERVO_POWER;
@@ -24,6 +26,17 @@ public class CRServoDiag extends LinearOpMode {
     private String status = "HOME";
 
 
+    private ElapsedTime time;
+    private double millis_to_open = 1000;
+    private double millis_to_close = 1000;
+
+    private enum STATE {
+        IDLE,
+        OPEN,
+        CLOSE
+    }
+    private STATE current_state;
+
     public void initialize() {
         Utils.setOpMode(this);
         controller = new Controller2(gamepad1);
@@ -32,6 +45,9 @@ public class CRServoDiag extends LinearOpMode {
         servo = Utils.hardwareMap.get(CRServo.class, servo_id);
         servo.setDirection(CRServo.Direction.FORWARD);
         servo.setPower(0);
+
+        time = new ElapsedTime();
+        current_state = STATE.IDLE;
 
         Utils.multTelemetry.addData("Status", "Initialized");
         Utils.multTelemetry.addData("Start Keys", "Press [>] to begin");
@@ -47,6 +63,41 @@ public class CRServoDiag extends LinearOpMode {
     }
 
 
+    public void clawMachine(){
+
+        switch (current_state) {
+
+            case IDLE:
+                servo.setPower(0);
+                time.reset();
+
+                if (controller.src.dpad_up) current_state = STATE.OPEN;
+                else if (controller.src.dpad_down) current_state = STATE.CLOSE;
+
+                break;
+
+            case OPEN:
+                if (controller.src.square) {
+                    current_state = STATE.IDLE;
+                    break;
+                }
+                else if (time.milliseconds() < millis_to_open) servo.setPower(0.5);
+                else current_state = STATE.IDLE;
+                break;
+
+            case CLOSE:
+                if (controller.src.square) {
+                    current_state = STATE.IDLE;
+                    break;
+                }
+                else if (time.milliseconds() < millis_to_close) servo.setPower(-0.5);
+                else current_state = STATE.IDLE;
+                break;
+        }
+
+    }
+
+
     @Override
     public void runOpMode() {
 
@@ -55,8 +106,12 @@ public class CRServoDiag extends LinearOpMode {
         waitForStart();
 
         double power = 0.0;
+        ElapsedTime time = new ElapsedTime();
         while (opModeIsActive()) {
 
+            clawMachine();
+
+            /*
             if (controller.src.dpad_up) {
                 power = CRSERVO_POWER;
                 status = "OPENING";
@@ -70,7 +125,7 @@ public class CRServoDiag extends LinearOpMode {
                 status = "STOPPED";
             }
             servo.setPower(power);
-
+            */
             Utils.multTelemetry.addData("Servo ID", servo_id);
             Utils.multTelemetry.addData("Servo Status", status);
             Utils.multTelemetry.addData("Servo Power", servo.getPower());
@@ -85,7 +140,6 @@ public class CRServoDiag extends LinearOpMode {
                 break;
             }
         }
-
     }
 }
 
