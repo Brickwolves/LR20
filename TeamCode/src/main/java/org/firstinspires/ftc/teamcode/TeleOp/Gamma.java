@@ -10,7 +10,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.Hardware.Controls.Controller2;
-import org.firstinspires.ftc.teamcode.Hardware.Controls.Joystick;
 import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
 import org.firstinspires.ftc.teamcode.Utilities.RingBuffer;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
@@ -19,8 +18,8 @@ import static java.lang.Math.abs;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.rpm;
 
 
-@TeleOp(name = "Gamma TeleOp - Scrimmage", group="Linear TeleOp")
-public class GammaTeleOp extends LinearOpMode {
+@TeleOp(name = "Gamma TeleOp", group="Linear TeleOp")
+public class Gamma extends LinearOpMode {
 
     // Main Stuff
     private MecanumRobot robot;
@@ -88,9 +87,8 @@ public class GammaTeleOp extends LinearOpMode {
     public void shutdown(){
         Utils.multTelemetry.addData("Status", "Shutting Down");
         Utils.multTelemetry.update();
-        robot.arm.shutdown();
-        robot.claw.shutdown();
         robot.intake.shutdown();
+        robot.arm.up();
     }
 
 
@@ -131,13 +129,34 @@ public class GammaTeleOp extends LinearOpMode {
 
 
             // ARM
-            //if (controller2.triangle_toggle) robot.gripper.armDown();
-            //else robot.gripper.armUp();
+            if (controller2.src.dpad_right){
+                robot.arm.in();
+            }
+            else if (controller2.src.dpad_up) {
+                robot.arm.up();
+            }
+            else if (controller2.src.dpad_left) {
+                robot.arm.out();
+            }
 
+            robot.claw.clawMachine(controller2.src.triangle, controller2.src.cross, controller2.src.square);
 
             // CLAW
             //if (controller2.cross_toggle) robot.gripper.closeClaw();
             //else robot.gripper.openClaw();
+            //robot.gripper.clawMachine(controller2.src.dpad_left, controller2.src.dpad_right, controller2.src.cross);
+
+            /*
+            if (controller2.src.triangle) robot.claw.open();
+            else if (controller2.src.cross) robot.claw.close();
+            else if (controller2.src.square) robot.claw.stop();
+            robot.claw.checkLimit();
+             */
+
+
+            Utils.multTelemetry.addData("Claw Status", robot.claw.getStatus());
+            Utils.multTelemetry.addData("Claw Power", robot.claw.getPower());
+
 
 
             // INTAKE CODE
@@ -161,8 +180,8 @@ public class GammaTeleOp extends LinearOpMode {
 
 
             // INTAKE ARM
-            if (controller2.src.dpad_up && !controller2.src.circle) robot.intake.armUp();
-            else if (controller2.src.dpad_down && !controller2.src.circle) robot.intake.armDown();
+            if (controller2.DPADDWN_toggle && !controller2.src.circle) robot.intake.armUp();
+            else if (!controller2.DPADDWN_toggle && !controller2.src.circle) robot.intake.armDown();
 
 
             // SHOOTER
@@ -266,6 +285,8 @@ public class GammaTeleOp extends LinearOpMode {
          ----------- L O G G I N G -----------
 
          */
+
+        /*
             Utils.multTelemetry.addData("RPM", rpm);
             Utils.multTelemetry.addData("PID OFF", pid_on);
 
@@ -289,7 +310,7 @@ public class GammaTeleOp extends LinearOpMode {
             Utils.multTelemetry.addData("Intake Left Arm", robot.intake.getLeftServoPosition());
             Utils.multTelemetry.addData("Intake Right Arm", robot.intake.getRightServoPosition());
             Utils.multTelemetry.addData("Shooter ON?", controller2.circle_toggle);
-
+        */
 
 
             Utils.multTelemetry.update();

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.TeleOp;
+package org.firstinspires.ftc.teamcode.TeleOp.Diagnostics;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -11,8 +11,8 @@ import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoD
 
 
 
-@TeleOp(name = "ServoDiagnostic TeleOp", group="Linear TeleOp")
-public class ServoDiagnosticTeleOp extends LinearOpMode {
+@TeleOp(name = "ServoDiag TeleOp", group="Linear TeleOp")
+public class ServoDiag extends LinearOpMode {
 
     private Controller2 controller;
 

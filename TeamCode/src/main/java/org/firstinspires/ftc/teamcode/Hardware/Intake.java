@@ -6,12 +6,12 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
 import static android.os.SystemClock.sleep;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.LEFT_ARM_SERVO_HOME;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.LEFT_ARM_SERVO_MAX;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.LEFT_ARM_SERVO_MIN;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.RIGHT_ARM_SERVO_HOME;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.RIGHT_ARM_SERVO_MAX;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.RIGHT_ARM_SERVO_MIN;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.LEFT_ARM_SERVO_HOME;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.LEFT_ARM_SERVO_MAX;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.LEFT_ARM_SERVO_MIN;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.RIGHT_ARM_SERVO_HOME;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.RIGHT_ARM_SERVO_MAX;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.RIGHT_ARM_SERVO_MIN;
 
 public class Intake {
 
@@ -55,6 +55,12 @@ public class Intake {
         left_arm_servo.setPosition(LEFT_ARM_SERVO_MIN);
         right_arm_servo.setPosition(RIGHT_ARM_SERVO_MAX);
     }
+
+    public void armMid(){
+        left_arm_servo.setPosition();
+        right_arm_servo.setPosition();
+    }
+
     public void armDown(){
         left_arm_servo.setPosition(LEFT_ARM_SERVO_MAX);
         right_arm_servo.setPosition(RIGHT_ARM_SERVO_MIN);

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.TeleOp;
+package org.firstinspires.ftc.teamcode.TeleOp.Diagnostics;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -14,7 +14,7 @@ import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shoote
 
 @Disabled
 @TeleOp(name = "DcMotor Diag TeleOp", group="Linear TeleOp")
-public class DcMotorDiag_TeleOp extends LinearOpMode {
+public class DcMotorDiag extends LinearOpMode {
 
     private Controller2 controller;
 

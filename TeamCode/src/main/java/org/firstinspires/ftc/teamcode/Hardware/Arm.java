@@ -10,8 +10,9 @@ public class Arm {
     private Servo servo;
 
     private final static double SERVO_ARM_HOME = 0.9;
-    private final static double SERVO_ARM_MIN_RANGE = 0.0;
-    private final static double SERVO_ARM_MAX_RANGE = 0.9;
+    private final static double OUT_POS = 0.0;
+    private final static double UP_POS = 0.68;
+    private final static double IN_POS = 0.9;
 
     public Arm(String id) {
         servo = Utils.hardwareMap.get(Servo.class, id);
@@ -20,16 +21,21 @@ public class Arm {
     }
 
     public void setArmPosition(double position){
-        double servo_arm_position = Range.clip(position, SERVO_ARM_MIN_RANGE, SERVO_ARM_MAX_RANGE);
+        double servo_arm_position = Range.clip(position, OUT_POS, IN_POS);
         servo.setPosition(servo_arm_position);
     }
 
-    public void up() {
-        servo.setPosition(SERVO_ARM_MAX_RANGE);
+
+    public void in() {
+        servo.setPosition(IN_POS);
     }
 
-    public void down() {
-        servo.setPosition(SERVO_ARM_MIN_RANGE);
+    public void up(){
+        servo.setPosition(UP_POS);
+    }
+
+    public void out() {
+        servo.setPosition(OUT_POS);
     }
 
     public void shutdown(){

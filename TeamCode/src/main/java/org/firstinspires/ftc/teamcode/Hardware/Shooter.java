@@ -11,12 +11,12 @@ import org.firstinspires.ftc.teamcode.Utilities.PID;
 import org.firstinspires.ftc.teamcode.Utilities.RingBuffer;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.LOCK_SERVO_HOME;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.LOCK_SERVO_MAX;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.LOCK_SERVO_MIN;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SHOOT_SERVO_HOME;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SHOOT_SERVO_MAX;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.SHOOT_SERVO_MIN;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.LOCK_SERVO_HOME;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.LOCK_SERVO_MAX;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.LOCK_SERVO_MIN;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.SHOOT_SERVO_HOME;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.SHOOT_SERVO_MAX;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.SHOOT_SERVO_MIN;
 
 public class Shooter {
 
@@ -98,6 +98,7 @@ public class Shooter {
     }
 
     public double feederCount(){ return feedCount; }
+    public void setFeederCount(int feedCount){ this.feedCount = feedCount; }
 
     public void feederState(boolean trigger){
         switch (currentFeederState) {

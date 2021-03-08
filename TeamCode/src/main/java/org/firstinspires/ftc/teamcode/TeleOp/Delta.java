@@ -4,6 +4,7 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -22,7 +23,7 @@ import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shoote
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.Controller.Input.*;
 
 
-
+@Disabled
 @TeleOp(name = "Delta TeleOp - Scrimmage", group="Linear TeleOp")
 public class Delta extends LinearOpMode {
 
@@ -91,18 +92,18 @@ public class Delta extends LinearOpMode {
 
 
     public void setUser2Controls(){
-        controller2.setOnAction(X, () -> robot.claw.closeFull());
-        controller2.setOffAction(X, () -> robot.claw.openFull());
+        //controller2.setOnAction(X, () -> robot.claw.closeFull());
+        //controller2.setOffAction(X, () -> robot.claw.openFull());
 
         controller2.setTapAction(DPAD_UP, () -> robot.intake.armUp());
         controller2.setTapAction(DPAD_DN, () -> robot.intake.armDown());
 
         controller2.setTapAction(CIRCLE, () -> robot.shooter.setPower(rpm));
         controller2.setIdleAction(CIRCLE, () -> robot.shooter.setPower(0));
-        controller2.setOnAction(CIRCLE, () -> robot.arm.down());
+        controller2.setOnAction(CIRCLE, () -> robot.arm.out());
 
-        controller2.setOnAction(TRIANGLE, () -> robot.arm.down());
-        controller2.setOffAction(TRIANGLE, () -> robot.arm.up());
+        controller2.setOnAction(TRIANGLE, () -> robot.arm.out());
+        controller2.setOffAction(TRIANGLE, () -> robot.arm.in());
         controller2.setTapAction(L_BUMPER, () -> LB1_TOGGLE = !LB1_TOGGLE);
         controller2.setOnAction(R_BUMPER, () -> {
             if (!controller2.src.circle) {

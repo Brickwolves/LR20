@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.TeleOp;
+package org.firstinspires.ftc.teamcode.TeleOp.Diagnostics;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.Utilities.Utils;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.power;
 
 @TeleOp(name = "Drive Diag TeleOp", group="Linear TeleOp")
-public class DriveDiag_TeleOp extends LinearOpMode {
+public class DriveDiag extends LinearOpMode {
 
     private Controller2 controller;
     private ElapsedTime time;

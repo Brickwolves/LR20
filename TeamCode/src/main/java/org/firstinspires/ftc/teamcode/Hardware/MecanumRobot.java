@@ -58,7 +58,9 @@ public class MecanumRobot implements Robot {
       //colorSensorBase = Utils.hardwareMap.get(ColorSensor.class, "color_sensor");
       //colorSensor = new ColorSensorImpl(colorSensorBase);
       imu = new IMU("imu");
-      gripper = new Gripper("claw", "arm");
+      //gripper = new Gripper("claw", "arm");
+      arm = new Arm("arm");
+      claw = new Claw("claw", "claw_encoder");
       intake = new Intake("intake", "servo_0", "servo_1");
       shooter = new Shooter("spinny_1", "spinny_2", "servo_4", "servo_5");
 

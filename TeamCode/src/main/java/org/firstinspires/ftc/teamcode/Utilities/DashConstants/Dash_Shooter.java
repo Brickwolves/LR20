@@ -14,4 +14,5 @@ public class Dash_Shooter {
     public static int ps_rpm = 3200;
 
     public static double millis = 400;
+    public static int rings = 1;
 }

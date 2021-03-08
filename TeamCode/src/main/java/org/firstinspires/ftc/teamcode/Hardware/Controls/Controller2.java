@@ -16,6 +16,11 @@ public class Controller2 {
     public boolean LB2_tap                      = false;
     public boolean RB2_tap                      = false;
 
+    public boolean DPADUP_tap                   = false;
+    public boolean DPADDWN_tap                  = false;
+    public boolean DPADR_tap                    = false;
+    public boolean DPADL_tap                    = false;
+
     public boolean triangle_tap                 = false;
     public boolean square_tap                   = false;
     public boolean circle_tap                   = false;
@@ -32,6 +37,11 @@ public class Controller2 {
     public boolean RB1_toggle                   = false;
     public boolean LB2_toggle                   = false;
     public boolean RB2_toggle                   = false;
+
+    public boolean DPADUP_toggle                = false;
+    public boolean DPADDWN_toggle               = false;
+    public boolean DPADR_toggle                 = false;
+    public boolean DPADL_toggle                 = false;
 
     public boolean triangle_toggle              = false;
     public boolean square_toggle                = true;
@@ -152,6 +162,11 @@ public class Controller2 {
         RB2_tap = buttonTapped(src.right_trigger, RB2_tap, right_stick_deadzone);
         LB2_tap = buttonTapped(src.left_trigger, LB2_tap, left_stick_deadzone);
 
+        DPADUP_tap = buttonTapped(src.dpad_up, DPADUP_tap);
+        DPADDWN_tap = buttonTapped(src.dpad_down, DPADDWN_tap);
+        DPADR_tap = buttonTapped(src.dpad_right, DPADR_tap);
+        DPADL_tap = buttonTapped(src.dpad_left, DPADL_tap);
+
         triangle_tap = buttonTapped(src.triangle, triangle_tap);
         cross_tap = buttonTapped(src.cross, cross_tap);
         square_tap = buttonTapped(src.square, square_tap);
@@ -173,6 +188,19 @@ public class Controller2 {
         }
         if (LB2_tap) {
             LB2_toggle = !LB2_toggle;
+        }
+
+        if (DPADUP_tap) {
+            DPADUP_toggle = !DPADUP_toggle;
+        }
+        if (DPADDWN_tap) {
+            DPADDWN_toggle = !DPADDWN_toggle;
+        }
+        if (DPADR_tap) {
+            DPADR_toggle = !DPADR_toggle;
+        }
+        if (DPADL_tap) {
+            DPADL_toggle = !DPADL_toggle;
         }
 
 
