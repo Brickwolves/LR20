@@ -62,7 +62,7 @@ public class Gamma extends LinearOpMode {
 
 
 
-
+        /*
         Utils.multTelemetry.addData("USER 1", "----------------------------------");
         Utils.multTelemetry.addData("Toggle ACM", "[SQUARE]");
         Utils.multTelemetry.addData("Velocity Ranger", "[Left Trigger]");
@@ -82,6 +82,7 @@ public class Gamma extends LinearOpMode {
 
         Utils.multTelemetry.addData("Shutdown Keys", "[TOUCHPAD] simultaneously");
         Utils.multTelemetry.update();
+         */
 
     }
 
@@ -145,8 +146,8 @@ public class Gamma extends LinearOpMode {
             Utils.multTelemetry.addData("Claw Status", robot.claw.getStatus());
             Utils.multTelemetry.addData("Claw Power", robot.claw.getPower());
             Utils.multTelemetry.addData("Claw Position", robot.claw.getClawPosition());
-            Utils.multTelemetry.addData("Claw Position", robot.claw.getDelta2Open());
-            Utils.multTelemetry.addData("Claw Position", robot.claw.getDelta2Close());
+            Utils.multTelemetry.addData("Claw Delta2Open", robot.claw.getDelta2Open());
+            Utils.multTelemetry.addData("Claw Delta2Close", robot.claw.getDelta2Close());
 
 
 

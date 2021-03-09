@@ -8,6 +8,7 @@ class CRServoDiagTest {
 
     @Test
     void clawMachine() {
+        assertEquals(0.0, 0.0);
     }
 
     @Test

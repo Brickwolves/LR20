@@ -1,7 +1,8 @@
-package org.firstinspires.ftc.teamcode.TeleOp.Diagnostics;
+package org.firstinspires.ftc.teamcode.Autonomous;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Hardware.Controls.Controller2;
@@ -9,18 +10,21 @@ import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.ps_rpm;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.rings;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.rpm;
 
-@TeleOp(name = "Shooter Diagnostic TeleOp", group="Linear TeleOp")
-public class ShooterDiag extends LinearOpMode {
+@Autonomous(name="ShooterTest", group="Autonomous Linear Opmode")
+public class ShooterTest extends LinearOpMode {
 
     private MecanumRobot robot;
     private Controller2 controller;
+    private ElapsedTime time;
 
-    public void initialize() {
+    public void initialize(){
         Utils.setOpMode(this);
         robot = new MecanumRobot();
         controller = new Controller2(gamepad1);
+        time = new ElapsedTime();
     }
 
     @Override
@@ -29,7 +33,28 @@ public class ShooterDiag extends LinearOpMode {
         initialize();
         waitForStart();
 
-        while (opModeIsActive()) {
+        if (opModeIsActive()){
+
+            robot.strafe(0, 40, 90, 0.1, null);
+            robot.strafe(-90, 16, 90, 0.1, null);
+
+            time.reset();
+            while (true) {
+                robot.intake.armDown();
+                robot.shooter.setRPM(rpm);
+
+                if (time.seconds() > 4) {
+                    if (robot.shooter.feederCount() < 3) robot.shooter.feederState(true);
+                    else break;
+                }
+
+                Utils.multTelemetry.addData("Position", robot.shooter.getPosition());
+                Utils.multTelemetry.update();
+            }
+        }
+
+        /*
+        while (opModeIsActive()){
             controller.updateToggles();
 
             robot.shooter.feederState(controller.src.right_trigger > 0.75);
@@ -41,17 +66,9 @@ public class ShooterDiag extends LinearOpMode {
                 robot.shooter.setPower(0);
             }
 
-
-
-            Utils.multTelemetry.addData("RPM", robot.shooter.getRPM());
-            Utils.multTelemetry.addData("Power", robot.shooter.getPower());
             Utils.multTelemetry.addData("Position", robot.shooter.getPosition());
-            Utils.multTelemetry.addData("Imu", robot.imu.getAngle());
-
             Utils.multTelemetry.update();
-
         }
+         */
     }
 }
-
-
