@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Hardware.Claw;
 import org.firstinspires.ftc.teamcode.Hardware.Controls.Controller2;
 import org.firstinspires.ftc.teamcode.Hardware.Intake;
 import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
@@ -50,8 +51,8 @@ public class MarkIV extends LinearOpMode
     public void initialize(){
         Utils.setOpMode(this);
         robot = new MecanumRobot();
+        robot.claw.setMode(Claw.MODE.RELATIVE);
         controller = new Controller2(gamepad1);
-        robot.claw.resetEncoder();
 
         robot.intake.armUp();
         robot.arm.in();

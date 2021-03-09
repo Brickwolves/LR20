@@ -38,6 +38,8 @@ public class Claw {
         CLOSED
     }
 
+    private MODE mode;
+
     public enum MODE {
         GLOBAL,
         RELATIVE
@@ -52,6 +54,7 @@ public class Claw {
         crServo.setPower(0);
 
         encoder = Utils.hardwareMap.get(DcMotor.class, encoder_id);
+        this.mode = mode;
         if (mode == MODE.RELATIVE) {
             resetEncoder();
             CLOSED_POSITION = RELATIVE_CLOSED_POSITION;
@@ -65,9 +68,21 @@ public class Claw {
         time = new ElapsedTime();
     }
 
+    public void setMode(MODE mode){
+        this.mode = mode;
+        if (mode == MODE.RELATIVE) {
+            resetEncoder();
+            CLOSED_POSITION = RELATIVE_CLOSED_POSITION;
+            OPEN_POSITION = RELATIVE_OPEN_POSITION;
+        }
+        else {
+            CLOSED_POSITION = GLOBAL_CLOSED_POSITION;
+            OPEN_POSITION = GLOBAL_OPEN_POSITION;
+        }
+    }
+
     public void resetEncoder(){
         encoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
     }
 
     public void clawMachine(boolean OPEN_BUTTON, boolean CLOSE_BUTTON, boolean STOP_BUTTON){

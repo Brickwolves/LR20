@@ -60,7 +60,7 @@ public class MecanumRobot implements Robot {
       imu = new IMU("imu");
       //gripper = new Gripper("claw", "arm");
       arm = new Arm("arm");
-      claw = new Claw("claw", "claw_encoder");
+      claw = new Claw("claw", "claw_encoder", Claw.MODE.GLOBAL);
       intake = new Intake("intake", "servo_0", "servo_1");
       shooter = new Shooter("spinny_1", "spinny_2", "servo_4", "servo_5");
 
