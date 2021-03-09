@@ -1,11 +1,15 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.Hardware.Controls.Controller2;
 import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
 import org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Vision;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
@@ -15,39 +19,66 @@ import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-@Autonomous(name="MarkIII - No Vision", group="Autonomous Linear Opmode")
-public class MarkIII extends LinearOpMode
-{
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Movement.diagnostic_inches;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.rpm;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Vision.ring_count;
+
+@Autonomous(name="MarkVI", group="Autonomous Linear Opmode")
+public class MarkVI extends LinearOpMode {
+
     private MecanumRobot robot;
+    private Controller2 controller;
+    private ElapsedTime time;
 
+    private int ringCount;
     OpenCvCamera webcam;
-
-    private FtcDashboard dashboard = FtcDashboard.getInstance();
-    private Telemetry dashboardTelemetry = dashboard.getTelemetry();
-    private MultipleTelemetry multTelemetry = new MultipleTelemetry(telemetry, dashboardTelemetry);
-
-
-    private static double ringCount = 0;
-    private boolean ringsFound = false;
 
     public void initialize(){
         Utils.setOpMode(this);
         robot = new MecanumRobot();
-
+        controller = new Controller2(gamepad1);
+        time = new ElapsedTime();
     }
 
+    public void BREAKPOINT(){
+        while (true){
+            Utils.multTelemetry.addData("Status", "Holding");
+            Utils.multTelemetry.update();
+            if (controller.src.cross) break;
+        }
+    }
+
+    public void shoot(int rings){
+        time.reset();
+        while (true) {
+            robot.intake.armDown();
+            robot.shooter.setRPM(3500);
+
+            if (time.seconds() > 2) {
+                if (robot.shooter.feederCount() < rings) robot.shooter.feederState(true);
+                else break;
+            }
+
+            Utils.multTelemetry.addData("Position", robot.shooter.getPosition());
+            Utils.multTelemetry.update();
+        }
+        robot.shooter.setPower(0);
+        robot.shooter.setFeederCount(0);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
-    public void runOpMode()
-    {
+    public void runOpMode() {
 
         initialize();
 
-
         /*
         Set up camera, and pipeline
-
+         */
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam"), cameraMonitorViewId);
 
@@ -60,88 +91,88 @@ public class MarkIII extends LinearOpMode
                 webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
             }
         });
-        */
 
-
-        telemetry.addLine("Waiting for start");
-        telemetry.update();
         waitForStart();
 
-
-        /*
-        ACTION
-         */
         if (opModeIsActive()){
 
-            double MOE = 1;
-            if (Dash_Vision.diagnostic_ring_count == 1.0 || Dash_Vision.diagnostic_ring_count == 4.0) ringsFound = true;
-
-            // Go to Ring Identification Position
-            multTelemetry.addData("Status", "Strafing to Ring Position");
-            multTelemetry.update();
-            robot.strafe(-90, 12, 0, 0.075, null);
-
-
-            // Go to Power Shot Position
-            multTelemetry.addData("Status", "Strafing to Power Shot Position");
-            multTelemetry.update();
-            robot.strafe(-90, 32, 0, 0.075, null);
-            robot.strafe(0, 58, 0, 0.075, null);
-
-
-            // Shooting Power Shots
-            for (int i=0; i < 3; i++){
-                multTelemetry.addData("Status", "Shooting Power Shot: " + i);
-                multTelemetry.update();
-                sleep(1000);
-
-                multTelemetry.addData("Status", "Strafing to next Power Shot");
-                multTelemetry.update();
-                sleep(1000);
-                robot.strafe(-90, 2, 0, 0.075, null);
-            }
-
-            if (Dash_Vision.diagnostic_ring_count == 0.0){
-
-                // Go to A
-                multTelemetry.addData("Status", "Moving to A");
-                multTelemetry.update();
-                robot.strafe(0, 12, 0, 0.075, null);
-                robot.strafe(90, 52, 0, 0.075, null);
-            }
-            else if (Dash_Vision.diagnostic_ring_count == 1.0){
-
-                // Go to B
-                multTelemetry.addData("Status", "Moving to B");
-                multTelemetry.update();
-                robot.strafe(0, 40, 0, 0.075, null);
-                robot.strafe(90, 30, 0, 0.075, null);
-
-            }
-            else {
-
-                // Go to C
-                multTelemetry.addData("Status", "Moving to C");
-                multTelemetry.update();
-                robot.strafe(0, 63, 0, 0.075, null);
-                robot.strafe(90, 52, 0, 0.075, null);
-            }
-
-
-
-
-
-
-            /*
-            telemetry.addData("FPS", String.format("%.2f", webcam.getFps()));
-            telemetry.update();
             webcam.stopStreaming();
-            sleep(3000);
-             */
 
-
+            if (ringCount == 0) A();
+            else if (ringCount == 1) B();
+            else C();
         }
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public void A(){
+        robot.strafe(0, 40, 90, 0.1, null);
+        robot.strafe(-90, 14, 90, 0.1, null);
+
+        shoot(4);
+
+        robot.strafe(40, 40, 90, 0.1, null);
+        robot.turn(-90,0.01);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public void B(){
+
+        // Strafe to shooting position
+        robot.strafe(0, 40, 90, 0.1, null);
+        robot.strafe(-90, 14, 90, 0.1, null);
+        shoot(4);
+
+        // Intake Rings
+        robot.strafe(90, 10, 90, 0.1, null);
+        robot.turn(0, 0.01);
+        robot.intake.setIntakePower(1);
+        robot.strafe(0, 20, 0, 0.1, null);
+        robot.intake.setIntakePower(0);
+
+
+        robot.strafe(180, 10, 0, 0.05, null);
+        robot.turn(90, 0.05);
+        robot.strafe(0, 5, 90, 0.1, null);
+
+        shoot(2);
+
+        robot.strafe(-10, 45, 90, 0.1, null);
+
+        robot.turn(-100, 0.05);
+
+        time.reset();
+        while (time.seconds() < 1){
+            robot.arm.out();
+        }
+    }
+
+    public void C(){
+
+        // Strafe to shooting position
+        robot.strafe(0, 40, 90, 0.1, null);
+        robot.strafe(-90, 14, 90, 0.1, null);
+        shoot(4);
+
+        BREAKPOINT();
+
+        time.reset();
+        while (time.seconds() < 1){
+            robot.intake.armMid();
+        }
+
+        // Knock of the top ring
+        robot.strafe(180, 10, 90, 0.1, null);
+        robot.strafe(-90, 20, 90, 0.1, null);
+
+        BREAKPOINT();
+
+        // Strafe back to put down front bumper
+        robot.strafe(170, 20, 90, 0.1, null);
+
+
+    }
+
 
     class RingDetectingPipeline extends OpenCvPipeline
     {
@@ -214,43 +245,20 @@ public class MarkIII extends LinearOpMode
                     finalUpperAve > Dash_Vision.orangeMin &&
                             finalUpperAve < Dash_Vision.orangeMax
 
-            ) ringCount = 4.0;
+            ) ringCount = 4;
                 // Check 0 rings
             else if (
 
                     finalLowerAve > Dash_Vision.orangeMax ||
                             finalLowerAve < Dash_Vision.orangeMin
 
-            ) ringCount = 0.0;
-            else ringCount = 1.0;
+            ) ringCount = 0;
+            else ringCount = 1;
 
-            /**
-             * RECT_BOTTOM_X1: 0.75
-             * RECT_BOTTOM_X2: 0.9
-             * RECT_BOTTOM_Y1: 0.38
-             * RECT_BOTTOM_Y2: 0.42
-             * RECT_TOP_X1: 0.75
-             * RECT_TOP_X2: 0.9
-             * RECT_TOP_Y1: 0.3
-             * RECT_TOP_Y2: 0.38
-             * Given a distance of around 3ft from rings
-             */
-
-            /*
-            multTelemetry.addData("RECT_TOP_X1", DashConstants.rectTopX1Percent);
-            multTelemetry.addData("RECT_TOP_Y1", DashConstants.rectTopY1Percent);
-            multTelemetry.addData("RECT_TOP_X2", DashConstants.rectTopX2Percent);
-            multTelemetry.addData("RECT_TOP_Y2", DashConstants.rectTopY2Percent);
-            multTelemetry.addData("RECT_BOTTOM_X1", DashConstants.rectBottomX1Percent);
-            multTelemetry.addData("RECT_BOTTOM_Y1", DashConstants.rectBottomY1Percent);
-            multTelemetry.addData("RECT_BOTTOM_X2", DashConstants.rectBottomX2Percent);
-            multTelemetry.addData("RECT_BOTTOM_Y2", DashConstants.rectBottomY2Percent);
-            */
-
-            multTelemetry.addData("Ring Count", ringCount);
-            multTelemetry.addData("finalLowerAve: ", finalLowerAve);
-            multTelemetry.addData("finalUpperAve: ", finalUpperAve);
-            multTelemetry.update();
+            Utils.multTelemetry.addData("Ring Count", ringCount);
+            Utils.multTelemetry.addData("finalLowerAve: ", finalLowerAve);
+            Utils.multTelemetry.addData("finalUpperAve: ", finalUpperAve);
+            Utils.multTelemetry.update();
 
             // Return altered image
             return outPut;
@@ -271,4 +279,5 @@ public class MarkIII extends LinearOpMode
             }
         }
     }
+
 }

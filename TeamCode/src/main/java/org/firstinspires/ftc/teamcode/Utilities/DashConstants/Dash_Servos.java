@@ -4,7 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 @Config
 public class Dash_Servos {
 
-    public static double SERVO_DIFFERENCE = 0;
+    public static double SERVO_DIFFERENCE = 0.06;
 
     public static double LEFT_ARM_SERVO_HOME = 0.53;
     public static double LEFT_ARM_SERVO_MIN = 0.53;

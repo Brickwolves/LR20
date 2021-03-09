@@ -132,22 +132,19 @@ public class Gamma extends LinearOpMode {
 
             // ARM
             if (controller2.src.dpad_right){
-                robot.arm.in();
+                robot.arm.out();
             }
             else if (controller2.src.dpad_up) {
                 robot.arm.up();
             }
             else if (controller2.src.dpad_left) {
-                robot.arm.out();
+                robot.arm.in();
             }
 
             robot.claw.clawMachine(controller2.src.triangle, controller2.src.cross, controller2.src.square);
 
-            Utils.multTelemetry.addData("Claw Status", robot.claw.getStatus());
-            Utils.multTelemetry.addData("Claw Power", robot.claw.getPower());
-            Utils.multTelemetry.addData("Claw Position", robot.claw.getClawPosition());
-            Utils.multTelemetry.addData("Claw Delta2Open", robot.claw.getDelta2Open());
-            Utils.multTelemetry.addData("Claw Delta2Close", robot.claw.getDelta2Close());
+            Utils.multTelemetry.addData("LARM Servo", robot.intake.getLeftServoPosition());
+            Utils.multTelemetry.addData("RArm Servo", robot.intake.getRightServoPosition());
 
 
 

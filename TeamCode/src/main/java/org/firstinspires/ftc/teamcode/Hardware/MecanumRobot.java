@@ -229,7 +229,7 @@ public class MecanumRobot implements Robot {
 
 
          double elapsedTime = Math.abs(System.currentTimeMillis() - startTime);
-         if (elapsedTime > 3000) break;
+         if (elapsedTime > 1500) break;
 
 
          Utils.multTelemetry.addData("Error", error);

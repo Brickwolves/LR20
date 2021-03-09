@@ -10,7 +10,6 @@ import org.firstinspires.ftc.teamcode.Utilities.Utils;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.*;
 
 
-
 @TeleOp(name = "ServoDiag TeleOp", group="Linear TeleOp")
 public class ServoDiag extends LinearOpMode {
 

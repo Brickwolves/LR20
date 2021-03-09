@@ -85,6 +85,70 @@ public class Claw {
         encoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
+    public void clawMachine(boolean OPEN_BUTTON, boolean CLOSE_BUTTON, boolean STOP_BUTTON, DcMotor encoder){
+
+        switch (current_state) {
+
+            case STOPPED:
+                status = "STOPPED";
+                claw_position = encoder.getCurrentPosition();
+
+                crServo.setPower(0);
+
+                if (OPEN_BUTTON) current_state = STATE.OPENING;
+                else if (CLOSE_BUTTON) current_state = STATE.CLOSING;
+
+                break;
+
+            case OPEN:
+                status = "OPEN";
+                claw_position = encoder.getCurrentPosition();
+
+                crServo.setPower(0);
+                if (CLOSE_BUTTON) current_state = STATE.CLOSING;
+                break;
+
+            case CLOSED:
+                status = "CLOSED";
+                claw_position = encoder.getCurrentPosition();
+
+                crServo.setPower(0);
+                if (OPEN_BUTTON) current_state = STATE.OPENING;
+                break;
+
+            case OPENING:
+                status = "OPENING";
+                claw_position = encoder.getCurrentPosition();
+
+                delta2Open = claw_position - OPEN_POSITION;
+                if (Math.abs(delta2Open) > MOE) crServo.setPower(CRSERVO_POWER);
+                else {
+                    current_state = STATE.OPEN;
+                    break;
+                }
+
+                if (STOP_BUTTON) current_state = STATE.STOPPED;
+                else if (CLOSE_BUTTON) current_state = STATE.CLOSING;
+                break;
+
+
+            case CLOSING:
+                status = "CLOSING";
+                claw_position = encoder.getCurrentPosition();
+
+                delta2Close = Math.abs(claw_position - CLOSED_POSITION);
+                if (delta2Close > MOE) crServo.setPower(-CRSERVO_POWER);
+                else {
+                    current_state = STATE.CLOSED;
+                    break;
+                }
+
+                if (STOP_BUTTON) current_state = STATE.STOPPED;
+                else if (OPEN_BUTTON) current_state = STATE.OPENING;
+                break;
+        }
+    }
+
     public void clawMachine(boolean OPEN_BUTTON, boolean CLOSE_BUTTON, boolean STOP_BUTTON){
 
         switch (current_state) {

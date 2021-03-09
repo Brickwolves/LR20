@@ -14,22 +14,20 @@ public class MarkV extends LinearOpMode {
 
     private Controller2 controller;
     private MecanumRobot robot;
-    private DcMotor claw_encoder;
-    private Claw claw;
+    private DcMotor encoder;
 
-    private double robot_claw_pos, encoder_pos, claw_pos;
+    private double claw_pos;
 
     public void initialize() {
         Utils.setOpMode(this);
         controller = new Controller2(gamepad1);
 
         robot = new MecanumRobot();
-        claw_encoder = Utils.hardwareMap.get(DcMotor.class, "claw_encoder");
-        claw = new Claw("claw", "claw_encoder", Claw.MODE.GLOBAL);
+        encoder = Utils.hardwareMap.get(DcMotor.class, "claw_encoder");
     }
 
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() {
         initialize();
 
         Utils.multTelemetry.addLine("Waiting for start");
@@ -37,12 +35,12 @@ public class MarkV extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()){
-            robot_claw_pos  = robot.claw.getClawPosition();
-            encoder_pos     = claw_encoder.getCurrentPosition();
-            claw_pos        = claw.getClawPosition();
-            Utils.multTelemetry.addData("Rob Claw Pos", robot_claw_pos);
-            Utils.multTelemetry.addData("Encoder Pos", encoder_pos);
+            claw_pos        = robot.claw.getClawPosition();
             Utils.multTelemetry.addData("Claw Pos", claw_pos);
+
+
+            robot.claw.clawMachine(controller.src.dpad_up, controller.src.dpad_down, controller.src.square, encoder);
+
 
             Utils.multTelemetry.update();
         }
