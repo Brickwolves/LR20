@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Hardware.Controls.Controller2;
+import org.firstinspires.ftc.teamcode.Hardware.Intake;
 import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
 import org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Movement;
 import org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter;
@@ -83,41 +84,27 @@ public class MarkIV extends LinearOpMode
 
 
     public void shoot(int rings){
-        boolean shooter_on = true;
-        boolean timed_out = false;
         ElapsedTime t = new ElapsedTime();
 
-        while (shooter_on){
+        // Start Shooter & Shoot
+        while (true) {
             robot.shooter.setRPM(ps_rpm);
-            double rpm_error = Math.abs(ps_rpm - robot.shooter.getRPM());
-            if (t.seconds() > 5){
-
+            if (t.seconds() > 6) {
                 if (robot.shooter.feederCount() < rings) robot.shooter.feederState(true);
-                else if (robot.shooter.feederCount() >= rings) {
-                    robot.shooter.setFeederCount(0);
-                    shooter_on = false;
-                }
+                else break;
             }
 
             Utils.multTelemetry.addData("Status", "Shooting");
             Utils.multTelemetry.addData("PS RPM", ps_rpm);
             Utils.multTelemetry.addData("RPM", robot.shooter.getRPM());
-            Utils.multTelemetry.addData("RPM Error", rpm_error);
             Utils.multTelemetry.addData("Time", t.seconds());
             Utils.multTelemetry.update();
 
-            // Time Out Condition
-            if (t.seconds() > 20){
-                timed_out = true;
-                break;
-            }
         }
+        robot.shooter.setFeederCount(0);
 
-        if (timed_out){
-            Utils.multTelemetry.addData("Status", "Timed Out");
-            Utils.multTelemetry.update();
-            sleep(3000);
-        }
+
+        // Stop Shooter
         while (robot.shooter.getRPM() != 0){
             robot.shooter.setRPM(0);
         }
@@ -139,6 +126,8 @@ public class MarkIV extends LinearOpMode
     @Override
     public void runOpMode()
     {
+
+        ElapsedTime t = new ElapsedTime();
 
         initialize();
 
@@ -165,14 +154,17 @@ public class MarkIV extends LinearOpMode
         multTelemetry.update();
         waitForStart();
 
-        breakpoint();
-
-        robot.strafe(diag_deg, diagnostic_inches, 90, 0.1, null);
+        robot.strafe(0, 39, 90, 0.1, null);
 
         breakpoint();
 
-        ElapsedTime t = new ElapsedTime();
-        while (t.seconds() < 3) robot.intake.armDown();
+        while (robot.intake.getStatus() != Intake.STATUS.DOWN) {
+            robot.intake.armDown();
+            Utils.multTelemetry.addLine("Lowering front bumper");
+            Utils.multTelemetry.update();
+        }
+
+        breakpoint();
 
         shoot(3);
 

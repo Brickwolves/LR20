@@ -8,8 +8,11 @@ public class Dash_CRServoDiag {
     public static double millis_to_open = 1772;
     public static double millis_to_close = 1870;
 
-    public static double CLOSE_POSITION = -1790;
-    public static double OPEN_POSITION = 0;
+    public static double GLOBAL_CLOSED_POSITION  = -1790;
+    public static double GLOBAL_OPEN_POSITION    = -35;
+    public static double RELATIVE_CLOSED_POSITION  = -1755;
+    public static double RELATIVE_OPEN_POSITION    = 0;
+
     public static double MOE = 25;
 
 

@@ -6,10 +6,14 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_CRServoDiag.CLOSE_POSITION;
+
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_CRServoDiag.CRSERVO_POWER;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_CRServoDiag.MOE;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_CRServoDiag.OPEN_POSITION;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_CRServoDiag.RELATIVE_OPEN_POSITION;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_CRServoDiag.RELATIVE_CLOSED_POSITION;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_CRServoDiag.GLOBAL_OPEN_POSITION;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_CRServoDiag.GLOBAL_CLOSED_POSITION;
+
 
 public class Claw {
 
@@ -19,6 +23,9 @@ public class Claw {
     private String status = "IDLE";
 
     private double claw_position, delta2Open, delta2Close, power;
+
+    private double CLOSED_POSITION;
+    private double OPEN_POSITION;
 
     private ElapsedTime time;
 
@@ -30,22 +37,37 @@ public class Claw {
         OPEN,
         CLOSED
     }
-    private STATE current_state = STATE.STOPPED;
-    private STATE last_state = current_state;
 
-    public Claw(String crServo_id, String encoder_id){
+    public enum MODE {
+        GLOBAL,
+        RELATIVE
+    }
+
+    private STATE current_state = STATE.STOPPED;
+
+    public Claw(String crServo_id, String encoder_id, MODE mode){
 
         crServo = Utils.hardwareMap.get(CRServo.class, crServo_id);
         crServo.setDirection(CRServo.Direction.FORWARD);
         crServo.setPower(0);
 
         encoder = Utils.hardwareMap.get(DcMotor.class, encoder_id);
+        if (mode == MODE.RELATIVE) {
+            resetEncoder();
+            CLOSED_POSITION = RELATIVE_CLOSED_POSITION;
+            OPEN_POSITION = RELATIVE_OPEN_POSITION;
+        }
+        else {
+            CLOSED_POSITION = GLOBAL_CLOSED_POSITION;
+            OPEN_POSITION = GLOBAL_OPEN_POSITION;
+        }
 
         time = new ElapsedTime();
     }
 
     public void resetEncoder(){
         encoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
     }
 
     public void clawMachine(boolean OPEN_BUTTON, boolean CLOSE_BUTTON, boolean STOP_BUTTON){
@@ -99,7 +121,7 @@ public class Claw {
                 status = "CLOSING";
                 claw_position = encoder.getCurrentPosition();
 
-                delta2Close = Math.abs(claw_position - CLOSE_POSITION);
+                delta2Close = Math.abs(claw_position - CLOSED_POSITION);
                 if (delta2Close > MOE) crServo.setPower(-CRSERVO_POWER);
                 else {
                     current_state = STATE.CLOSED;
@@ -117,7 +139,7 @@ public class Claw {
     }
 
     public double getPower(){
-        return power;
+        return crServo.getPower();
     }
 
     public double getClawPosition(){

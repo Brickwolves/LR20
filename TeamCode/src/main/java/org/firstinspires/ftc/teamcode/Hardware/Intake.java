@@ -27,9 +27,14 @@ public class Intake {
     private DcMotor intake_motor;
     private Servo left_arm_servo;
     private Servo right_arm_servo;
+    private STATUS status;
+    public enum STATUS {
+        UP,
+        MID,
+        DOWN
+    }
 
     public Intake(String intake_motor_id, String left_servo_id, String right_servo_id){
-
 
         this.intake_motor_id = intake_motor_id;
         this.left_servo_id = left_servo_id;
@@ -47,7 +52,6 @@ public class Intake {
         right_arm_servo.setDirection(Servo.Direction.FORWARD);
         right_arm_servo.setPosition(RIGHT_ARM_SERVO_HOME);
 
-
     }
 
     public void setIntakePower(double power){
@@ -56,19 +60,30 @@ public class Intake {
     public void armUp(){
         left_arm_servo.setPosition(LEFT_ARM_SERVO_MIN);
         right_arm_servo.setPosition(RIGHT_ARM_SERVO_MAX);
+
+        if (left_arm_servo.getPosition() == LEFT_ARM_SERVO_MIN && right_arm_servo.getPosition() == RIGHT_ARM_SERVO_MAX){
+            status = STATUS.UP;
+        }
     }
 
     public void armMid(){
         left_arm_servo.setPosition(LEFT_ARM_SERVO_MID);
         right_arm_servo.setPosition(RIGHT_ARM_SERVO_MID);
+        if (left_arm_servo.getPosition() == LEFT_ARM_SERVO_MID && right_arm_servo.getPosition() == RIGHT_ARM_SERVO_MID){
+            status = STATUS.MID;
+        }
     }
 
     public void armDown(){
         left_arm_servo.setPosition(LEFT_ARM_SERVO_MAX);
         right_arm_servo.setPosition(RIGHT_ARM_SERVO_MIN);
+
+        if (left_arm_servo.getPosition() == LEFT_ARM_SERVO_MAX && right_arm_servo.getPosition() == RIGHT_ARM_SERVO_MIN){
+            status = STATUS.DOWN;
+        }
     }
 
-
+    public STATUS getStatus() { return status; }
     public double getLeftServoPosition(){
         return left_arm_servo.getPosition();
     }
@@ -84,7 +99,6 @@ public class Intake {
     public void shutdown(){
         armUp();
         setIntakePower(0);
-        sleep(1000);
     }
 
 }
