@@ -79,7 +79,7 @@ public class Utils {
          * Simply returns a proportional constant
          */
 
-        position += 0.01;           // Necessary otherwise we're stuck at position 0 (sqrt(0) = 0)
+        position += 0.1;           // Necessary otherwise we're stuck at position 0 (sqrt(0) = 0)
         double normFactor = 1 / Math.sqrt(0.1 * distance);
 
         // Modeling a piece wise of power as a function of distance

@@ -17,7 +17,7 @@ public class Arm {
     public Arm(String id) {
         servo = Utils.hardwareMap.get(Servo.class, id);
         servo.setDirection(Servo.Direction.FORWARD);
-        servo.setPosition(SERVO_ARM_HOME);
+        servo.setPosition(IN_POS);
     }
 
     public void setArmPosition(double position){

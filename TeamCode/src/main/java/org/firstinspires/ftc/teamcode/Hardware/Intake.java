@@ -8,9 +8,11 @@ import org.firstinspires.ftc.teamcode.Utilities.Utils;
 import static android.os.SystemClock.sleep;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.LEFT_ARM_SERVO_HOME;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.LEFT_ARM_SERVO_MAX;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.LEFT_ARM_SERVO_MID;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.LEFT_ARM_SERVO_MIN;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.RIGHT_ARM_SERVO_HOME;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.RIGHT_ARM_SERVO_MAX;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.RIGHT_ARM_SERVO_MID;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.RIGHT_ARM_SERVO_MIN;
 
 public class Intake {
@@ -57,8 +59,8 @@ public class Intake {
     }
 
     public void armMid(){
-        left_arm_servo.setPosition();
-        right_arm_servo.setPosition();
+        left_arm_servo.setPosition(LEFT_ARM_SERVO_MID);
+        right_arm_servo.setPosition(RIGHT_ARM_SERVO_MID);
     }
 
     public void armDown(){

@@ -25,6 +25,8 @@ import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvPipeline;
 
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Movement.diag_deg;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Movement.diagnostic_inches;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.ps_rpm;
 
 @Autonomous(name="MarkIV", group="Autonomous Linear Opmode")
@@ -48,10 +50,36 @@ public class MarkIV extends LinearOpMode
         Utils.setOpMode(this);
         robot = new MecanumRobot();
         controller = new Controller2(gamepad1);
+        robot.claw.resetEncoder();
 
-        robot.arm.up();
-        robot.intake.armDown();
+        robot.intake.armUp();
+        robot.arm.in();
+
+        while (!robot.claw.getStatus().equals("OPEN")) {
+            robot.claw.clawMachine(true, false, false);
+        }
+        breakpoint();
+        while (!robot.claw.getStatus().equals("CLOSED")) {
+            robot.claw.clawMachine(false, true, false);
+        }
+
+
     }
+    public void shutdown() {
+        robot.arm.in();
+        robot.intake.armUp();
+    }
+    public void breakpoint(){
+        while (true){
+            Utils.multTelemetry.addData("Status", "Holding");
+            Utils.multTelemetry.addData("Claw Position", robot.claw.getClawPosition());
+            Utils.multTelemetry.update();
+            if (controller.src.cross) break;
+        }
+        Utils.multTelemetry.addData("Status", "Continuing");
+        Utils.multTelemetry.update();
+    }
+
 
 
     public void shoot(int rings){
@@ -62,7 +90,7 @@ public class MarkIV extends LinearOpMode
         while (shooter_on){
             robot.shooter.setRPM(ps_rpm);
             double rpm_error = Math.abs(ps_rpm - robot.shooter.getRPM());
-            if (rpm_error < 500){
+            if (t.seconds() > 5){
 
                 if (robot.shooter.feederCount() < rings) robot.shooter.feederState(true);
                 else if (robot.shooter.feederCount() >= rings) {
@@ -76,7 +104,6 @@ public class MarkIV extends LinearOpMode
             Utils.multTelemetry.addData("RPM", robot.shooter.getRPM());
             Utils.multTelemetry.addData("RPM Error", rpm_error);
             Utils.multTelemetry.addData("Time", t.seconds());
-
             Utils.multTelemetry.update();
 
             // Time Out Condition
@@ -91,27 +118,22 @@ public class MarkIV extends LinearOpMode
             Utils.multTelemetry.update();
             sleep(3000);
         }
+        while (robot.shooter.getRPM() != 0){
+            robot.shooter.setRPM(0);
+        }
     }
+
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void powerShot(double startAngle){
         startAngle = 82;
         for (int i=0; i < 3; i++){
-            robot.turn(startAngle * (7 + i), 0.01);
+            robot.turn(startAngle + (7 * i), 0.01);
             shoot(1);
         }
     }
 
 
-    public void breakpoint(){
-        while (true){
-            Utils.multTelemetry.addData("Status", "Holding");
-            Utils.multTelemetry.update();
-            if (controller.src.cross) break;
-        }
-        Utils.multTelemetry.addData("Status", "Continuing");
-        Utils.multTelemetry.update();
-    }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -143,47 +165,57 @@ public class MarkIV extends LinearOpMode
         multTelemetry.update();
         waitForStart();
 
+        breakpoint();
 
-        /*
-        ACTION
-         */
+        robot.strafe(diag_deg, diagnostic_inches, 90, 0.1, null);
 
         breakpoint();
 
-        shoot(Dash_Shooter.rings);
-        //robot.strafe(-26, 60, 90, 0.1, null);
-        //powerShot(82);
+        ElapsedTime t = new ElapsedTime();
+        while (t.seconds() < 3) robot.intake.armDown();
 
-/*        double startAngle = 82;
+        shoot(3);
 
-        while (robot.shooter.getRPM() < ps_rpm){
-            robot.shooter.setRPM(ps_rpm);
-            multTelemetry.addData("RPM", robot.shooter.getRPM());
-            multTelemetry.update();
-        };
-        robot.turn(startAngle, 0.01);
-        shoot(Dash_Shooter.millis);
+        //shoot(Dash_Shooter.rings);
+        //robot.strafe(-26, 60, 90, 0.2, null);
 
-        while (robot.shooter.getRPM() < ps_rpm){
-            robot.shooter.setRPM(ps_rpm);
-            multTelemetry.addData("RPM", robot.shooter.getRPM());
-            multTelemetry.update();
-        };
-        robot.turn(startAngle + 7, 0.01);
-        shoot(Dash_Shooter.millis);
+        //robot.turn(82, 0.01);
 
-        while (robot.shooter.getRPM() < ps_rpm){
-            robot.shooter.setRPM(ps_rpm);
-            multTelemetry.addData("RPM", robot.shooter.getRPM());
-            multTelemetry.update();
-        };
-        robot.turn(startAngle + (7 * 2), 0.01);
-        shoot(Dash_Shooter.millis);*/
 
+        //robot.intake.armDown();
+        //shoot(1);
+
+
+
+        //breakpoint();
+
+        //robot.turn(90, 0.01);
+
+        //breakpoint();
+
+        while (!robot.claw.getStatus().equals("OPEN")) {
+            robot.claw.clawMachine(true, false, false);
+        }
 
         Utils.multTelemetry.addData("Status", "Finishing");
         Utils.multTelemetry.update();
     }
+
+    public void A(){
+
+    }
+
+
+    public void B(){
+
+    }
+
+
+    public void C(){
+
+    }
+
+
 
     class RingDetectingPipeline extends OpenCvPipeline
     {

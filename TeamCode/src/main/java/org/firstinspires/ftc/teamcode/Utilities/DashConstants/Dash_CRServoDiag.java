@@ -8,9 +8,9 @@ public class Dash_CRServoDiag {
     public static double millis_to_open = 1772;
     public static double millis_to_close = 1870;
 
-    public static double OPEN_POSITION = -35;
-    public static double CLOSE_POSITION = -1750;
-    public static double MOE = 75;
+    public static double CLOSE_POSITION = -1790;
+    public static double OPEN_POSITION = 0;
+    public static double MOE = 25;
 
 
     public static boolean STATE_MACHINE_ON = false;

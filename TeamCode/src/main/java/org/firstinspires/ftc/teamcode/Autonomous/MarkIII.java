@@ -17,8 +17,8 @@ import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-@Autonomous(name="Mark3 - No Vision", group="Autonomous Linear Opmode")
-public class Mark3 extends LinearOpMode
+@Autonomous(name="MarkIII - No Vision", group="Autonomous Linear Opmode")
+public class MarkIII extends LinearOpMode
 {
     private MecanumRobot robot;
 

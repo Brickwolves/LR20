@@ -44,6 +44,10 @@ public class Claw {
         time = new ElapsedTime();
     }
 
+    public void resetEncoder(){
+        encoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+
     public void clawMachine(boolean OPEN_BUTTON, boolean CLOSE_BUTTON, boolean STOP_BUTTON){
 
         switch (current_state) {
@@ -79,8 +83,8 @@ public class Claw {
                 status = "OPENING";
                 claw_position = encoder.getCurrentPosition();
 
-                delta2Open = Math.abs(claw_position - OPEN_POSITION);
-                if (delta2Open > MOE) crServo.setPower(CRSERVO_POWER);
+                delta2Open = claw_position - OPEN_POSITION;
+                if (Math.abs(delta2Open) > MOE) crServo.setPower(CRSERVO_POWER);
                 else {
                     current_state = STATE.OPEN;
                     break;
@@ -92,6 +96,7 @@ public class Claw {
 
 
             case CLOSING:
+                status = "CLOSING";
                 claw_position = encoder.getCurrentPosition();
 
                 delta2Close = Math.abs(claw_position - CLOSE_POSITION);
@@ -105,6 +110,10 @@ public class Claw {
                 else if (OPEN_BUTTON) current_state = STATE.OPENING;
                 break;
         }
+    }
+
+    public DcMotor.RunMode getEncoderMode(){
+        return encoder.getMode();
     }
 
     public double getPower(){

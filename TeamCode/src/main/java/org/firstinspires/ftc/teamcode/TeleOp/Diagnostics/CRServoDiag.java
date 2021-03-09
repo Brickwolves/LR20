@@ -43,6 +43,7 @@ public class CRServoDiag extends LinearOpMode {
         arm = new Arm("arm");
 
         claw_encoder = Utils.hardwareMap.get(DcMotor.class, "claw_encoder");
+
         start_position = claw_encoder.getCurrentPosition();
 
         crServo = Utils.hardwareMap.get(CRServo.class, CRSERVO_ID);
@@ -54,6 +55,7 @@ public class CRServoDiag extends LinearOpMode {
         Utils.multTelemetry.addData("Status", "Initialized");
         Utils.multTelemetry.addData("Start Keys", "Press [>] to begin");
         Utils.multTelemetry.addData("Shutdown Keys", "Press [RB] & [LB] simultaneously");
+        Utils.multTelemetry.addData("MODE", claw_encoder.getMode());
         Utils.multTelemetry.update();
     }
 

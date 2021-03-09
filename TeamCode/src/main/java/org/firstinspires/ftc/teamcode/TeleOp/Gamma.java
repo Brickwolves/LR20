@@ -141,21 +141,13 @@ public class Gamma extends LinearOpMode {
 
             robot.claw.clawMachine(controller2.src.triangle, controller2.src.cross, controller2.src.square);
 
-            // CLAW
-            //if (controller2.cross_toggle) robot.gripper.closeClaw();
-            //else robot.gripper.openClaw();
-            //robot.gripper.clawMachine(controller2.src.dpad_left, controller2.src.dpad_right, controller2.src.cross);
-
-            /*
-            if (controller2.src.triangle) robot.claw.open();
-            else if (controller2.src.cross) robot.claw.close();
-            else if (controller2.src.square) robot.claw.stop();
-            robot.claw.checkLimit();
-             */
-
-
             Utils.multTelemetry.addData("Claw Status", robot.claw.getStatus());
             Utils.multTelemetry.addData("Claw Power", robot.claw.getPower());
+            Utils.multTelemetry.addData("Claw Position", robot.claw.getClawPosition());
+            Utils.multTelemetry.addData("Claw Position", robot.claw.getDelta2Open());
+            Utils.multTelemetry.addData("Claw Position", robot.claw.getDelta2Close());
+
+
 
 
 
