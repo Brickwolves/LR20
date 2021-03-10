@@ -36,13 +36,13 @@ public class Claw {
     public void setRightServoPosition(double position) { right_servo.setPosition(position);}
 
     public void open() {
-        left_servo.setPosition();
-        right_servo.setPosition();
+        //left_servo.setPosition();
+        //right_servo.setPosition();
     }
 
     public void close() {
-        left_servo.setPosition();
-        right_servo.setPosition();
+        //left_servo.setPosition();
+        //right_servo.setPosition();
     }
 
     public void resetHome(){

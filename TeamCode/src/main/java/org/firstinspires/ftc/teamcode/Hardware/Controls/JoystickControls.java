@@ -4,7 +4,6 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import org.firstinspires.ftc.teamcode.Utilities.Point;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.Input.*;
 
-import java.security.Key;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,7 +20,7 @@ public class JoystickControls {
         X, Y,
         SHIFTED_X, SHIFTED_Y,
         INVERT_X, INVERT_Y,
-        INVERT_SHIFTED_X, INVERT_SHIFTED_Y;
+        INVERT_SHIFTED_X, INVERT_SHIFTED_Y
     }
 
     public interface StickCheck {

@@ -27,7 +27,7 @@ import static java.lang.Math.abs;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.rpm;
 
 
-@TeleOp(name = "Gamma TeleOp", group="Linear TeleOp")
+@TeleOp(name = "Zeta TeleOp", group="Linear TeleOp")
 public class Zeta extends LinearOpMode {
 
     // Main Stuff

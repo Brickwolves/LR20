@@ -6,7 +6,7 @@ import org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonChe
 
 public class Button {
 
-    private ElapsedTime time = time = new ElapsedTime();;
+    private ElapsedTime time = time = new ElapsedTime();
     private double waitTime = 0.2;
 
     public boolean pressed_last_cycle;

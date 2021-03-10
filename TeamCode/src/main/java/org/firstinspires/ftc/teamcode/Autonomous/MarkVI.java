@@ -23,6 +23,10 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Movement.diag_deg;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Movement.diagnostic_inches;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Vision.ring_count;
+
 @Autonomous(name="MarkVI", group="Autonomous Linear Opmode")
 public class MarkVI extends LinearOpMode {
 
@@ -51,15 +55,16 @@ public class MarkVI extends LinearOpMode {
     public void shoot(int rings){
         time.reset();
         while (true) {
-            robot.intake.armDown();
             robot.shooter.setRPM(3500);
 
-            if (time.seconds() > 2) {
+            if (time.seconds() > 3) {
                 if (robot.shooter.feederCount() < rings) robot.shooter.feederState(true);
                 else break;
             }
 
             Utils.multTelemetry.addData("Position", robot.shooter.getPosition());
+            Utils.multTelemetry.addData("RPM", robot.shooter.getRPM());
+
             Utils.multTelemetry.update();
         }
         robot.shooter.setPower(0);
@@ -94,6 +99,7 @@ public class MarkVI extends LinearOpMode {
 
             webcam.stopStreaming();
 
+            ringCount = ring_count;
             if (ringCount == 0) A();
             else if (ringCount == 1) B();
             else C();
@@ -102,7 +108,7 @@ public class MarkVI extends LinearOpMode {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void A(){
-        robot.strafe(0, 40, 90, 0.1, null);
+        robot.strafe(0, 40, 90, 0.1, () -> robot.intake.armDown());
         robot.strafe(-90, 14, 90, 0.1, null);
 
         shoot(4);
@@ -115,7 +121,7 @@ public class MarkVI extends LinearOpMode {
     public void B(){
 
         // Strafe to shooting position
-        robot.strafe(0, 40, 90, 0.1, null);
+        robot.strafe(0, 40, 90, 0.1, () -> robot.intake.armDown());
         robot.strafe(-90, 14, 90, 0.1, null);
         shoot(4);
 
@@ -127,7 +133,7 @@ public class MarkVI extends LinearOpMode {
         robot.intake.setIntakePower(0);
 
 
-        robot.strafe(180, 10, 0, 0.05, null);
+        robot.strafe(180, 10, 0, 0.05, () -> robot.intake.armDown());
         robot.turn(90, 0.05);
         robot.strafe(0, 5, 90, 0.1, null);
 
@@ -143,29 +149,50 @@ public class MarkVI extends LinearOpMode {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public void C(){
 
         // Strafe to shooting position
-        robot.strafe(0, 40, 90, 0.1, null);
+        robot.strafe(0, 40, 90, 0.1, () -> robot.intake.armMid());
         robot.strafe(-90, 14, 90, 0.1, null);
         shoot(4);
 
-        BREAKPOINT();
-
-        time.reset();
-        while (time.seconds() < 1){
-            robot.intake.armMid();
-        }
-
         // Knock of the top ring
         robot.strafe(180, 10, 90, 0.1, null);
-        robot.strafe(-90, 20, 90, 0.1, null);
-
-        BREAKPOINT();
+        robot.strafe(-90, 14, 90, 0.1, null);
 
         // Strafe back to put down front bumper
-        robot.strafe(170, 20, 90, 0.1, null);
+        robot.strafe(150, 7, 90, 0.1, null);
 
+        time.reset();
+        while (time.seconds() < 1){ robot.intake.armDown(); }
+
+        // Intake rings
+        robot.intake.setIntakePower(1);
+        robot.strafe(0, 25, 90, 0.01, null);
+        sleep(1000);
+        robot.intake.setIntakePower(0);
+
+        // Strafe back to shooting position and shoot
+        robot.strafe(105, 14, 90, 0.05, null);
+        shoot(4);
+
+        // Get ready to intake last ring
+        robot.strafe(-100, 30, 90, 0.1, null);
+
+        // Intake last ring while strafing
+        robot.intake.setIntakePower(1);
+        robot.strafe(0, 25, 90, 0.01, null);
+        sleep(1000);
+        robot.intake.setIntakePower(0);
+
+        // Strafe to shooting position and shoot last ring
+        robot.strafe(110, 34, 90, 0.1, null);
+        shoot(2);
+
+        // Strafe to C for WG
+        robot.strafe(0, diagnostic_inches, 90, 0.1, null);
+        robot.turn(diag_deg, 0.01);
 
     }
 

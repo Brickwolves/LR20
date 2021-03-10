@@ -1,9 +1,7 @@
 package org.firstinspires.ftc.teamcode.Hardware.Controls;
 
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.*;
-
 import com.qualcomm.robotcore.hardware.Gamepad;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +15,7 @@ public class ButtonControls {
         LB1, RB1,
         LB2, RB2,
         DPAD_UP, DPAD_DN, DPAD_L, DPAD_R, DPAD,
-        TOUCHPAD;
+        TOUCHPAD
     }
 
     public enum ButtonState {
@@ -29,10 +27,7 @@ public class ButtonControls {
 
     private Map<Input, Button> buttons = new HashMap<>();
     private static List<ButtonControls> instances = new ArrayList<>();
-
-    public interface ButtonCheck {
-        boolean check();
-    }
+    public interface ButtonCheck { boolean check(); }
 
     public Gamepad src;
     public ButtonControls(Gamepad gamepad){
@@ -54,7 +49,6 @@ public class ButtonControls {
         buttons.put(TOUCHPAD,   new Button(() -> src.touchpad));
         buttons.put(LB2,        new Button(() -> src.left_trigger > 0.75));
         buttons.put(RB2,        new Button(() -> src.right_trigger > 0.75));
-
     }
 
     public boolean get(Input input, ButtonState buttonState) {
@@ -85,5 +79,5 @@ public class ButtonControls {
         }
     }
 
-    public boolean DPADPress() {return src.dpad_down || src.dpad_left || src.dpad_right || src.dpad_up;}
+    public boolean DPADPress() { return src.dpad_down || src.dpad_left || src.dpad_right || src.dpad_up; }
 }
