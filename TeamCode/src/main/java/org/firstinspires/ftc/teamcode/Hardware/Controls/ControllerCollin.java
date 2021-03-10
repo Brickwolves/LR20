@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 
 import static java.lang.Thread.sleep;
 
-public class Controller2 {
+public class ControllerCollin {
 
     /*
     --------------- S I N G L E   P R E S S E S -------------
@@ -66,7 +66,7 @@ public class Controller2 {
 
     // Default Vars
     public Gamepad src;
-    public Controller2(Gamepad src){
+    public ControllerCollin(Gamepad src){
         this.src = src;
     }
 

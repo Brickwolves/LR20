@@ -6,15 +6,13 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.Hardware.Controls.Controller2;
+import org.firstinspires.ftc.teamcode.Hardware.Controls.ControllerCollin;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
-
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.power;
 
 @TeleOp(name = "Drive Diag TeleOp", group="Linear TeleOp")
 public class DriveDiag extends LinearOpMode {
 
-    private Controller2 controller;
+    private ControllerCollin controller;
     private ElapsedTime time;
 
     private DcMotor fr, fl, br, bl;
@@ -22,7 +20,7 @@ public class DriveDiag extends LinearOpMode {
 
     public void initialize(){
         Utils.setOpMode(this);
-        controller = new Controller2(gamepad1);
+        controller = new ControllerCollin(gamepad1);
 
         fr = Utils.hardwareMap.get(DcMotor.class, "front_right_motor");
         fl = Utils.hardwareMap.get(DcMotor.class, "front_left_motor");
@@ -82,8 +80,8 @@ public class DriveDiag extends LinearOpMode {
 
 
             // Get Thumbsticks
-            Controller2.Thumbstick rightThumbstick = controller.getRightThumbstick();
-            Controller2.Thumbstick leftThumbstick = controller.getLeftThumbstick();
+            ControllerCollin.Thumbstick rightThumbstick = controller.getRightThumbstick();
+            ControllerCollin.Thumbstick leftThumbstick = controller.getLeftThumbstick();
 
             // DRIVER VALUES
             double drive = -controller.src.right_stick_y;

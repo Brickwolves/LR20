@@ -11,7 +11,6 @@ import org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Movement;
 import org.firstinspires.ftc.teamcode.Utilities.PID;
 import org.firstinspires.ftc.teamcode.Utilities.SyncTask;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 
 import static android.os.SystemClock.sleep;
@@ -27,7 +26,6 @@ public class MecanumRobot implements Robot {
    //public ColorSensorImpl colorSensor;
    //public ColorSensor colorSensorBase;
    public IMU imu;
-   public Claw claw;
    public Arm arm;
    public Intake intake;
    public Shooter shooter;
@@ -60,7 +58,6 @@ public class MecanumRobot implements Robot {
       imu = new IMU("imu");
       //gripper = new Gripper("claw", "arm");
       arm = new Arm("arm");
-      claw = new Claw("claw", "claw_encoder", Claw.MODE.GLOBAL);
       intake = new Intake("intake", "servo_0", "servo_1");
       shooter = new Shooter("spinny_1", "spinny_2", "servo_4", "servo_5");
 

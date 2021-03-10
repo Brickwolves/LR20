@@ -10,8 +10,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.teamcode.Hardware.Controls.Controller;
-import org.firstinspires.ftc.teamcode.Hardware.Controls.Joystick;
+import org.firstinspires.ftc.teamcode.Hardware.Controls.Controller4;
+import org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls;
 import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
 import org.firstinspires.ftc.teamcode.Utilities.RingBuffer;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
@@ -20,7 +20,7 @@ import static java.lang.Math.abs;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.rpm;
 
 // Controller Imports
-import static org.firstinspires.ftc.teamcode.Hardware.Controls.Controller.Input.*;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.Controller4.Input.*;
 
 
 @Disabled
@@ -28,7 +28,7 @@ import static org.firstinspires.ftc.teamcode.Hardware.Controls.Controller.Input.
 public class Delta extends LinearOpMode {
 
     private MecanumRobot robot;
-    private Controller controller1, controller2;
+    private Controller4 controller1, controller2;
 
     // Power Shot Angles
     private int     ps_increment = 0;
@@ -54,18 +54,18 @@ public class Delta extends LinearOpMode {
 
 
     // JOYSTICKS
-    private Joystick rightStick, leftStick;
+    private JoystickControls rightStick, leftStick;
 
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void initialize() {
         Utils.setOpMode(this);
         robot = new MecanumRobot();
-        controller1 = new Controller(gamepad1);
-        controller2 = new Controller(gamepad2);
+        controller1 = new Controller4(gamepad1);
+        controller2 = new Controller4(gamepad2);
 
-        rightStick = new Joystick(gamepad1.right_stick_x, gamepad1.right_stick_y);
-        leftStick = new Joystick(gamepad2.left_stick_x, gamepad2.left_stick_y);
+        rightStick = new JoystickControls(gamepad1.right_stick_x, gamepad1.right_stick_y);
+        leftStick = new JoystickControls(gamepad2.left_stick_x, gamepad2.left_stick_y);
 
         setUser1Controls();
         setUser2Controls();
@@ -174,7 +174,7 @@ public class Delta extends LinearOpMode {
         Utils.multTelemetry.addData("Status", "Shutting Down");
         Utils.multTelemetry.update();
         robot.arm.shutdown();
-        robot.claw.shutdown();
+        robot.CRClaw.shutdown();
         robot.intake.shutdown();
 
         shutdownReady = true;
@@ -215,7 +215,7 @@ public class Delta extends LinearOpMode {
             updateIntakeVelocity();
 
 
-            Controller.update();
+            Controller4.update();
             robot.shooter.feederState(gamepad1.right_trigger > 0.75);
 
 
@@ -226,8 +226,8 @@ public class Delta extends LinearOpMode {
          */
 
             // Get Joysticks
-            rightStick = new Joystick(gamepad1.right_stick_x, gamepad1.right_stick_y);
-            leftStick = new Joystick(gamepad2.left_stick_x, gamepad2.left_stick_y);
+            rightStick = new JoystickControls(gamepad1.right_stick_x, gamepad1.right_stick_y);
+            leftStick = new JoystickControls(gamepad2.left_stick_x, gamepad2.left_stick_y);
 
 
             // DRIVER VALUES

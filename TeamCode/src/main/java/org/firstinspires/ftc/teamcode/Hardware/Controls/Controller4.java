@@ -7,17 +7,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.firstinspires.ftc.teamcode.Hardware.Controls.Controller.Input.*;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.Controller4.Input.*;
 
 
 /**
  * @author 99% of all code by Alex Appleby, Team 16896
  * @author Modifications by Jamie Gabbay, Team 18224
  */
-public class Controller {
+public class Controller4 {
     private Map<Input, Button> buttons = new HashMap<>();
 
-    private static List<Controller> instances = new ArrayList<>();
+    private static List<Controller4> instances = new ArrayList<>();
 
     public Gamepad src;
 
@@ -29,7 +29,7 @@ public class Controller {
         TOUCHPAD;
     }
 
-    public Controller(Gamepad gamepad){
+    public Controller4(Gamepad gamepad){
         src = gamepad;
 
         instances.add(this);
@@ -50,7 +50,7 @@ public class Controller {
     }
 
     public static void update(){
-        for (Controller c : instances) {
+        for (Controller4 c : instances) {
             c.updateInstance();
         }
     }

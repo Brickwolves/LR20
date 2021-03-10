@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.Hardware.Controls.Controller2;
+import org.firstinspires.ftc.teamcode.Hardware.Controls.ControllerCollin;
 import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
 import org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Vision;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
@@ -23,15 +23,11 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Movement.diagnostic_inches;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.rpm;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Vision.ring_count;
-
 @Autonomous(name="MarkVI", group="Autonomous Linear Opmode")
 public class MarkVI extends LinearOpMode {
 
     private MecanumRobot robot;
-    private Controller2 controller;
+    private ControllerCollin controller;
     private ElapsedTime time;
 
     private int ringCount;
@@ -40,7 +36,7 @@ public class MarkVI extends LinearOpMode {
     public void initialize(){
         Utils.setOpMode(this);
         robot = new MecanumRobot();
-        controller = new Controller2(gamepad1);
+        controller = new ControllerCollin(gamepad1);
         time = new ElapsedTime();
     }
 

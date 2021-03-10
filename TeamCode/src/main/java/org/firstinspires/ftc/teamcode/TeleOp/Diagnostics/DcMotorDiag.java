@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.Hardware.Controls.Controller2;
+import org.firstinspires.ftc.teamcode.Hardware.Controls.ControllerCollin;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.power;
@@ -16,7 +16,7 @@ import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shoote
 @TeleOp(name = "DcMotor Diag TeleOp", group="Linear TeleOp")
 public class DcMotorDiag extends LinearOpMode {
 
-    private Controller2 controller;
+    private ControllerCollin controller;
 
     private DcMotor motor;
     private String motor_id = "front_right_motor";
@@ -31,7 +31,7 @@ public class DcMotorDiag extends LinearOpMode {
 
     public void initialize() {
         Utils.setOpMode(this);
-        controller = new Controller2(gamepad1);
+        controller = new ControllerCollin(gamepad1);
 
 
         motor = Utils.hardwareMap.get(DcMotor.class, motor_id);

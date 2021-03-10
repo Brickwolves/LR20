@@ -2,25 +2,23 @@ package org.firstinspires.ftc.teamcode.TeleOp.Diagnostics;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.Hardware.Controls.Controller2;
+import org.firstinspires.ftc.teamcode.Hardware.Controls.ControllerCollin;
 import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.ps_rpm;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.rpm;
 
 @TeleOp(name = "Shooter Diagnostic TeleOp", group="Linear TeleOp")
 public class ShooterDiag extends LinearOpMode {
 
     private MecanumRobot robot;
-    private Controller2 controller;
+    private ControllerCollin controller;
 
     public void initialize() {
         Utils.setOpMode(this);
         robot = new MecanumRobot();
-        controller = new Controller2(gamepad1);
+        controller = new ControllerCollin(gamepad1);
     }
 
     @Override

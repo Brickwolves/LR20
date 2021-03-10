@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.Hardware.Controls.Controller2;
+import org.firstinspires.ftc.teamcode.Hardware.Controls.ControllerCollin;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.*;
@@ -13,7 +13,7 @@ import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoD
 @TeleOp(name = "ServoDiag TeleOp", group="Linear TeleOp")
 public class ServoDiag extends LinearOpMode {
 
-    private Controller2 controller;
+    private ControllerCollin controller;
 
     private Servo servo;
     private String servo_id = SERVO_ID;
@@ -22,7 +22,7 @@ public class ServoDiag extends LinearOpMode {
 
     public void initialize() {
         Utils.setOpMode(this);
-        controller = new Controller2(gamepad1);
+        controller = new ControllerCollin(gamepad1);
 
 
         servo = Utils.hardwareMap.get(Servo.class, servo_id);

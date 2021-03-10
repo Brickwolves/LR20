@@ -11,12 +11,10 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.Hardware.Claw;
-import org.firstinspires.ftc.teamcode.Hardware.Controls.Controller2;
+import org.firstinspires.ftc.teamcode.Hardware.CR_Claw;
+import org.firstinspires.ftc.teamcode.Hardware.Controls.ControllerCollin;
 import org.firstinspires.ftc.teamcode.Hardware.Intake;
 import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
-import org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Movement;
-import org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter;
 import org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Vision;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 import org.opencv.core.Core;
@@ -27,8 +25,6 @@ import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Movement.diag_deg;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Movement.diagnostic_inches;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.ps_rpm;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.rpm;
 
@@ -37,7 +33,7 @@ public class MarkIV extends LinearOpMode
 {
 
     private MecanumRobot robot;
-    private Controller2 controller;
+    private ControllerCollin controller;
 
     OpenCvCamera webcam;
 
@@ -52,8 +48,8 @@ public class MarkIV extends LinearOpMode
     public void initialize(){
         Utils.setOpMode(this);
         robot = new MecanumRobot();
-        robot.claw.setMode(Claw.MODE.RELATIVE);
-        controller = new Controller2(gamepad1);
+        robot.CRClaw.setMode(CR_Claw.MODE.RELATIVE);
+        controller = new ControllerCollin(gamepad1);
 
         robot.intake.armUp();
         robot.arm.in();
@@ -77,7 +73,7 @@ public class MarkIV extends LinearOpMode
     public void breakpoint(){
         while (true){
             Utils.multTelemetry.addData("Status", "Holding");
-            Utils.multTelemetry.addData("Claw Position", robot.claw.getClawPosition());
+            Utils.multTelemetry.addData("Claw Position", robot.CRClaw.getClawPosition());
             Utils.multTelemetry.update();
             if (controller.src.cross) break;
         }

@@ -9,7 +9,16 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.teamcode.Hardware.Controls.ControllerCollin;
+import org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.*;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.*;
+
+import org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.Input.*;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.Value.*;
+
+
+
 import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
 import org.firstinspires.ftc.teamcode.Utilities.RingBuffer;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
@@ -19,12 +28,12 @@ import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shoote
 
 
 @TeleOp(name = "Gamma TeleOp", group="Linear TeleOp")
-public class Gamma extends LinearOpMode {
+public class Zeta extends LinearOpMode {
 
     // Main Stuff
     private MecanumRobot robot;
-    private ControllerCollin controller1;
-    private ControllerCollin controllerCollin;
+    private ButtonControls BC1, BC2;
+    private JoystickControls JC1;
 
     // Power Shot Angles
     private int     ps_increment = 2;
@@ -56,8 +65,10 @@ public class Gamma extends LinearOpMode {
     public void initialize() {
         Utils.setOpMode(this);
         robot = new MecanumRobot();
-        controller1 = new ControllerCollin(gamepad1);
-        controllerCollin = new ControllerCollin(gamepad2);
+        BC1 = new ButtonControls(gamepad1);
+        BC2 = new ButtonControls(gamepad2);
+
+        JC1 = new JoystickControls(gamepad2);
 
 
 
@@ -125,57 +136,49 @@ public class Gamma extends LinearOpMode {
          ----------- H A R D W A R E    F U N C T I O N A L I T Y -----------
 
          */
-            controller1.updateToggles();
-            controllerCollin.updateToggles();
+
+            ButtonControls.update();
+            JoystickControls.update();
+
 
 
             // ARM
-            if (controllerCollin.src.dpad_right){
-                robot.arm.out();
-            }
-            else if (controllerCollin.src.dpad_up) {
-                robot.arm.up();
-            }
-            else if (controllerCollin.src.dpad_left) {
-                robot.arm.in();
-            }
+            if (BC2.get(DPAD_DN, DOWN)) robot.arm.out();
+            else if (BC2.get(DPAD_UP, DOWN)) robot.arm.up();
+            else if (BC2.get(DPAD_L, DOWN)) robot.arm.in();
 
 
             // INTAKE CODE
             current_intake_position = robot.intake.getIntakePosition();
             double intake_velocity = (current_intake_position - last_intake_position) / (current_nanoseconds - last_nanoseconds);
 
-            if (controllerCollin.RB1_toggle && !controllerCollin.src.circle) {
-
+            if (BC2.get(RB1, TOGGLE) && BC2.get(CIRCLE, UP)) {
                 // CHECK INTAKE STALLING
                 if (abs(robot.intake.getIntakePower()) == 1 && abs(intake_velocity) < 0.01 && intake_time.seconds() < 1) {
                     intake_time.reset();
                     robot.intake.setIntakePower(-1);
                 }
                 else {
-                    if (controllerCollin.LB1_toggle) robot.intake.setIntakePower(-1);
+                    if (BC2.get(LB1, TOGGLE)) robot.intake.setIntakePower(-1);
                     else robot.intake.setIntakePower(1);
                 }
             }
             else robot.intake.setIntakePower(0);
 
 
-
             // INTAKE ARM
-            if (controllerCollin.DPADDWN_toggle && !controllerCollin.src.circle) robot.intake.armUp();
-            else if (!controllerCollin.DPADDWN_toggle && !controllerCollin.src.circle) robot.intake.armDown();
+            if (BC2.get(DPAD_DN, TOGGLE) && BC2.get(CIRCLE, UP)) robot.intake.armUp();
+            else if (!BC2.get(DPAD_DN, TOGGLE) && BC2.get(CIRCLE, UP)) robot.intake.armDown();
 
 
             // SHOOTER
-            robot.shooter.feederState(controller1.src.right_trigger > 0.75);
-            if (controllerCollin.circle_toggle) {
-                //robot.intake.armDown();
-                //robot.shooter.setRPM(4500);
+            robot.shooter.feederState(BC1.get(RB2, DOWN));
+            if (BC2.get(CIRCLE, TOGGLE)) {
+                robot.intake.armDown();
                 robot.shooter.setRPM(rpm);
             }
-            else {
-                robot.shooter.setPower(0);
-            }
+            else robot.shooter.setPower(0);
+
 
 
 
@@ -188,42 +191,36 @@ public class Gamma extends LinearOpMode {
 
          */
 
-            // Get Thumbsticks
-            ControllerCollin.Thumbstick rightThumbstick = controller1.getRightThumbstick();
-            ControllerCollin.Thumbstick leftThumbstick = controller1.getLeftThumbstick();
-
             // ABSOLUTE CONTROL MODE
-            if (controller1.square_toggle) rightThumbstick.setShift(robot.imu.getAngle() % 360);
-            else rightThumbstick.setShift(0);
+            if (BC1.get(SQUARE, TOGGLE)) JC1.setShifted(RIGHT, robot.imu.getAngle() % 360);
+            else JC1.setShifted(RIGHT, 0);
 
             // DRIVER VALUES
-            double drive = rightThumbstick.getInvertedShiftedY();
-            double strafe = rightThumbstick.getShiftedX();
-            double turn = leftThumbstick.getX();
+            double drive = JC1.get(RIGHT, INVERT_SHIFTED_Y);
+            double strafe = JC1.get(RIGHT, SHIFTED_X);
+            double turn = JC1.get(LEFT, X);
 
             // VELOCITY RANGER
-            double velocity = Range.clip((1 - controller1.src.left_trigger), 0.5, 1);
+            double velocity = Range.clip((1 - gamepad1.left_trigger), 0.5, 1);
 
 
             // DPAD Auto Turn
-            if (controller1.src.dpad_up) locked_direction               = MecanumRobot.turnTarget(0, robot.imu.getAngle());
-            else if (controller1.src.dpad_right) locked_direction       = MecanumRobot.turnTarget(-90, robot.imu.getAngle());
-            else if (controller1.src.dpad_left) locked_direction        = MecanumRobot.turnTarget(90, robot.imu.getAngle());
-            else if (controller1.src.dpad_down) locked_direction        = MecanumRobot.turnTarget(180, robot.imu.getAngle());
-
-
+            if (BC1.get(DPAD_UP, DOWN)) locked_direction            = MecanumRobot.turnTarget(0, robot.imu.getAngle());
+            else if (BC1.get(DPAD_R, DOWN)) locked_direction        = MecanumRobot.turnTarget(-90, robot.imu.getAngle());
+            else if (BC1.get(DPAD_L, DOWN)) locked_direction        = MecanumRobot.turnTarget(90, robot.imu.getAngle());
+            else if (BC1.get(DPAD_DN, DOWN)) locked_direction       = MecanumRobot.turnTarget(180, robot.imu.getAngle());
 
 
             // Power Shot increment
-            if (controller1.RB1_tap){
+            if (BC1.get(RB1, TAP)){
                 if (ps_increment == 2) ps_increment = 0;
                 else ps_increment++;
             }
-            else if (controller1.LB1_tap) {
+            else if (BC1.get(LB1, TAP)) {
                 if (ps_increment == 0) ps_increment = 2;
                 else ps_increment--;
             }
-            if (controller1.RB1_tap || controller1.LB1_tap)
+            if (BC1.get(RB1, TAP) || BC1.get(LB1, TAP))
                 if (ps_increment == 0)      locked_direction = MecanumRobot.turnTarget(-ps_delta_angle, robot.imu.getAngle());
                 else if (ps_increment == 1) locked_direction = MecanumRobot.turnTarget(0, robot.imu.getAngle());
                 else if (ps_increment == 2) locked_direction = MecanumRobot.turnTarget(ps_delta_angle, robot.imu.getAngle());
@@ -240,7 +237,7 @@ public class Gamma extends LinearOpMode {
                     | |
 
              */
-            if (controller1.src.left_stick_x != 0) {
+            if (JC1.get(LEFT, X) != 0) {
                 pid_on = false;
             }
             else if (current_angular_velocity == 0.0 ) {
@@ -306,7 +303,7 @@ public class Gamma extends LinearOpMode {
 
          */
 
-        if ((controller1.src.touchpad) || (controllerCollin.src.touchpad)){
+        if (BC1.get(TOUCHPAD, DOWN) || BC2.get(TOUCHPAD, DOWN)){
             shutdown();
             break;
         }

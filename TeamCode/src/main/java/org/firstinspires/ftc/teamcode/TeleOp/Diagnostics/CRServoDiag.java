@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Hardware.Arm;
-import org.firstinspires.ftc.teamcode.Hardware.Controls.Controller2;
+import org.firstinspires.ftc.teamcode.Hardware.Controls.ControllerCollin;
 import org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_CRServoDiag;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
@@ -19,7 +19,7 @@ import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_CRServ
 @TeleOp(name = "CRServoDiag TeleOp", group="Linear TeleOp")
 public class CRServoDiag extends LinearOpMode {
 
-    private Controller2 controller;
+    private ControllerCollin controller;
 
     private Arm arm;
     private DcMotor claw_encoder;
@@ -38,7 +38,7 @@ public class CRServoDiag extends LinearOpMode {
 
     public void initialize() {
         Utils.setOpMode(this);
-        controller = new Controller2(gamepad1);
+        controller = new ControllerCollin(gamepad1);
 
         arm = new Arm("arm");
 

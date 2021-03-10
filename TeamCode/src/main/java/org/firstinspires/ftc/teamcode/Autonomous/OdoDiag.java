@@ -4,14 +4,14 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.teamcode.Hardware.Controls.Controller2;
+import org.firstinspires.ftc.teamcode.Hardware.Controls.ControllerCollin;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
 @Autonomous(name="OdoDiag", group="Autonomous Linear Opmode")
 public class OdoDiag extends LinearOpMode {
 
     private DcMotor od;
-    private Controller2 controller;
+    private ControllerCollin controller;
     private double start_pos, pos;
 
     public void breakpoint(){
@@ -26,7 +26,7 @@ public class OdoDiag extends LinearOpMode {
 
     public void initialize(){
         Utils.setOpMode(this);
-        controller = new Controller2(gamepad1);
+        controller = new ControllerCollin(gamepad1);
         od = Utils.hardwareMap.get(DcMotor.class, "claw_encoder");
         start_pos = od.getCurrentPosition();
     }

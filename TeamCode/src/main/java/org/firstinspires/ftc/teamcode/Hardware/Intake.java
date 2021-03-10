@@ -5,15 +5,14 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
-import static android.os.SystemClock.sleep;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.LEFT_ARM_SERVO_HOME;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.LEFT_ARM_SERVO_MAX;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.LEFT_ARM_SERVO_MID;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.LEFT_ARM_SERVO_MIN;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.RIGHT_ARM_SERVO_HOME;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.RIGHT_ARM_SERVO_MAX;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.RIGHT_ARM_SERVO_MID;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.RIGHT_ARM_SERVO_MIN;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.INTAKE_ARM_LSERVO_HOME;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.INTAKE_ARM_LSERVO_MAX;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.INTAKE_ARM_LSERVO_MID;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.INTAKE_ARM_LSERVO_MIN;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.INTAKE_ARM_RSERVO_HOME;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.INTAKE_ARM_RSERVO_MAX;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.INTAKE_ARM_RSERVO_MID;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.INTAKE_ARM_RSERVO_MIN;
 
 public class Intake {
 
@@ -46,11 +45,11 @@ public class Intake {
 
         left_arm_servo = Utils.hardwareMap.get(Servo.class, left_servo_id);
         left_arm_servo.setDirection(Servo.Direction.FORWARD);
-        left_arm_servo.setPosition(LEFT_ARM_SERVO_HOME);
+        left_arm_servo.setPosition(INTAKE_ARM_LSERVO_HOME);
 
         right_arm_servo = Utils.hardwareMap.get(Servo.class, right_servo_id);
         right_arm_servo.setDirection(Servo.Direction.FORWARD);
-        right_arm_servo.setPosition(RIGHT_ARM_SERVO_HOME);
+        right_arm_servo.setPosition(INTAKE_ARM_RSERVO_HOME);
 
     }
 
@@ -58,27 +57,27 @@ public class Intake {
         intake_motor.setPower(power);
     }
     public void armUp(){
-        left_arm_servo.setPosition(LEFT_ARM_SERVO_MIN);
-        right_arm_servo.setPosition(RIGHT_ARM_SERVO_MAX);
+        left_arm_servo.setPosition(INTAKE_ARM_LSERVO_MIN);
+        right_arm_servo.setPosition(INTAKE_ARM_RSERVO_MAX);
 
-        if (left_arm_servo.getPosition() == LEFT_ARM_SERVO_MIN && right_arm_servo.getPosition() == RIGHT_ARM_SERVO_MAX){
+        if (left_arm_servo.getPosition() == INTAKE_ARM_LSERVO_MIN && right_arm_servo.getPosition() == INTAKE_ARM_RSERVO_MAX){
             status = STATUS.UP;
         }
     }
 
     public void armMid(){
-        left_arm_servo.setPosition(LEFT_ARM_SERVO_MID);
-        right_arm_servo.setPosition(RIGHT_ARM_SERVO_MID);
-        if (left_arm_servo.getPosition() == LEFT_ARM_SERVO_MID && right_arm_servo.getPosition() == RIGHT_ARM_SERVO_MID){
+        left_arm_servo.setPosition(INTAKE_ARM_LSERVO_MID);
+        right_arm_servo.setPosition(INTAKE_ARM_RSERVO_MID);
+        if (left_arm_servo.getPosition() == INTAKE_ARM_LSERVO_MID && right_arm_servo.getPosition() == INTAKE_ARM_RSERVO_MID){
             status = STATUS.MID;
         }
     }
 
     public void armDown(){
-        left_arm_servo.setPosition(LEFT_ARM_SERVO_MAX);
-        right_arm_servo.setPosition(RIGHT_ARM_SERVO_MIN);
+        left_arm_servo.setPosition(INTAKE_ARM_LSERVO_MAX);
+        right_arm_servo.setPosition(INTAKE_ARM_RSERVO_MIN);
 
-        if (left_arm_servo.getPosition() == LEFT_ARM_SERVO_MAX && right_arm_servo.getPosition() == RIGHT_ARM_SERVO_MIN){
+        if (left_arm_servo.getPosition() == INTAKE_ARM_LSERVO_MAX && right_arm_servo.getPosition() == INTAKE_ARM_RSERVO_MIN){
             status = STATUS.DOWN;
         }
     }
