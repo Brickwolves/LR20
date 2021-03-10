@@ -24,12 +24,12 @@ public class Dash_Servos {
     public static double LOCK_SERVO_MIN             = 0.3;
     public static double LOCK_SERVO_MAX             = 0.47;
 
-    public static double CLAW_RSERVO_HOME           = 0;
-    public static double CLAW_RSERVO_MIN            = 0;
-    public static double CLAW_RSERVO_MAX            = 0;
+    public static double CLAW_RSERVO_HOME           = 0.5;
+    public static double CLAW_RSERVO_MIN            = 0.12;
+    public static double CLAW_RSERVO_MAX            = 0.5;
 
     public static double CLAW_LSERVO_HOME           = 0;
     public static double CLAW_LSERVO_MIN            = 0;
-    public static double CLAW_LSERVO_MAX            = 0;
+    public static double CLAW_LSERVO_MAX            = 0.37;
 
 }

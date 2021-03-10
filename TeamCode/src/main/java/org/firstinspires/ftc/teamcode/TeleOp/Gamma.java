@@ -140,6 +140,16 @@ public class Gamma extends LinearOpMode {
                 robot.arm.in();
             }
 
+            if (controllerCollin.src.triangle){
+                robot.claw.open();
+            }
+            else if (controllerCollin.src.cross){
+                robot.claw.close();
+            }
+            else if (controllerCollin.src.square){
+                robot.claw.stop();
+            }
+
 
             // INTAKE CODE
             current_intake_position = robot.intake.getIntakePosition();

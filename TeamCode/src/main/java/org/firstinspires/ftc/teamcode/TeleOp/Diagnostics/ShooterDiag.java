@@ -8,6 +8,7 @@ import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.ps_rpm;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.rpm;
 
 @TeleOp(name = "Shooter Diagnostic TeleOp", group="Linear TeleOp")
 public class ShooterDiag extends LinearOpMode {
@@ -32,8 +33,8 @@ public class ShooterDiag extends LinearOpMode {
 
             robot.shooter.feederState(controller.src.right_trigger > 0.75);
             if (controller.circle_toggle) {
-                robot.intake.armDown();
-                robot.shooter.setRPM(ps_rpm);
+                robot.intake.armMid();
+                robot.shooter.setRPM(rpm);
             }
             else {
                 robot.shooter.setPower(0);

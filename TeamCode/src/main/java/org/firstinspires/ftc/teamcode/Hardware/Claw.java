@@ -28,6 +28,9 @@ public class Claw {
         left_servo = Utils.hardwareMap.get(Servo.class, left_servo_id);
         left_servo.setDirection(Servo.Direction.FORWARD);
 
+        right_servo = Utils.hardwareMap.get(Servo.class, right_servo_id);
+        right_servo.setDirection(Servo.Direction.FORWARD);
+
         resetHome();
 
         time = new ElapsedTime();
@@ -40,14 +43,20 @@ public class Claw {
 
     public void open() {
         status = "OPENING";
-        //left_servo.setPosition();
-        //right_servo.setPosition();
+        left_servo.setPosition(CLAW_LSERVO_MIN);
+        right_servo.setPosition(CLAW_RSERVO_MAX);
     }
 
     public void close() {
-        status = "CLSOING";
-        //left_servo.setPosition();
-        //right_servo.setPosition();
+        status = "CLOSING";
+        left_servo.setPosition(CLAW_LSERVO_MAX);
+        right_servo.setPosition(CLAW_RSERVO_MIN);
+    }
+
+    public void stop() {
+        status = "STOPPING";
+        left_servo.setPosition(left_servo.getPosition());
+        right_servo.setPosition(right_servo.getPosition());
     }
 
     public void resetHome(){
