@@ -57,7 +57,7 @@ public class MarkVI extends LinearOpMode {
         while (true) {
             robot.shooter.setRPM(3500);
 
-            if (time.seconds() > 3) {
+            if (time.seconds() > 2) {
                 if (robot.shooter.feederCount() < rings) robot.shooter.feederState(true);
                 else break;
             }
@@ -99,7 +99,7 @@ public class MarkVI extends LinearOpMode {
 
             webcam.stopStreaming();
 
-            ringCount = ring_count;
+            //ringCount = ring_count;
             if (ringCount == 0) A();
             else if (ringCount == 1) B();
             else C();
@@ -177,6 +177,17 @@ public class MarkVI extends LinearOpMode {
         robot.strafe(105, 14, 90, 0.05, null);
         shoot(4);
 
+        // Strafe to C for WG
+        robot.strafe(0, 70, 90, 0.5, null);
+        robot.turn(-50, 0.01);
+
+        time.reset();
+        while (time.seconds() < 1){ robot.arm.out(); }
+
+        /*
+
+        auto for getting the last ring
+
         // Get ready to intake last ring
         robot.strafe(-100, 30, 90, 0.1, null);
 
@@ -193,6 +204,7 @@ public class MarkVI extends LinearOpMode {
         // Strafe to C for WG
         robot.strafe(0, diagnostic_inches, 90, 0.1, null);
         robot.turn(diag_deg, 0.01);
+         */
 
     }
 

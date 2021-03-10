@@ -13,6 +13,9 @@ import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.CLAW_RSERVO_MAX;
 
 
+// LEFT PORT 1,  MAX CLOSED, MIN OPEN
+// RIGHT PORT 2, MIN CLOSED, MAX OPEN
+
 
 public class Claw {
 
@@ -36,11 +39,13 @@ public class Claw {
     public void setRightServoPosition(double position) { right_servo.setPosition(position);}
 
     public void open() {
+        status = "OPENING";
         //left_servo.setPosition();
         //right_servo.setPosition();
     }
 
     public void close() {
+        status = "CLSOING";
         //left_servo.setPosition();
         //right_servo.setPosition();
     }
