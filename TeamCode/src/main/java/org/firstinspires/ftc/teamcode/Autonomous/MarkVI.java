@@ -191,6 +191,12 @@ public class MarkVI extends LinearOpMode {
         time.reset();
         while (time.seconds() < 1){ robot.arm.out(); }
 
+        // Strafe back to line and turn to 0
+        time.reset();
+        while (time.seconds() < 1){ robot.claw.open(); }
+
+        robot.strafe(180, 40, 90, 0.1, null);
+
         /*
 
         auto for getting the last ring

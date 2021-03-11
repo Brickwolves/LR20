@@ -15,6 +15,10 @@ import org.firstinspires.ftc.teamcode.Utilities.RingBuffer;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
 import static java.lang.Math.abs;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.TOGGLE;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.CIRCLE;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.LB1;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.SQUARE;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.rpm;
 
 
@@ -60,28 +64,26 @@ public class Gamma extends LinearOpMode {
         controller2 = new ControllerCollin(gamepad2);
 
 
-
-        /*
-        Utils.multTelemetry.addData("USER 1", "----------------------------------");
-        Utils.multTelemetry.addData("Toggle ACM", "[SQUARE]");
-        Utils.multTelemetry.addData("Velocity Ranger", "[Left Trigger]");
+        Utils.multTelemetry.addLine("------USER 1----------------------------");
+        Utils.multTelemetry.addData("Velocity Ranger", "[LB2]");
         Utils.multTelemetry.addData("Face Direction", "DPAD");
-        Utils.multTelemetry.addData("Shoot", "[R TRIGGER]");
         Utils.multTelemetry.addData("Power Shot Increment", "[TRIANGLE]");
 
-        Utils.multTelemetry.addData("", "");
-        Utils.multTelemetry.addData("USER 2", "----------------------------------");
-        Utils.multTelemetry.addData("Claw", "[CROSS]");
-        Utils.multTelemetry.addData("Arm", "[TRIANGLE]");
+        Utils.multTelemetry.addLine("");
+
+        Utils.multTelemetry.addLine("------USER 2----------------------------");
+        Utils.multTelemetry.addData("Claw", "[TRIANGLE]");
         Utils.multTelemetry.addData("Intake ON/OFF", "[RB1]");
         Utils.multTelemetry.addData("Intake Direction", "[LB1]");
-        Utils.multTelemetry.addData("Intake Arm Up", "[DPAD UP]");
-        Utils.multTelemetry.addData("Intake Arm Down", "[DPAD DOWN]");
+        Utils.multTelemetry.addData("Bumper Toggle", "[DPAD DOWN]");
+        Utils.multTelemetry.addData("Arm Out", "[DPAD RIGHT]");
+        Utils.multTelemetry.addData("Arm Up", "[DPAD UP]");
+        Utils.multTelemetry.addData("Arm In", "[DPAD LEFT]");
         Utils.multTelemetry.addData("Shooter ON/OFF", "[CIRCLE]");
+        Utils.multTelemetry.addData("Shoot", "[RB2]");
 
         Utils.multTelemetry.addData("Shutdown Keys", "[TOUCHPAD] simultaneously");
         Utils.multTelemetry.update();
-         */
 
     }
 
@@ -105,6 +107,12 @@ public class Gamma extends LinearOpMode {
 
         while (opModeIsActive()) {
 
+            /*
+
+             ----------- C A L C U L A T I O N S -----------
+
+                                                          */
+
             // Calculate Angular Velocity
             current_nanoseconds = elapsedTime.nanoseconds();
             current_angle = robot.imu.getAngle();
@@ -124,6 +132,7 @@ public class Gamma extends LinearOpMode {
          ----------- H A R D W A R E    F U N C T I O N A L I T Y -----------
 
                                                                             */
+
             controller1.updateToggles();
             controller2.updateToggles();
 
@@ -179,11 +188,11 @@ public class Gamma extends LinearOpMode {
 
 
 
-        /*
+             /*
 
-         ----------- S T E E R I N G    F U N C T I O N A L I T Y -----------
+                 ----------- S T E E R I N G    F U N C T I O N A L I T Y -----------
 
-         */
+                                                                                    */
 
             // Get Thumbsticks
             ControllerCollin.Thumbstick rightThumbstick = controller1.getRightThumbstick();
@@ -229,15 +238,10 @@ public class Gamma extends LinearOpMode {
 
             /*
 
-                    | |   ______       _____      ________
-                    | |  |_   __ \    |_   _|    |_   ___ `.
-                    | |    | |__) |     | |        | |   `. \
-                    | |    |  ___/      | |        | |    | |
-                    | |   _| |_        _| |_      _| |___.' /
-                    | |  |_____|      |_____|    |________.'
-                    | |
+            ----------- P I D -----------
 
-             */
+                                       */
+
             if (controller1.src.left_stick_x != 0) {
                 pid_on = false;
             }
@@ -254,60 +258,38 @@ public class Gamma extends LinearOpMode {
             last_cycle_pid_state = pid_on;
 
 
-
-
             // LAST STEP
             robot.setDrivePower(drive, strafe, turn, velocity);
 
 
-        /*
+            /*
 
-         ----------- L O G G I N G -----------
+             ----------- L O G G I N G -----------
 
-         */
+                                                */
 
-        /*
-            Utils.multTelemetry.addData("RPM", rpm);
-            Utils.multTelemetry.addData("PID OFF", pid_on);
-
-            Utils.multTelemetry.addData("ACM", controller1.right_stick_btn_toggle);
+            Utils.multTelemetry.addLine("--DRIVER-------------------------------------");
             Utils.multTelemetry.addData("Angle", robot.imu.getAngle());
             Utils.multTelemetry.addData("Locked Angle", locked_direction);
             Utils.multTelemetry.addData("PS Increment", ps_increment);
 
-            Utils.multTelemetry.addData("Time", current_nanoseconds);
-            Utils.multTelemetry.addData("Turn", turn);
-            Utils.multTelemetry.addData("Velocity Constant", velocity);
-            Utils.multTelemetry.addData("Angular Velocity", current_angular_velocity);
-
-            Utils.multTelemetry.addData("", "");
-
-            Utils.multTelemetry.addData("HARDWARE", "---------------------------------------");
-            Utils.multTelemetry.addData("Arm", robot.arm.getPosition());
-            Utils.multTelemetry.addData("Claw", controller2.circle_toggle);
-            Utils.multTelemetry.addData("Intake ON?", controller2.RB1_toggle);
+            Utils.multTelemetry.addLine("--HARDWARE-------------------------------------");
             Utils.multTelemetry.addData("Intake Forward", controller2.LB1_toggle);
-            Utils.multTelemetry.addData("Intake Left Arm", robot.intake.getLeftServoPosition());
-            Utils.multTelemetry.addData("Intake Right Arm", robot.intake.getRightServoPosition());
             Utils.multTelemetry.addData("Shooter ON?", controller2.circle_toggle);
-        */
-
 
             Utils.multTelemetry.update();
 
 
 
 
-        /*
+            /*
+             ----------- S H U T D O W N -----------
+                                                  */
 
-         ----------- S H U T D O W N -----------
-
-         */
-
-        if ((controller1.src.touchpad) || (controller2.src.touchpad)){
-            shutdown();
-            break;
-        }
+            if ((controller1.src.touchpad) || (controller2.src.touchpad)){
+                shutdown();
+                break;
+            }
 
 
         }

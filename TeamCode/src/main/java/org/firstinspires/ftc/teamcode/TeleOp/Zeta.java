@@ -73,30 +73,26 @@ public class Zeta extends LinearOpMode {
 
 
 
-        /*
-        Utils.multTelemetry.addData("USER 1", "----------------------------------");
-        Utils.multTelemetry.addData("Toggle ACM", "[SQUARE]");
-        Utils.multTelemetry.addData("Velocity Ranger", "[LB1]");
+        Utils.multTelemetry.addLine("------USER 1----------------------------");
+        Utils.multTelemetry.addData("Velocity Ranger", "[LB2]");
         Utils.multTelemetry.addData("Face Direction", "DPAD");
         Utils.multTelemetry.addData("Power Shot Increment", "[TRIANGLE]");
 
-        Utils.multTelemetry.addData("", "");
-        Utils.multTelemetry.addData("USER 2", "----------------------------------");
+        Utils.multTelemetry.addLine("");
+
+        Utils.multTelemetry.addLine("------USER 2----------------------------");
         Utils.multTelemetry.addData("Claw", "[TRIANGLE]");
         Utils.multTelemetry.addData("Intake ON/OFF", "[RB1]");
         Utils.multTelemetry.addData("Intake Direction", "[LB1]");
         Utils.multTelemetry.addData("Bumper Toggle", "[DPAD DOWN]");
-
         Utils.multTelemetry.addData("Arm Out", "[DPAD RIGHT]");
         Utils.multTelemetry.addData("Arm Up", "[DPAD UP]");
         Utils.multTelemetry.addData("Arm In", "[DPAD LEFT]");
-
         Utils.multTelemetry.addData("Shooter ON/OFF", "[CIRCLE]");
         Utils.multTelemetry.addData("Shoot", "[RB2]");
 
         Utils.multTelemetry.addData("Shutdown Keys", "[TOUCHPAD] simultaneously");
         Utils.multTelemetry.update();
-         */
 
     }
 
@@ -112,13 +108,17 @@ public class Zeta extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-
         initialize();
         waitForStart();
         elapsedTime = new ElapsedTime();
 
-
         while (opModeIsActive()) {
+
+             /*
+
+             ----------- C A L C U L A T I O N S -----------
+
+                                                          */
 
             // Calculate Angular Velocity
             current_nanoseconds = elapsedTime.nanoseconds();
@@ -135,28 +135,27 @@ public class Zeta extends LinearOpMode {
 
 
 
-        /*
+            /*
 
-         ----------- H A R D W A R E    F U N C T I O N A L I T Y -----------
+             ----------- H A R D W A R E    F U N C T I O N A L I T Y -----------
 
-         */
+                                                                               */
 
             ButtonControls.update();
             JoystickControls.update();
 
 
 
-            // ARM
+            //                  ARM
             if (BC2.get(DPAD_R, DOWN)) robot.arm.out();
             else if (BC2.get(DPAD_UP, DOWN)) robot.arm.up();
             else if (BC2.get(DPAD_L, DOWN)) robot.arm.in();
 
-
-            // CLAW
+            //                  CLAW
             if (BC2.get(TRIANGLE, TOGGLE)) robot.claw.open();
             else robot.claw.close();
 
-            // INTAKE CODE
+            //                INTAKE CODE
             current_intake_position = robot.intake.getIntakePosition();
             double intake_velocity = (current_intake_position - last_intake_position) / (current_nanoseconds - last_nanoseconds);
 
@@ -189,15 +188,11 @@ public class Zeta extends LinearOpMode {
 
 
 
+            /*
 
+             ----------- S T E E R I N G    F U N C T I O N A L I T Y -----------
 
-
-
-        /*
-
-         ----------- S T E E R I N G    F U N C T I O N A L I T Y -----------
-
-         */
+                                                                                */
 
             // ABSOLUTE CONTROL MODE
             JC1.setShifted(RIGHT, robot.imu.getAngle() % 360);
@@ -210,15 +205,13 @@ public class Zeta extends LinearOpMode {
             // VELOCITY RANGER
             double velocity = Range.clip((1 - gamepad1.left_trigger), 0.5, 1);
 
-
-            // DPAD Auto Turn
+            // DPAD AUTO TURN
             if (BC1.get(DPAD_UP, DOWN)) locked_direction            = MecanumRobot.turnTarget(0, robot.imu.getAngle());
             else if (BC1.get(DPAD_R, DOWN)) locked_direction        = MecanumRobot.turnTarget(-90, robot.imu.getAngle());
             else if (BC1.get(DPAD_L, DOWN)) locked_direction        = MecanumRobot.turnTarget(90, robot.imu.getAngle());
             else if (BC1.get(DPAD_DN, DOWN)) locked_direction       = MecanumRobot.turnTarget(180, robot.imu.getAngle());
 
-
-            // Power Shot increment
+            // POWER SHOT INCREMENT
             if (BC1.get(RB1, TAP)){
                 if (ps_increment == 2) ps_increment = 0;
                 else ps_increment++;
@@ -235,30 +228,17 @@ public class Zeta extends LinearOpMode {
 
             /*
 
-                    | |   ______       _____      ________
-                    | |  |_   __ \    |_   _|    |_   ___ `.
-                    | |    | |__) |     | |        | |   `. \
-                    | |    |  ___/      | |        | |    | |
-                    | |   _| |_        _| |_      _| |___.' /
-                    | |  |_____|      |_____|    |________.'
-                    | |
+            ----------- P I D -----------
 
-             */
-            if (JC1.get(LEFT, X) != 0) {
-                pid_on = false;
-            }
-            else if (current_angular_velocity == 0.0 ) {
-                pid_on = true;
-            }
+                                       */
 
-            if (pid_on && !last_cycle_pid_state) {
-                locked_direction = robot.imu.getAngle();
-            }
-            else if (pid_on) {
-                turn = robot.rotationPID.update(locked_direction - current_angle) * -1;
-            }
+            if (JC1.get(LEFT, X) != 0) pid_on = false;
+            else if (current_angular_velocity == 0.0) pid_on = true;
+
+            if (pid_on && !last_cycle_pid_state) locked_direction = robot.imu.getAngle();
+            else if (pid_on) turn = robot.rotationPID.update(locked_direction - current_angle) * -1;
+
             last_cycle_pid_state = pid_on;
-
 
 
 
@@ -266,11 +246,11 @@ public class Zeta extends LinearOpMode {
             robot.setDrivePower(drive, strafe, turn, velocity);
 
 
-        /*
+            /*
 
-         ----------- L O G G I N G -----------
+             ----------- L O G G I N G -----------
 
-         */
+                                                */
 
 
             Utils.multTelemetry.addLine("--DRIVER-------------------------------------");
@@ -283,25 +263,19 @@ public class Zeta extends LinearOpMode {
             Utils.multTelemetry.addData("Intake Forward", BC2.get(LB1, TOGGLE));
             Utils.multTelemetry.addData("Shooter ON?", BC2.get(CIRCLE, TOGGLE));
 
-
-
             Utils.multTelemetry.update();
 
 
 
 
-        /*
+            /*
+             ----------- S H U T D O W N -----------
+                                                  */
 
-         ----------- S H U T D O W N -----------
-
-         */
-
-        if (BC1.get(TOUCHPAD, DOWN) || BC2.get(TOUCHPAD, DOWN)){
-            shutdown();
-            break;
-        }
-
-
+            if (BC1.get(TOUCHPAD, DOWN) || BC2.get(TOUCHPAD, DOWN)){
+                shutdown();
+                break;
+            }
         }
     }
 }
