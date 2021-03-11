@@ -194,18 +194,22 @@ public class Zeta extends LinearOpMode {
 
                                                                                 */
 
-            // ABSOLUTE CONTROL MODE
+            //           ABSOLUTE CONTROL MODE          //
             JC1.setShifted(RIGHT, robot.imu.getAngle() % 360);
+            if (BC1.get(SQUARE, TAP)) {
+                robot.imu.setOffsetAngle(-robot.imu.getAngle());
+                robot.imu.resetDeltaAngle();
+            }
 
-            // DRIVER VALUES
+            //              DRIVER VALUES               //
             double drive = JC1.get(RIGHT, INVERT_SHIFTED_Y);
             double strafe = JC1.get(RIGHT, SHIFTED_X);
             double turn = JC1.get(LEFT, X);
 
-            // VELOCITY RANGER
+            //              VELOCITY RANGER             //
             double velocity = Range.clip((1 - gamepad1.left_trigger), 0.5, 1);
 
-            // DPAD AUTO TURN
+            //              DPAD AUTO TURN              //
             if (BC1.get(DPAD_UP, DOWN)) locked_direction            = MecanumRobot.turnTarget(0, robot.imu.getAngle());
             else if (BC1.get(DPAD_R, DOWN)) locked_direction        = MecanumRobot.turnTarget(-90, robot.imu.getAngle());
             else if (BC1.get(DPAD_L, DOWN)) locked_direction        = MecanumRobot.turnTarget(90, robot.imu.getAngle());

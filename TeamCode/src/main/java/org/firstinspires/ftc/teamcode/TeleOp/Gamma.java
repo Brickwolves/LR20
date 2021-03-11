@@ -198,8 +198,6 @@ public class Gamma extends LinearOpMode {
             ControllerCollin.Thumbstick rightThumbstick = controller1.getRightThumbstick();
             ControllerCollin.Thumbstick leftThumbstick = controller1.getLeftThumbstick();
 
-            robot.imu.setOffsetAngle(robot.imu.getAngle());
-
             // ABSOLUTE CONTROL MODE
             rightThumbstick.setShift(robot.imu.getAngle() % 360);
 

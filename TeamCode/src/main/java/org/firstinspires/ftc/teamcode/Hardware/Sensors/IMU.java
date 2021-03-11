@@ -95,4 +95,5 @@ public class IMU {
         return startAngle;
     }
     public void setOffsetAngle(double startAngle) { this.startAngle = startAngle; }
+    public void resetDeltaAngle() { deltaAngle = 0; }
 }
