@@ -23,10 +23,6 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Movement.diag_deg;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Movement.diagnostic_inches;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Vision.ring_count;
-
 @Autonomous(name="MarkVI", group="Autonomous Linear Opmode")
 public class MarkVI extends LinearOpMode {
 
@@ -71,12 +67,7 @@ public class MarkVI extends LinearOpMode {
         robot.shooter.setFeederCount(0);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    @Override
-    public void runOpMode() {
-
-        initialize();
-
+    public void startVision(){
         /*
         Set up camera, and pipeline
          */
@@ -92,6 +83,22 @@ public class MarkVI extends LinearOpMode {
                 webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
             }
         });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    @Override
+    public void runOpMode() {
+
+        initialize();
+        startVision();
+
+        while (!controller.src.cross){
+            robot.claw.open();
+        }
+        time.reset();
+        while (time.seconds() < 2){
+            robot.claw.close();
+        }
 
         waitForStart();
 

@@ -37,8 +37,8 @@ public class ButtonControls {
 
         buttons.put(TRIANGLE,   new Button(() -> src.triangle));
         buttons.put(SQUARE,     new Button(() -> src.square));
-        buttons.put(CROSS,      new Button(() -> src.x));
-        buttons.put(CIRCLE,     new Button(() -> src.y));
+        buttons.put(CROSS,      new Button(() -> src.cross));
+        buttons.put(CIRCLE,     new Button(() -> src.circle));
         buttons.put(LB1,        new Button(() -> src.left_bumper));
         buttons.put(RB1,        new Button(() -> src.right_bumper));
         buttons.put(DPAD_UP,    new Button(() -> src.dpad_up));

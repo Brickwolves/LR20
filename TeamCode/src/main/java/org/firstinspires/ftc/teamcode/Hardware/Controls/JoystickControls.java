@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 
 public class JoystickControls {
@@ -67,13 +68,7 @@ public class JoystickControls {
     public void setShifted(Input input, double shiftValue) {
         Joystick joystick = joysticks.get(input);
         if (joystick == null) throw new Error("Could not find Joystick");
-        switch (input){
-            case LEFT:
-
-                break;
-            case RIGHT:
-                break;
-        }
+        Objects.requireNonNull(joysticks.get(input)).setShift(shiftValue);
     }
 
 

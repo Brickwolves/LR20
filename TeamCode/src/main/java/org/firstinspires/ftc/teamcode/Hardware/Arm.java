@@ -11,7 +11,7 @@ public class Arm {
 
     private final static double SERVO_ARM_HOME = 0.9;
     private final static double OUT_POS = 0.0;
-    private final static double UP_POS = 0.68;
+    private final static double UP_POS = 0.7;
     private final static double IN_POS = 0.9;
 
     public Arm(String id) {

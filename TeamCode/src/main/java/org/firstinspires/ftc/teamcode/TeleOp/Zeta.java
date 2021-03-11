@@ -65,30 +65,34 @@ public class Zeta extends LinearOpMode {
     public void initialize() {
         Utils.setOpMode(this);
         robot = new MecanumRobot();
+
         BC1 = new ButtonControls(gamepad1);
         BC2 = new ButtonControls(gamepad2);
 
-        JC1 = new JoystickControls(gamepad2);
+        JC1 = new JoystickControls(gamepad1);
 
 
 
         /*
         Utils.multTelemetry.addData("USER 1", "----------------------------------");
         Utils.multTelemetry.addData("Toggle ACM", "[SQUARE]");
-        Utils.multTelemetry.addData("Velocity Ranger", "[Left Trigger]");
+        Utils.multTelemetry.addData("Velocity Ranger", "[LB1]");
         Utils.multTelemetry.addData("Face Direction", "DPAD");
-        Utils.multTelemetry.addData("Shoot", "[R TRIGGER]");
         Utils.multTelemetry.addData("Power Shot Increment", "[TRIANGLE]");
 
         Utils.multTelemetry.addData("", "");
         Utils.multTelemetry.addData("USER 2", "----------------------------------");
-        Utils.multTelemetry.addData("Claw", "[CROSS]");
-        Utils.multTelemetry.addData("Arm", "[TRIANGLE]");
+        Utils.multTelemetry.addData("Claw", "[TRIANGLE]");
         Utils.multTelemetry.addData("Intake ON/OFF", "[RB1]");
         Utils.multTelemetry.addData("Intake Direction", "[LB1]");
-        Utils.multTelemetry.addData("Intake Arm Up", "[DPAD UP]");
-        Utils.multTelemetry.addData("Intake Arm Down", "[DPAD DOWN]");
+        Utils.multTelemetry.addData("Bumper Toggle", "[DPAD DOWN]");
+
+        Utils.multTelemetry.addData("Arm Out", "[DPAD RIGHT]");
+        Utils.multTelemetry.addData("Arm Up", "[DPAD UP]");
+        Utils.multTelemetry.addData("Arm In", "[DPAD LEFT]");
+
         Utils.multTelemetry.addData("Shooter ON/OFF", "[CIRCLE]");
+        Utils.multTelemetry.addData("Shoot", "[RB2]");
 
         Utils.multTelemetry.addData("Shutdown Keys", "[TOUCHPAD] simultaneously");
         Utils.multTelemetry.update();
@@ -143,10 +147,14 @@ public class Zeta extends LinearOpMode {
 
 
             // ARM
-            if (BC2.get(DPAD_DN, DOWN)) robot.arm.out();
+            if (BC2.get(DPAD_R, DOWN)) robot.arm.out();
             else if (BC2.get(DPAD_UP, DOWN)) robot.arm.up();
             else if (BC2.get(DPAD_L, DOWN)) robot.arm.in();
 
+
+            // CLAW
+            if (BC2.get(TRIANGLE, TOGGLE)) robot.claw.open();
+            else robot.claw.close();
 
             // INTAKE CODE
             current_intake_position = robot.intake.getIntakePosition();
@@ -167,12 +175,12 @@ public class Zeta extends LinearOpMode {
 
 
             // INTAKE ARM
-            if (BC2.get(DPAD_DN, TOGGLE) && BC2.get(CIRCLE, UP)) robot.intake.armUp();
-            else if (!BC2.get(DPAD_DN, TOGGLE) && BC2.get(CIRCLE, UP)) robot.intake.armDown();
+            if (BC2.get(DPAD_DN, TOGGLE)) robot.intake.armUp();
+            else robot.intake.armDown();
 
 
             // SHOOTER
-            robot.shooter.feederState(BC1.get(RB2, DOWN));
+            robot.shooter.feederState(BC2.get(RB2, DOWN));
             if (BC2.get(CIRCLE, TOGGLE)) {
                 robot.intake.armDown();
                 robot.shooter.setRPM(rpm);
@@ -192,8 +200,7 @@ public class Zeta extends LinearOpMode {
          */
 
             // ABSOLUTE CONTROL MODE
-            if (BC1.get(SQUARE, TOGGLE)) JC1.setShifted(RIGHT, robot.imu.getAngle() % 360);
-            else JC1.setShifted(RIGHT, 0);
+            JC1.setShifted(RIGHT, robot.imu.getAngle() % 360);
 
             // DRIVER VALUES
             double drive = JC1.get(RIGHT, INVERT_SHIFTED_Y);
@@ -221,9 +228,9 @@ public class Zeta extends LinearOpMode {
                 else ps_increment--;
             }
             if (BC1.get(RB1, TAP) || BC1.get(LB1, TAP))
-                if (ps_increment == 0)      locked_direction = MecanumRobot.turnTarget(-ps_delta_angle, robot.imu.getAngle());
-                else if (ps_increment == 1) locked_direction = MecanumRobot.turnTarget(0, robot.imu.getAngle());
-                else if (ps_increment == 2) locked_direction = MecanumRobot.turnTarget(ps_delta_angle, robot.imu.getAngle());
+                if (ps_increment == 0)      locked_direction = MecanumRobot.turnTarget(-ps_delta_angle + 90, robot.imu.getAngle());
+                else if (ps_increment == 1) locked_direction = MecanumRobot.turnTarget(90, robot.imu.getAngle());
+                else if (ps_increment == 2) locked_direction = MecanumRobot.turnTarget(ps_delta_angle + 90, robot.imu.getAngle());
 
 
             /*
@@ -265,31 +272,17 @@ public class Zeta extends LinearOpMode {
 
          */
 
-        /*
-            Utils.multTelemetry.addData("RPM", rpm);
-            Utils.multTelemetry.addData("PID OFF", pid_on);
 
-            Utils.multTelemetry.addData("ACM", controller1.right_stick_btn_toggle);
+            Utils.multTelemetry.addLine("--DRIVER-------------------------------------");
+            Utils.multTelemetry.addData("ACM", BC1.get(SQUARE, TOGGLE));
             Utils.multTelemetry.addData("Angle", robot.imu.getAngle());
             Utils.multTelemetry.addData("Locked Angle", locked_direction);
             Utils.multTelemetry.addData("PS Increment", ps_increment);
 
-            Utils.multTelemetry.addData("Time", current_nanoseconds);
-            Utils.multTelemetry.addData("Turn", turn);
-            Utils.multTelemetry.addData("Velocity Constant", velocity);
-            Utils.multTelemetry.addData("Angular Velocity", current_angular_velocity);
+            Utils.multTelemetry.addLine("--HARDWARE-------------------------------------");
+            Utils.multTelemetry.addData("Intake Forward", BC2.get(LB1, TOGGLE));
+            Utils.multTelemetry.addData("Shooter ON?", BC2.get(CIRCLE, TOGGLE));
 
-            Utils.multTelemetry.addData("", "");
-
-            Utils.multTelemetry.addData("HARDWARE", "---------------------------------------");
-            Utils.multTelemetry.addData("Arm", robot.arm.getPosition());
-            Utils.multTelemetry.addData("Claw", controller2.circle_toggle);
-            Utils.multTelemetry.addData("Intake ON?", controller2.RB1_toggle);
-            Utils.multTelemetry.addData("Intake Forward", controller2.LB1_toggle);
-            Utils.multTelemetry.addData("Intake Left Arm", robot.intake.getLeftServoPosition());
-            Utils.multTelemetry.addData("Intake Right Arm", robot.intake.getRightServoPosition());
-            Utils.multTelemetry.addData("Shooter ON?", controller2.circle_toggle);
-        */
 
 
             Utils.multTelemetry.update();

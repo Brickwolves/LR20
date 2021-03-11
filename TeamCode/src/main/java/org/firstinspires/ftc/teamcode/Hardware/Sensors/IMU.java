@@ -14,6 +14,7 @@ public class IMU {
     private Double previousAngle;
     private double deltaAngle;
     private double startAngle;
+    private double offsetAngle;
 
     public IMU(String deviceName) {
 
@@ -21,9 +22,11 @@ public class IMU {
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         imu.initialize(parameters);
 
-        startAngle = this.getAngle();
+        startAngle = getAngle();
         previousAngle = null;
         deltaAngle = 0;
+        offsetAngle = 90;
+
     }
 
 
@@ -50,7 +53,7 @@ public class IMU {
 
         // Update the previous angle
         previousAngle = currentAngle;
-        return currentAngle + deltaAngle + 90;
+        return currentAngle + deltaAngle + offsetAngle;
     }
 
     public double getAngleActual(){
@@ -91,4 +94,5 @@ public class IMU {
     public double getStartAngle(){
         return startAngle;
     }
+    public void setOffsetAngle(double startAngle) { this.startAngle = startAngle; }
 }

@@ -20,6 +20,8 @@ public class Dash_Movement {
     public static double diag_deg = -20;
     public static double diagnostic_inches = 70;
 
+    public static double buttonWait = 0.2;
+
 
 
 

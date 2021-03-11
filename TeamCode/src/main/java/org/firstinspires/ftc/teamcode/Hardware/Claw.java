@@ -53,13 +53,8 @@ public class Claw {
         right_servo.setPosition(CLAW_RSERVO_MIN);
     }
 
-    public void stop() {
-        status = "STOPPING";
-        left_servo.setPosition(left_servo.getPosition());
-        right_servo.setPosition(right_servo.getPosition());
-    }
-
     public void resetHome(){
+        status = "HOME";
         left_servo.setPosition(CLAW_LSERVO_HOME);
         right_servo.setPosition(CLAW_RSERVO_HOME);
     }
