@@ -129,7 +129,8 @@ public class MecanumRobot implements Robot {
 
 
       resetMotors();                                              // Reset Motor Encoder
-      double radians = (angle + 90) * Math.PI / 180;              // Convert to NORTH=0, to NORTH=90 like  unit circle, and also to radians
+
+      double radians = (angle + 90) * (Math.PI / 180);             // Convert to NORTH=0, to NORTH=90 like  unit circle, and also to radians
       double yFactor = Math.sin(radians);                         // Unit Circle Y
       double xFactor = Math.cos(radians);                         // Unit Circle X
       double yTicks = Math.abs(yFactor * ticks);

@@ -23,6 +23,10 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Movement.diag_deg;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Movement.diagnostic_inches;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Vision.ring_count;
+
 @Autonomous(name="MarkVI", group="Autonomous Linear Opmode")
 public class MarkVI extends LinearOpMode {
 
@@ -51,7 +55,7 @@ public class MarkVI extends LinearOpMode {
     public void shoot(int rings){
         time.reset();
         while (true) {
-            robot.shooter.setRPM(3500);
+            robot.shooter.setRPM(3700);
 
             if (time.seconds() > 2) {
                 if (robot.shooter.feederCount() < rings) robot.shooter.feederState(true);
@@ -105,8 +109,6 @@ public class MarkVI extends LinearOpMode {
         if (opModeIsActive()){
 
             webcam.stopStreaming();
-
-            //ringCount = ring_count;
             if (ringCount == 0) A();
             else if (ringCount == 1) B();
             else C();
@@ -120,8 +122,16 @@ public class MarkVI extends LinearOpMode {
 
         shoot(4);
 
-        robot.strafe(40, 40, 90, 0.1, null);
-        robot.turn(-90,0.01);
+        robot.strafe(30, 46, 90, 0.1, null);
+        robot.strafe(90, 17, 90, 0.1, null);
+
+
+        time.reset();
+        while (time.seconds() < 1){ robot.arm.out(); }
+
+        time.reset();
+        while (time.seconds() < 1){ robot.claw.open(); }
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -137,6 +147,7 @@ public class MarkVI extends LinearOpMode {
         robot.turn(0, 0.01);
         robot.intake.setIntakePower(1);
         robot.strafe(0, 20, 0, 0.1, null);
+        sleep(500);
         robot.intake.setIntakePower(0);
 
 
@@ -146,13 +157,18 @@ public class MarkVI extends LinearOpMode {
 
         shoot(2);
 
-        robot.strafe(-10, 45, 90, 0.1, null);
+        robot.strafe(-10, 40, 90, 0.1, null);
 
-        robot.turn(-100, 0.05);
+        robot.turn(-90, 0.05);
 
         time.reset();
         while (time.seconds() < 1){
             robot.arm.out();
+        }
+
+        time.reset();
+        while (time.seconds() < 1){
+            robot.claw.open();
         }
     }
 
@@ -191,11 +207,8 @@ public class MarkVI extends LinearOpMode {
         time.reset();
         while (time.seconds() < 1){ robot.arm.out(); }
 
-        // Strafe back to line and turn to 0
         time.reset();
         while (time.seconds() < 1){ robot.claw.open(); }
-
-        robot.strafe(180, 40, 90, 0.1, null);
 
         /*
 

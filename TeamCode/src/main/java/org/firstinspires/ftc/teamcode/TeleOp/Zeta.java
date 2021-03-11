@@ -197,7 +197,7 @@ public class Zeta extends LinearOpMode {
             //           ABSOLUTE CONTROL MODE          //
             JC1.setShifted(RIGHT, robot.imu.getAngle() % 360);
             if (BC1.get(SQUARE, TAP)) {
-                robot.imu.setOffsetAngle(-robot.imu.getAngle());
+                robot.imu.setOffsetAngle(-((robot.imu.getAngle() + 180) % 360));
                 robot.imu.resetDeltaAngle();
             }
 
@@ -225,9 +225,9 @@ public class Zeta extends LinearOpMode {
                 else ps_increment--;
             }
             if (BC1.get(RB1, TAP) || BC1.get(LB1, TAP))
-                if (ps_increment == 0)      locked_direction = MecanumRobot.turnTarget(-ps_delta_angle + 90, robot.imu.getAngle());
+                if (ps_increment == 0)      locked_direction = MecanumRobot.turnTarget(ps_delta_angle + 90, robot.imu.getAngle());
                 else if (ps_increment == 1) locked_direction = MecanumRobot.turnTarget(90, robot.imu.getAngle());
-                else if (ps_increment == 2) locked_direction = MecanumRobot.turnTarget(ps_delta_angle + 90, robot.imu.getAngle());
+                else if (ps_increment == 2) locked_direction = MecanumRobot.turnTarget(-ps_delta_angle + 90, robot.imu.getAngle());
 
 
             /*
@@ -258,7 +258,7 @@ public class Zeta extends LinearOpMode {
 
 
             Utils.multTelemetry.addLine("--DRIVER-------------------------------------");
-            Utils.multTelemetry.addData("ACM", BC1.get(SQUARE, TOGGLE));
+            Utils.multTelemetry.addData("ACM Offset", robot.imu.getOffsetAngle());
             Utils.multTelemetry.addData("Angle", robot.imu.getAngle());
             Utils.multTelemetry.addData("Locked Angle", locked_direction);
             Utils.multTelemetry.addData("PS Increment", ps_increment);
