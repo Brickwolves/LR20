@@ -175,6 +175,11 @@ public class MarkVI extends LinearOpMode {
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void C(){
 
+
+        /*
+        AUTO THAT KNOCKS OVER WOBBLE
+        */
+
         // Strafe to shooting position
         robot.strafe(0, 40, 90, 0.1, () -> robot.intake.armMid());
         robot.strafe(-90, 14, 90, 0.1, null);
@@ -210,9 +215,10 @@ public class MarkVI extends LinearOpMode {
         time.reset();
         while (time.seconds() < 1){ robot.claw.open(); }
 
+
         /*
 
-        auto for getting the last ring
+        Auto for getting the last ring
 
         // Get ready to intake last ring
         robot.strafe(-100, 30, 90, 0.1, null);

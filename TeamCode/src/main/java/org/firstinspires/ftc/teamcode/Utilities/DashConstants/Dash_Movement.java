@@ -18,7 +18,7 @@ public class Dash_Movement {
     public static double turn_offset = 5;
 
     public static double diag_deg = 180;
-    public static double diagnostic_inches = 20;
+    public static double diagnostic_inches = 10;
 
     public static double buttonWait = 0.2;
 

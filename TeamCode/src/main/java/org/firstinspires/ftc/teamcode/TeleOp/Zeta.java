@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.teamcode.Hardware.Arm;
 import org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.*;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.*;
@@ -36,7 +37,7 @@ public class Zeta extends LinearOpMode {
     private JoystickControls JC1;
 
     // Power Shot Angles
-    private int     ps_increment = 2;
+    private int     ps_increment = 1;
     private double  ps_delta_angle = 15;
 
     // PID Stuff
@@ -114,6 +115,8 @@ public class Zeta extends LinearOpMode {
 
         while (opModeIsActive()) {
 
+
+
              /*
 
              ----------- C A L C U L A T I O N S -----------
@@ -126,8 +129,9 @@ public class Zeta extends LinearOpMode {
 
             double delta_angle = current_angle - angle_ring_buffer.getValue(current_angle);
             double delta_time = current_nanoseconds - time_ring_buffer.getValue(current_nanoseconds);
-
             double current_angular_velocity = delta_angle / delta_time;
+
+
 
 
             last_nanoseconds = current_nanoseconds;
@@ -148,12 +152,15 @@ public class Zeta extends LinearOpMode {
 
             //                  ARM
             if (BC2.get(DPAD_R, DOWN)) robot.arm.out();
-            else if (BC2.get(DPAD_UP, DOWN)) robot.arm.up();
             else if (BC2.get(DPAD_L, DOWN)) robot.arm.in();
+            else if (BC2.get(DPAD_UP, TAP)) {
+                if (robot.arm.getStatus() == Arm.STATUS.UP) robot.arm.up2();
+                else robot.arm.up();
+            }
 
             //                  CLAW
-            if (BC2.get(TRIANGLE, TOGGLE)) robot.claw.open();
-            else robot.claw.close();
+            if (BC2.get(TRIANGLE, TOGGLE)) robot.claw.close();
+            else robot.claw.open();
 
             //                INTAKE CODE
             current_intake_position = robot.intake.getIntakePosition();
@@ -230,6 +237,7 @@ public class Zeta extends LinearOpMode {
                 else if (ps_increment == 2) locked_direction = MecanumRobot.turnTarget(-ps_delta_angle + 90, robot.imu.getAngle());
 
 
+
             /*
 
             ----------- P I D -----------
@@ -246,8 +254,13 @@ public class Zeta extends LinearOpMode {
 
 
 
-            // LAST STEP
+            /*
+
+            ----------- S E T    P O W E R -----------
+
+                                       */
             robot.setDrivePower(drive, strafe, turn, velocity);
+
 
 
             /*
@@ -256,12 +269,13 @@ public class Zeta extends LinearOpMode {
 
                                                 */
 
-
             Utils.multTelemetry.addLine("--DRIVER-------------------------------------");
             Utils.multTelemetry.addData("ACM Offset", robot.imu.getOffsetAngle());
             Utils.multTelemetry.addData("Angle", robot.imu.getAngle());
             Utils.multTelemetry.addData("Locked Angle", locked_direction);
             Utils.multTelemetry.addData("PS Increment", ps_increment);
+            Utils.multTelemetry.addData("Angular Velocity", current_angular_velocity);
+
 
             Utils.multTelemetry.addLine("--HARDWARE-------------------------------------");
             Utils.multTelemetry.addData("Intake Forward", BC2.get(LB1, TOGGLE));
