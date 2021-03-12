@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOp.Diagnostics;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -15,7 +16,7 @@ import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_CRServ
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_CRServoDiag.CRSERVO_ID;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_CRServoDiag.CRSERVO_POWER;
 
-
+@Disabled
 @TeleOp(name = "CRServoDiag TeleOp", group="Linear TeleOp")
 public class CRServoDiag extends LinearOpMode {
 

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOp.Diagnostics;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -10,6 +11,7 @@ import org.firstinspires.ftc.teamcode.Utilities.Utils;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.ps_rpm;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.rpm;
 
+@Disabled
 @TeleOp(name = "Shooter Diagnostic TeleOp", group="Linear TeleOp")
 public class ShooterDiag extends LinearOpMode {
 

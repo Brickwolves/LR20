@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOp.Diagnostics;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -9,6 +10,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Hardware.Controls.ControllerCollin;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
+@Disabled
 @TeleOp(name = "Drive Diag TeleOp", group="Linear TeleOp")
 public class DriveDiag extends LinearOpMode {
 
