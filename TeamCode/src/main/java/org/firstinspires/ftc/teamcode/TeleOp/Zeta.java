@@ -38,7 +38,10 @@ public class Zeta extends LinearOpMode {
 
     // Power Shot Angles
     private int     ps_increment = 1;
-    private double  ps_delta_angle = 15;
+    private double  ps_delta_angle = 5.5;
+
+    // Square button
+    private boolean square_pressed = false;
 
     // PID Stuff
     private double  locked_direction;
@@ -203,9 +206,10 @@ public class Zeta extends LinearOpMode {
 
             //           ABSOLUTE CONTROL MODE          //
             JC1.setShifted(RIGHT, robot.imu.getAngle() % 360);
-            if (BC1.get(SQUARE, TAP)) {
+            if (BC1.get(SQUARE, TAP) && !square_pressed) {
                 robot.imu.setOffsetAngle(-((robot.imu.getAngle() + 180) % 360));
                 robot.imu.resetDeltaAngle();
+                square_pressed = true;
             }
 
             //              DRIVER VALUES               //
@@ -214,7 +218,11 @@ public class Zeta extends LinearOpMode {
             double turn = JC1.get(LEFT, X);
 
             //              VELOCITY RANGER             //
-            double velocity = Range.clip((1 - gamepad1.left_trigger), 0.5, 1);
+            double velocity = 1;
+            if (BC1.get(LB2, DOWN)) velocity = Range.clip((1 - gamepad1.left_trigger), 0.5, 1);
+            else if (BC1.get(RB2, DOWN)) velocity = Range.clip((1 - gamepad1.right_trigger), 0.2, 1);
+
+
 
             //              DPAD AUTO TURN              //
             if (BC1.get(DPAD_UP, DOWN)) locked_direction            = MecanumRobot.turnTarget(0, robot.imu.getAngle());
@@ -222,7 +230,7 @@ public class Zeta extends LinearOpMode {
             else if (BC1.get(DPAD_L, DOWN)) locked_direction        = MecanumRobot.turnTarget(90, robot.imu.getAngle());
             else if (BC1.get(DPAD_DN, DOWN)) locked_direction       = MecanumRobot.turnTarget(180, robot.imu.getAngle());
 
-            // POWER SHOT INCREMENT
+            //            POWER SHOT INCREMENT          //
             if (BC1.get(RB1, TAP)){
                 if (ps_increment == 2) ps_increment = 0;
                 else ps_increment++;
@@ -275,6 +283,8 @@ public class Zeta extends LinearOpMode {
             Utils.multTelemetry.addData("Locked Angle", locked_direction);
             Utils.multTelemetry.addData("PS Increment", ps_increment);
             Utils.multTelemetry.addData("Angular Velocity", current_angular_velocity);
+            Utils.multTelemetry.addData("RPM", robot.shooter.getRPM());
+
 
 
             Utils.multTelemetry.addLine("--HARDWARE-------------------------------------");
