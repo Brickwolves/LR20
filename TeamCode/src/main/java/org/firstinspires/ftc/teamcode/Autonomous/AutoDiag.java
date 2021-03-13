@@ -20,7 +20,6 @@ import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Bu
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.CIRCLE;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.CROSS;
 
-@Disabled
 @Autonomous(name="AutoDiag", group="Autonomous Linear Opmode")
 public class AutoDiag extends LinearOpMode {
 
@@ -28,7 +27,7 @@ public class AutoDiag extends LinearOpMode {
     private ButtonControls BC;
     private ElapsedTime time = new ElapsedTime();
 
-    public void breakpoint(){
+    public void BREAKPOINT(){
         while (true){
             Utils.multTelemetry.addData("Status", "Holding");
             Utils.multTelemetry.update();
@@ -73,6 +72,6 @@ public class AutoDiag extends LinearOpMode {
         Utils.multTelemetry.update();
         waitForStart();
 
-        shoot(4);
+        robot.turnPowerRamp(0, 0.1);
     }
 }

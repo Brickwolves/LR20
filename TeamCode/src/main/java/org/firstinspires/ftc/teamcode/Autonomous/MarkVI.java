@@ -25,6 +25,7 @@ import org.openftc.easyopencv.OpenCvPipeline;
 
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Movement.diag_deg;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Movement.diagnostic_inches;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.rpm;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Vision.ring_count;
 
 @Autonomous(name="MarkVI", group="Autonomous Linear Opmode")
@@ -55,7 +56,7 @@ public class MarkVI extends LinearOpMode {
     public void shoot(int rings){
         time.reset();
         while (true) {
-            robot.shooter.setRPM(3700);
+            robot.shooter.setRPM(rpm);
 
             if (time.seconds() > 2) {
                 if (robot.shooter.feederCount() < rings) robot.shooter.feederState(true);
