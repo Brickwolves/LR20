@@ -5,6 +5,7 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 
 import com.qualcomm.robotcore.hardware.*;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.Hardware.Sensors.IMU;
@@ -121,29 +122,33 @@ public class Mecanum implements Robot {
    }
 
 
+   @RequiresApi(api = Build.VERSION_CODES.N)
+   public double closestRelativeAngle(double targetAngle){
+      double simpleTargetDelta = floorMod(Math.round(((360 - targetAngle) + imu.getAngle()) * 1e6), Math.round(360.000 * 1e6)) / 1e6;
+      double alternateTargetDelta = -1 * (360 - simpleTargetDelta);
+      return StrictMath.abs(simpleTargetDelta) >= StrictMath.abs(alternateTargetDelta) ? 0 - simpleTargetDelta : 0 - alternateTargetDelta;
+   }
+
    /**
     * @param angle
     * @param inches
     */
+   @RequiresApi(api = Build.VERSION_CODES.N)
    public void strafe(double angle, double inches, double directionFacingAngle, double acceleration, SyncTask task){
 
+      ElapsedTime time = new ElapsedTime();
       System.out.println(angle + " " + inches);
       double ticks = convertInches2Ticks(inches);
 
 
-      // ACM
-      double strafeAngle;
-      double absZeroAngle = (imu.getStartAngle() - imu.getAngle()) % 360;
-      if (absZeroAngle <= -180) {
-         strafeAngle = absZeroAngle - angle;
-      }
-      else {
-         strafeAngle = absZeroAngle;
-      }
-      angle += strafeAngle;
+
+      angle = closestRelativeAngle(angle);
 
 
 
+
+
+      directionFacingAngle = findClosestAngle(directionFacingAngle, imu.getAngle());
 
       resetMotors();                                              // Reset Motor Encoder
 
@@ -181,14 +186,10 @@ public class Mecanum implements Robot {
          currentPosition = getPosition();
 
 
-         Utils.multTelemetry.addData("Error", error);
-         Utils.multTelemetry.addData("Turn", turn);
-         Utils.multTelemetry.addData("Drive", drive * power);
-         Utils.multTelemetry.addData("Strafe", strafe * power);
-         Utils.multTelemetry.update();
+         Utils.telemetry.addData("Error", error);
+         Utils.telemetry.update();
       }
       setAllPower(0);
-      sleep(200);
    }
 
    @RequiresApi(api = Build.VERSION_CODES.N)

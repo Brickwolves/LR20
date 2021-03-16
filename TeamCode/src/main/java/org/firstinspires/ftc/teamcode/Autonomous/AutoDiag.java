@@ -49,11 +49,10 @@ public class AutoDiag extends LinearOpMode {
         Utils.multTelemetry.update();
         waitForStart();
 
-        robot.turn(0, 0.5);
-        robot.turn(180, 0.5);
         robot.turn(-90, 0.5);
-        robot.turn(0, 0.5);
-        robot.turn(5, 0.5);
+        robot.strafe(0, 10, -90, 0.1, null);
+        robot.strafe(180, 10, -90, 0.1, null);
+
 
 
     }
