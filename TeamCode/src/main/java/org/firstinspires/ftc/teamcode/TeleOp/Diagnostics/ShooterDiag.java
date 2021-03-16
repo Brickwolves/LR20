@@ -5,22 +5,21 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Hardware.Controls.ControllerCollin;
-import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
+import org.firstinspires.ftc.teamcode.Hardware.Mecanum;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.ps_rpm;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.rpm;
 
 @Disabled
 @TeleOp(name = "Shooter Diagnostic TeleOp", group="Linear TeleOp")
 public class ShooterDiag extends LinearOpMode {
 
-    private MecanumRobot robot;
+    private Mecanum robot;
     private ControllerCollin controller;
 
     public void initialize() {
         Utils.setOpMode(this);
-        robot = new MecanumRobot();
+        robot = new Mecanum();
         controller = new ControllerCollin(gamepad1);
     }
 

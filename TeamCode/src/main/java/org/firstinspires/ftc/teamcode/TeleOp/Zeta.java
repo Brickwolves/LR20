@@ -20,8 +20,8 @@ import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.
 
 
 
-import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
-import org.firstinspires.ftc.teamcode.Utilities.RingBuffer;
+import org.firstinspires.ftc.teamcode.Hardware.Mecanum;
+import org.firstinspires.ftc.teamcode.Utilities.PID.RingBuffer;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
 import static java.lang.Math.abs;
@@ -32,7 +32,7 @@ import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shoote
 public class Zeta extends LinearOpMode {
 
     // Main Stuff
-    private MecanumRobot robot;
+    private Mecanum robot;
     private ButtonControls BC1, BC2;
     private JoystickControls JC1;
 
@@ -68,7 +68,7 @@ public class Zeta extends LinearOpMode {
 
     public void initialize() {
         Utils.setOpMode(this);
-        robot = new MecanumRobot();
+        robot = new Mecanum();
 
         BC1 = new ButtonControls(gamepad1);
         BC2 = new ButtonControls(gamepad2);
@@ -225,10 +225,10 @@ public class Zeta extends LinearOpMode {
 
 
             //              DPAD AUTO TURN              //
-            if (BC1.get(DPAD_UP, DOWN)) locked_direction            = MecanumRobot.turnTarget(0, robot.imu.getAngle());
-            else if (BC1.get(DPAD_R, DOWN)) locked_direction        = MecanumRobot.turnTarget(-90, robot.imu.getAngle());
-            else if (BC1.get(DPAD_L, DOWN)) locked_direction        = MecanumRobot.turnTarget(90, robot.imu.getAngle());
-            else if (BC1.get(DPAD_DN, DOWN)) locked_direction       = MecanumRobot.turnTarget(180, robot.imu.getAngle());
+            if (BC1.get(DPAD_UP, DOWN)) locked_direction            = Mecanum.findClosestAngle(0, robot.imu.getAngle());
+            else if (BC1.get(DPAD_R, DOWN)) locked_direction        = Mecanum.findClosestAngle(-90, robot.imu.getAngle());
+            else if (BC1.get(DPAD_L, DOWN)) locked_direction        = Mecanum.findClosestAngle(90, robot.imu.getAngle());
+            else if (BC1.get(DPAD_DN, DOWN)) locked_direction       = Mecanum.findClosestAngle(180, robot.imu.getAngle());
 
             //            POWER SHOT INCREMENT          //
             if (BC1.get(RB1, TAP)){
@@ -240,9 +240,9 @@ public class Zeta extends LinearOpMode {
                 else ps_increment--;
             }
             if (BC1.get(RB1, TAP) || BC1.get(LB1, TAP))
-                if (ps_increment == 0)      locked_direction = MecanumRobot.turnTarget(ps_delta_angle + 90, robot.imu.getAngle());
-                else if (ps_increment == 1) locked_direction = MecanumRobot.turnTarget(90, robot.imu.getAngle());
-                else if (ps_increment == 2) locked_direction = MecanumRobot.turnTarget(-ps_delta_angle + 90, robot.imu.getAngle());
+                if (ps_increment == 0)      locked_direction = Mecanum.findClosestAngle(ps_delta_angle + 90, robot.imu.getAngle());
+                else if (ps_increment == 1) locked_direction = Mecanum.findClosestAngle(90, robot.imu.getAngle());
+                else if (ps_increment == 2) locked_direction = Mecanum.findClosestAngle(-ps_delta_angle + 90, robot.imu.getAngle());
 
 
 

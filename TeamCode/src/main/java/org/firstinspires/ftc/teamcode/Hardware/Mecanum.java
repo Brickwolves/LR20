@@ -5,10 +5,12 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 
 import com.qualcomm.robotcore.hardware.*;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.Hardware.Sensors.IMU;
 import org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Movement;
-import org.firstinspires.ftc.teamcode.Utilities.PID;
+import org.firstinspires.ftc.teamcode.Utilities.MathUtils;
+import org.firstinspires.ftc.teamcode.Utilities.PID.PID;
 import org.firstinspires.ftc.teamcode.Utilities.SyncTask;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
@@ -19,7 +21,7 @@ import static org.firstinspires.ftc.teamcode.Utilities.Utils.convertInches2Ticks
 import static org.firstinspires.ftc.teamcode.Utilities.Utils.map;
 
 
-public class MecanumRobot implements Robot {
+public class Mecanum implements Robot {
 
    private DcMotor fr, fl, br, bl;
    //public TouchSensor touchSensor;
@@ -31,13 +33,14 @@ public class MecanumRobot implements Robot {
    public Intake intake;
    public Shooter shooter;
 
+   private double turn;
 
    private double initAngle;
    private double currentPosition;
 
    public PID rotationPID = new PID(Dash_Movement.p, Dash_Movement.i, Dash_Movement.d, 100, true);
 
-   public MecanumRobot(){
+   public Mecanum(){
       initRobot();
    }
 
@@ -128,6 +131,20 @@ public class MecanumRobot implements Robot {
       double ticks = convertInches2Ticks(inches);
 
 
+      // ACM
+      double strafeAngle;
+      double absZeroAngle = (imu.getStartAngle() - imu.getAngle()) % 360;
+      if (absZeroAngle <= -180) {
+         strafeAngle = absZeroAngle - angle;
+      }
+      else {
+         strafeAngle = absZeroAngle;
+      }
+      angle += strafeAngle;
+
+
+
+
       resetMotors();                                              // Reset Motor Encoder
 
       double radians = (angle + 90) * (Math.PI / 180);             // Convert to NORTH=0, to NORTH=90 like  unit circle, and also to radians
@@ -175,7 +192,7 @@ public class MecanumRobot implements Robot {
    }
 
    @RequiresApi(api = Build.VERSION_CODES.N)
-   public static double turnTarget(double targetAngle, double currentAngle){
+   public static double findClosestAngle(double targetAngle, double currentAngle){
       double simpleTargetDelta = floorMod(Math.round(((360 - targetAngle) + currentAngle) * 1e6), Math.round(360.000 * 1e6)) / 1e6;
       double alternateTargetDelta = -1 * (360 - simpleTargetDelta);
       return StrictMath.abs(simpleTargetDelta) <= StrictMath.abs(alternateTargetDelta) ? currentAngle - simpleTargetDelta : currentAngle - alternateTargetDelta;
@@ -185,62 +202,55 @@ public class MecanumRobot implements Robot {
    public void turn(double target_angle, double MOE) {
 
       double startTime = System.currentTimeMillis();
+      double turn_direction, pid_return, power, powerRampPosition;
 
-      double turn;
+
+      //            Calc Power Ramping and PID Values           //
       double current_angle = imu.getAngle();
-      double actual_target_angle = turnTarget(target_angle, current_angle);
+      double startAngle = current_angle;
+      double actual_target_angle = findClosestAngle(target_angle, current_angle);
+      double startDeltaAngle = Math.abs(actual_target_angle - current_angle);
       double error = actual_target_angle - current_angle;
 
-      while ((Math.abs(error) > MOE) && Utils.isActive()) {
-         actual_target_angle = turnTarget(target_angle, current_angle);
-         error = actual_target_angle - current_angle;
-         turn = rotationPID.update(error) * -1;
-         setDrivePower(0, 0, turn, Dash_Movement.velocity);
 
+
+      while ((Math.abs(error) > MOE) && Utils.isActive()) {
+
+         //              PID                     //
+         error = actual_target_angle - current_angle;
+         pid_return = rotationPID.update(error) * -1;
+         turn_direction = (pid_return > 0) ? 1 : -1;
+
+
+         //              Power Ramping            //
+         powerRampPosition = MathUtils.map(current_angle, startAngle, actual_target_angle, 0, startDeltaAngle);
+         power = Utils.powerRamp(powerRampPosition, startDeltaAngle, 0.1);
+
+
+         //turn = (turn > 0) ? Range.clip(turn, 0.1, 1) : Range.clip(turn, -1, -0.1);
+
+
+         //        Check timeout             //
+         //double elapsedTime = Math.abs(System.currentTimeMillis() - startTime);
+         //if (elapsedTime > 3000) break;
+
+
+         //        Set Power                 //
+         setDrivePower(0, 0, turn_direction, power);
          current_angle = imu.getAngle();
 
-         // Check timeout
-         double elapsedTime = Math.abs(System.currentTimeMillis() - startTime);
-         if (elapsedTime > 3000) break;
 
 
+         //          Logging                 //
          Utils.multTelemetry.addData("Error", error);
-         Utils.multTelemetry.addData("Turn", turn);
+         Utils.multTelemetry.addData("Turn", turn_direction);
+         Utils.multTelemetry.addData("Power", power);
          Utils.multTelemetry.addData("IMU", current_angle);
+         Utils.multTelemetry.addData("Finished", (Math.abs(error) <= MOE));
          Utils.multTelemetry.update();
       }
+      setAllPower(0);
    }
-
-
-   public void turnPID(double targetAngle, double MOE){
-
-      double startTime = System.currentTimeMillis();
-
-      double currentAngle = imu.getAngle();
-      double error = targetAngle - currentAngle;
-
-      while ((Math.abs(error) > MOE) && Utils.isActive()) {
-         error = targetAngle - currentAngle;
-         double turn = rotationPID.update(error) * -1;
-
-         setDrivePower(0 ,0, turn, Dash_Movement.velocity);
-
-         currentAngle = imu.getAngle();
-
-
-         double elapsedTime = Math.abs(System.currentTimeMillis() - startTime);
-         if (elapsedTime > 1500) break;
-
-
-         Utils.multTelemetry.addData("Error", error);
-         Utils.multTelemetry.addData("Turn", turn);
-         Utils.multTelemetry.addData("IMU", currentAngle);
-         Utils.multTelemetry.update();
-      }
-
-      setDrivePower(0, 0, 0, 0);
-   }
-
 
    public void turnPowerRamp(double targetAngle, double MOE) {
          System.out.println("Turning to " + targetAngle + " degrees");
@@ -286,5 +296,9 @@ public class MecanumRobot implements Robot {
          setAllPower(0);
 
          sleep(100);
+      }
+
+      public double getTurn(){
+         return turn;
       }
 }

@@ -7,8 +7,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter;
-import org.firstinspires.ftc.teamcode.Utilities.PID;
-import org.firstinspires.ftc.teamcode.Utilities.RingBuffer;
+import org.firstinspires.ftc.teamcode.Utilities.PID.PID;
+import org.firstinspires.ftc.teamcode.Utilities.PID.RingBuffer;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.LOCK_SERVO_HOME;
@@ -101,6 +101,7 @@ public class Shooter {
     public void setFeederCount(int feedCount){ this.feedCount = feedCount; }
 
     public void feederState(boolean trigger){
+
         switch (currentFeederState) {
 
             case STATE_IDLE:

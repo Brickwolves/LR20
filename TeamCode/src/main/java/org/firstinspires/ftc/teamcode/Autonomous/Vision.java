@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
+import org.firstinspires.ftc.teamcode.Hardware.Mecanum;
 import org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Vision;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 import org.opencv.core.Core;
@@ -17,17 +17,17 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-@Autonomous(name="MarkII - Vision", group="Autonomous Linear Opmode")
-public class MarkII extends LinearOpMode
+@Autonomous(name="Vision", group="Autonomous Linear Opmode")
+public class Vision extends LinearOpMode
 {
-    private MecanumRobot mecanumRobot;
+    private Mecanum mecanumRobot;
 
     OpenCvCamera webcam;
     private static double ringCount = 0;
 
     public void initialize(){
         Utils.setOpMode(this);
-        mecanumRobot = new MecanumRobot();
+        mecanumRobot = new Mecanum();
     }
 
     @Override

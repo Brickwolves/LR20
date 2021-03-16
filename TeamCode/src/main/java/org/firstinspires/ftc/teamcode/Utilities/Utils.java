@@ -6,6 +6,8 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.Range;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class Utils {
@@ -38,8 +40,6 @@ public class Utils {
         if (isLinearOpMode) {
             linearOpMode = (LinearOpMode) opMode;
         }
-
-
     }
 
 
@@ -79,16 +79,22 @@ public class Utils {
          * Simply returns a proportional constant
          */
 
-        position += 0.1;           // Necessary otherwise we're stuck at position 0 (sqrt(0) = 0)
+
+        position = Math.abs(position);
+        distance = Math.abs(distance);
+        acceleration = Math.abs(acceleration);
+
+        position += 1;
         double normFactor = 1 / Math.sqrt(0.1 * distance);
 
         // Modeling a piece wise of power as a function of distance
         double p1 = normFactor * Math.sqrt(acceleration * position);
-        double p2 = .8;
-        double p3 = normFactor * (Math.cbrt(acceleration * (distance - position)));
-        double power = Math.min(Math.min(p1, p2), p3)+0.1;
-        //telemetry.addData("Distance", distance);
-        //telemetry.addData("Position", position);
+        double p2 = 1;
+        double p3 = normFactor * (Math.sqrt(acceleration * Math.abs(distance - position)));
+        double power = Math.min(Math.min(p1, p2), p3);
+        power = Range.clip(power, 0.1, 1);
+        Utils.multTelemetry.addData("Distance", distance);
+        Utils.multTelemetry.addData("Position", position);
 
         return power;
     }

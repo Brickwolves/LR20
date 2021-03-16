@@ -11,15 +11,11 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.Hardware.Controls.ControllerCollin;
-import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
-import org.firstinspires.ftc.teamcode.Utilities.RingBuffer;
+import org.firstinspires.ftc.teamcode.Hardware.Mecanum;
+import org.firstinspires.ftc.teamcode.Utilities.PID.RingBuffer;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
 import static java.lang.Math.abs;
-import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.TOGGLE;
-import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.CIRCLE;
-import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.LB1;
-import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.SQUARE;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.rpm;
 
 @Disabled
@@ -27,7 +23,7 @@ import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shoote
 public class Gamma extends LinearOpMode {
 
     // Main Stuff
-    private MecanumRobot robot;
+    private Mecanum robot;
     private ControllerCollin controller1;
     private ControllerCollin controller2;
 
@@ -60,7 +56,7 @@ public class Gamma extends LinearOpMode {
 
     public void initialize() {
         Utils.setOpMode(this);
-        robot = new MecanumRobot();
+        robot = new Mecanum();
         controller1 = new ControllerCollin(gamepad1);
         controller2 = new ControllerCollin(gamepad2);
 
@@ -212,13 +208,13 @@ public class Gamma extends LinearOpMode {
 
 
             // DPAD Auto Turn
-            if (controller1.src.dpad_up) locked_direction               = MecanumRobot.turnTarget(0, robot.imu.getAngle());
-            else if (controller1.src.dpad_right) locked_direction       = MecanumRobot.turnTarget(-90, robot.imu.getAngle());
-            else if (controller1.src.dpad_left) locked_direction        = MecanumRobot.turnTarget(90, robot.imu.getAngle());
-            else if (controller1.src.dpad_down) locked_direction        = MecanumRobot.turnTarget(180, robot.imu.getAngle());
+            if (controller1.src.dpad_up) locked_direction               = Mecanum.findClosestAngle(0, robot.imu.getAngle());
+            else if (controller1.src.dpad_right) locked_direction       = Mecanum.findClosestAngle(-90, robot.imu.getAngle());
+            else if (controller1.src.dpad_left) locked_direction        = Mecanum.findClosestAngle(90, robot.imu.getAngle());
+            else if (controller1.src.dpad_down) locked_direction        = Mecanum.findClosestAngle(180, robot.imu.getAngle());
 
 
-            if (controller1.src.circle) locked_direction = MecanumRobot.turnTarget(110, robot.imu.getAngle());
+            if (controller1.src.circle) locked_direction = Mecanum.findClosestAngle(110, robot.imu.getAngle());
 
             // Power Shot increment
             if (controller1.RB1_tap){
@@ -230,9 +226,9 @@ public class Gamma extends LinearOpMode {
                 else ps_increment--;
             }
             if (controller1.RB1_tap || controller1.LB1_tap)
-                if (ps_increment == 0)      locked_direction = MecanumRobot.turnTarget(-ps_delta_angle + 90, robot.imu.getAngle());
-                else if (ps_increment == 1) locked_direction = MecanumRobot.turnTarget(0 + 90, robot.imu.getAngle());
-                else if (ps_increment == 2) locked_direction = MecanumRobot.turnTarget(ps_delta_angle + 90, robot.imu.getAngle());
+                if (ps_increment == 0)      locked_direction = Mecanum.findClosestAngle(-ps_delta_angle + 90, robot.imu.getAngle());
+                else if (ps_increment == 1) locked_direction = Mecanum.findClosestAngle(0 + 90, robot.imu.getAngle());
+                else if (ps_increment == 2) locked_direction = Mecanum.findClosestAngle(ps_delta_angle + 90, robot.imu.getAngle());
 
 
             /*

@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Hardware.Controls.ControllerCollin;
-import org.firstinspires.ftc.teamcode.Hardware.MecanumRobot;
+import org.firstinspires.ftc.teamcode.Hardware.Mecanum;
 import org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Vision;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 import org.opencv.core.Core;
@@ -23,15 +23,12 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Movement.diag_deg;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Movement.diagnostic_inches;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.rpm;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Vision.ring_count;
 
 @Autonomous(name="MarkVI", group="Autonomous Linear Opmode")
 public class MarkVI extends LinearOpMode {
 
-    private MecanumRobot robot;
+    private Mecanum robot;
     private ControllerCollin controller;
     private ElapsedTime time;
 
@@ -40,7 +37,7 @@ public class MarkVI extends LinearOpMode {
 
     public void initialize(){
         Utils.setOpMode(this);
-        robot = new MecanumRobot();
+        robot = new Mecanum();
         controller = new ControllerCollin(gamepad1);
         time = new ElapsedTime();
     }
@@ -118,13 +115,13 @@ public class MarkVI extends LinearOpMode {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void A(){
-        robot.strafe(0, 40, 90, 0.1, () -> robot.intake.armDown());
-        robot.strafe(-90, 14, 90, 0.1, null);
+        robot.strafe(90, 40, 90, 0.1, () -> robot.intake.armDown());
+        robot.strafe(0, 14, 90, 0.1, null);
 
         shoot(4);
 
-        robot.strafe(30, 46, 90, 0.1, null);
-        robot.strafe(90, 17, 90, 0.1, null);
+        robot.strafe(120, 46, 90, 0.1, null);
+        robot.strafe(180, 17, 90, 0.1, null);
 
 
         time.reset();
@@ -139,26 +136,26 @@ public class MarkVI extends LinearOpMode {
     public void B(){
 
         // Strafe to shooting position
-        robot.strafe(0, 40, 90, 0.1, () -> robot.intake.armDown());
-        robot.strafe(-90, 14, 90, 0.1, null);
+        robot.strafe(90, 40, 90, 0.1, () -> robot.intake.armDown());
+        robot.strafe(0, 14, 90, 0.1, null);
         shoot(4);
 
         // Intake Rings
-        robot.strafe(90, 10, 90, 0.1, null);
+        robot.strafe(180, 10, 90, 0.1, null);
         robot.turn(0, 0.01);
         robot.intake.setIntakePower(1);
-        robot.strafe(0, 20, 0, 0.1, null);
+        robot.strafe(90, 20, 0, 0.1, null);
         sleep(500);
         robot.intake.setIntakePower(0);
 
 
-        robot.strafe(180, 10, 0, 0.05, () -> robot.intake.armDown());
+        robot.strafe(270, 10, 0, 0.05, () -> robot.intake.armDown());
         robot.turn(90, 0.05);
-        robot.strafe(0, 5, 90, 0.1, null);
+        robot.strafe(90, 5, 90, 0.1, null);
 
         shoot(2);
 
-        robot.strafe(-10, 40, 90, 0.1, null);
+        robot.strafe(110, 40, 90, 0.1, null);
 
         robot.turn(-90, 0.05);
 
@@ -182,32 +179,32 @@ public class MarkVI extends LinearOpMode {
         */
 
         // Strafe to shooting position
-        robot.strafe(0, 40, 90, 0.1, () -> robot.intake.armMid());
-        robot.strafe(-90, 14, 90, 0.1, null);
+        robot.strafe(90, 40, 90, 0.1, () -> robot.intake.armMid());
+        robot.strafe(0, 14, 90, 0.1, null);
         shoot(4);
 
         // Knock of the top ring
-        robot.strafe(180, 10, 90, 0.1, null);
-        robot.strafe(-90, 14, 90, 0.1, null);
+        robot.strafe(270, 10, 90, 0.1, null);
+        robot.strafe(0, 14, 90, 0.1, null);
 
         // Strafe back to put down front bumper
-        robot.strafe(150, 7, 90, 0.1, null);
+        robot.strafe(240, 7, 90, 0.1, null);
 
         time.reset();
         while (time.seconds() < 1){ robot.intake.armDown(); }
 
         // Intake rings
         robot.intake.setIntakePower(1);
-        robot.strafe(0, 25, 90, 0.01, null);
+        robot.strafe(90, 25, 90, 0.01, null);
         sleep(1000);
         robot.intake.setIntakePower(0);
 
         // Strafe back to shooting position and shoot
-        robot.strafe(105, 14, 90, 0.05, null);
+        robot.strafe(195, 14, 90, 0.05, null);
         shoot(4);
 
         // Strafe to C for WG
-        robot.strafe(0, 70, 90, 0.5, null);
+        robot.strafe(90, 70, 90, 0.5, null);
         robot.turn(-50, 0.01);
 
         time.reset();
