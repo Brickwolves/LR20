@@ -25,8 +25,8 @@ import org.openftc.easyopencv.OpenCvPipeline;
 
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.rpm;
 
-@Autonomous(name="MarkVI", group="Autonomous Linear Opmode")
-public class MarkVI extends LinearOpMode {
+@Autonomous(name="Qualifier", group="Autonomous Linear Opmode")
+public class Qualifier extends LinearOpMode {
 
     private Mecanum robot;
     private ControllerCollin controller;
@@ -56,7 +56,7 @@ public class MarkVI extends LinearOpMode {
             robot.shooter.setRPM(rpm);
 
             if (time.seconds() > 2) {
-                if (robot.shooter.feederCount() < rings) robot.shooter.feederState(true);
+                if (robot.shooter.getFeederCount() < rings) robot.shooter.feederState(true);
                 else break;
             }
 

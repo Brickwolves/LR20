@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Autonomous;
+package org.firstinspires.ftc.teamcode.Autonomous.Diagnostics;
 
 import android.os.Build;
 
@@ -14,16 +14,18 @@ import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.DOWN;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.CROSS;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Movement.diag_deg;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Movement.diag_inches;
 
 @Autonomous(name="AutoDiag", group="Autonomous Linear Opmode")
-public class AutoDiag extends LinearOpMode {
+public class Movement extends LinearOpMode {
 
     private Mecanum robot;
     private ButtonControls BC;
     private ElapsedTime time = new ElapsedTime();
 
     public void BREAKPOINT(){
-        while (true){
+        while (true && opModeIsActive()){
             Utils.multTelemetry.addData("Status", "Holding");
             Utils.multTelemetry.addData("Turn", robot.getTurn());
             Utils.multTelemetry.update();
@@ -49,11 +51,19 @@ public class AutoDiag extends LinearOpMode {
         Utils.multTelemetry.update();
         waitForStart();
 
-        robot.turn(-90, 0.5);
-        robot.strafe(0, 10, -90, 0.1, null);
-        robot.strafe(180, 10, -90, 0.1, null);
+        B();
 
-
-
+        while (!BC.get(CROSS, DOWN) && opModeIsActive()) {
+            Utils.multTelemetry.addLine("BREAKPOINT");
+            Utils.multTelemetry.addData("Angle", robot.imu.getAngle());
+            Utils.multTelemetry.update();
+        }
     }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public void B(){
+        robot.strafe(diag_deg, diag_inches, 90, 0.5, null);
+    }
+
 }

@@ -16,5 +16,5 @@ public class Dash_Vision {
     public static double orangeMax = 115;
     public static double orangeMin = 80;
 
-    public static int ring_count = 4;
+    public static int ring_count = 1;
 }

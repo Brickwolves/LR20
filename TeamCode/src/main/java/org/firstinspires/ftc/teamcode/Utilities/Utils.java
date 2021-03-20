@@ -84,7 +84,7 @@ public class Utils {
         distance = Math.abs(distance);
         acceleration = Math.abs(acceleration);
 
-        position += 1;
+        position += 2;
         double normFactor = 1 / Math.sqrt(0.1 * distance);
 
         // Modeling a piece wise of power as a function of distance

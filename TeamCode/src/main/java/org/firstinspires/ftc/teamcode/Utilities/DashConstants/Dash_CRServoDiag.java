@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.Utilities.DashConstants;
 import com.acmerobotics.dashboard.config.Config;
 
-@Config
+//@Config
 public class Dash_CRServoDiag {
     public static String CRSERVO_ID = "claw";
     public static double CRSERVO_POWER = 1;

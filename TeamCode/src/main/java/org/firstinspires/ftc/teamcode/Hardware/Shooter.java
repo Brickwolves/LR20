@@ -97,7 +97,7 @@ public class Shooter {
         isFeederLocked = false;
     }
 
-    public double feederCount(){ return feedCount; }
+    public double getFeederCount(){ return feedCount; }
     public void setFeederCount(int feedCount){ this.feedCount = feedCount; }
 
     public void feederState(boolean trigger){
