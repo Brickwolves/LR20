@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls;
 import org.firstinspires.ftc.teamcode.Hardware.Mecanum;
 import org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Vision;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
@@ -22,14 +23,13 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-import org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls;
-import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.*;
-import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.*;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.DOWN;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.CROSS;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.rpm;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Vision.ring_count;
 
-@Autonomous(name="MarkVII", group="Autonomous Linear Opmode")
-public class MarkVII extends LinearOpMode {
+@Autonomous(name="MarkVIII", group="Autonomous Linear Opmode")
+public class MarkVIII extends LinearOpMode {
 
     private Mecanum robot;
     private ButtonControls BC;

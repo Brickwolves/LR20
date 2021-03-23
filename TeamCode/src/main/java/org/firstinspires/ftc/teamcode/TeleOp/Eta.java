@@ -1,7 +1,9 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
 import android.os.Build;
+
 import androidx.annotation.RequiresApi;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -10,11 +12,7 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Hardware.Arm;
 import org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls;
-import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.*;
-import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.*;
 import org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls;
-import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.Input.*;
-import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.Value.*;
 import org.firstinspires.ftc.teamcode.Hardware.Mecanum;
 import org.firstinspires.ftc.teamcode.Utilities.PID.RingBuffer;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
@@ -33,6 +31,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.Math.abs;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.DOWN;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.TAP;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.TOGGLE;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.UP;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.CIRCLE;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.DPAD_DN;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.DPAD_L;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.DPAD_R;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.DPAD_UP;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.LB1;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.LB2;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.RB1;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.RB2;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.SQUARE;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.TOUCHPAD;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.TRIANGLE;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.Input.LEFT;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.Input.RIGHT;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.Value.INVERT_SHIFTED_X;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.Value.INVERT_SHIFTED_Y;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.Value.SHIFTED_X;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.Value.X;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.rpm;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Vision.MAX_H;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Vision.MAX_S;
@@ -40,7 +60,12 @@ import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Vision
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Vision.MIN_H;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Vision.MIN_S;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Vision.MIN_V;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Vision.blur;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Vision.dilate_const;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Vision.erode_const;
 import static org.opencv.core.Core.inRange;
+import static org.opencv.core.CvType.CV_64F;
+import static org.opencv.core.CvType.CV_8U;
 import static org.opencv.imgproc.Imgproc.CHAIN_APPROX_SIMPLE;
 import static org.opencv.imgproc.Imgproc.GaussianBlur;
 import static org.opencv.imgproc.Imgproc.RETR_TREE;
@@ -53,8 +78,8 @@ import static org.opencv.imgproc.Imgproc.findContours;
 import static org.opencv.imgproc.Imgproc.rectangle;
 
 
-@TeleOp(name = "Zeta TeleOp", group="Linear TeleOp")
-public class Zeta extends LinearOpMode {
+@TeleOp(name = "Eta TeleOp", group="Linear TeleOp")
+public class Eta extends LinearOpMode {
 
     // Main Stuff
     private Mecanum robot;
@@ -98,30 +123,14 @@ public class Zeta extends LinearOpMode {
         BC1 = new ButtonControls(gamepad1);
         BC2 = new ButtonControls(gamepad2);
         JC1 = new JoystickControls(gamepad1);
+        elapsedTime = new ElapsedTime();
         startVision();
 
 
-
-        Utils.multTelemetry.addLine("------USER 1----------------------------");
-        Utils.multTelemetry.addData("Velocity Ranger", "[LB2]");
-        Utils.multTelemetry.addData("Face Direction", "DPAD");
-        Utils.multTelemetry.addData("Power Shot Increment", "[TRIANGLE]");
-
-        Utils.multTelemetry.addLine("");
-
-        Utils.multTelemetry.addLine("------USER 2----------------------------");
-        Utils.multTelemetry.addData("Claw", "[TRIANGLE]");
-        Utils.multTelemetry.addData("Intake ON/OFF", "[RB1]");
-        Utils.multTelemetry.addData("Intake Direction", "[LB1]");
-        Utils.multTelemetry.addData("Bumper Toggle", "[DPAD DOWN]");
-        Utils.multTelemetry.addData("Arm Out", "[DPAD RIGHT]");
-        Utils.multTelemetry.addData("Arm Up", "[DPAD UP]");
-        Utils.multTelemetry.addData("Arm In", "[DPAD LEFT]");
-        Utils.multTelemetry.addData("Shooter ON/OFF", "[CIRCLE]");
-        Utils.multTelemetry.addData("Shoot", "[RB2]");
-
-        Utils.multTelemetry.addData("Shutdown Keys", "[TOUCHPAD] simultaneously");
-        Utils.multTelemetry.update();
+        while (!opModeIsActive()) {
+            Utils.multTelemetry.addData("FPS", webcam.getFps());
+            Utils.multTelemetry.update();
+        }
 
     }
 
@@ -138,7 +147,6 @@ public class Zeta extends LinearOpMode {
          */
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam"), cameraMonitorViewId);
-
         webcam.setPipeline(new GoalFinderPipeline());
         webcam.openCameraDeviceAsync(() -> webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT));
     }
@@ -150,11 +158,6 @@ public class Zeta extends LinearOpMode {
 
         initialize();
         waitForStart();
-
-        if (opModeIsActive()){
-            elapsedTime = new ElapsedTime();
-        }
-
         while (opModeIsActive()) {
 
 
@@ -172,8 +175,6 @@ public class Zeta extends LinearOpMode {
             double delta_angle = current_angle - angle_ring_buffer.getValue(current_angle);
             double delta_time = current_nanoseconds - time_ring_buffer.getValue(current_nanoseconds);
             double current_angular_velocity = delta_angle / delta_time;
-
-
 
 
             last_nanoseconds = current_nanoseconds;
@@ -371,7 +372,7 @@ public class Zeta extends LinearOpMode {
             input.copyTo(output);
 
             // Blurring
-            GaussianBlur(modified, modified, new Size(35, 35), 0);
+            GaussianBlur(modified, modified, new Size(blur, blur), 0);
 
             // Thresholding
             MIN_HSV = new Scalar(MIN_H, MIN_S, MIN_V);
@@ -379,8 +380,8 @@ public class Zeta extends LinearOpMode {
             inRange(modified, MIN_HSV, MAX_HSV, modified);
 
             // Erosion and Dilation
-            //erode(modified, modified, new Mat(5, 5, CV_64F));
-            //dilate(modified, modified, new Mat(5, 5, CV_64F));
+            erode(modified, modified, new Mat(erode_const, erode_const, CV_8U));
+            dilate(modified, modified, new Mat(dilate_const, dilate_const, CV_8U));
 
             // Find contours of goal
             List<MatOfPoint> contours = new ArrayList<>();
@@ -389,14 +390,7 @@ public class Zeta extends LinearOpMode {
             if (contours.size() == 0) return output;
 
             // Retrieve goal contours
-            List<MatOfPoint> new_contours = new ArrayList<>();
-            int outer_index = findLargestContourIndex(contours);
-            new_contours.add(contours.get(outer_index));
-            if (contours.size() > 2){
-                contours.remove(outer_index);
-                int inner_index = findLargestContourIndex(contours);
-                new_contours.add(contours.get(inner_index));
-            }
+            List<MatOfPoint> new_contours = findNLargestContours(3, contours);
 
             // Get bounding rectangles
             List<Rect> bounding_rects = new ArrayList<>();
@@ -427,6 +421,19 @@ public class Zeta extends LinearOpMode {
             }
             return index;
         }
+
+        public List<MatOfPoint> findNLargestContours(int n, List<MatOfPoint> contours){
+            List<MatOfPoint> new_contours = new ArrayList<>();
+
+            for (int j=0; j < n; j++){
+                int largest_index = findLargestContourIndex(contours);
+                new_contours.add(contours.get(largest_index));
+
+                contours.remove(largest_index);
+                if (contours.size() == 0) break;
+            }
+            return new_contours;
+       }
 
         @Override
         public void onViewportTapped()
