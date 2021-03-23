@@ -32,4 +32,5 @@ public class Dash_Vision {
     public static int blur = 5;
     public static int erode_const = 5;
     public static int dilate_const = 5;
+    public static int goalWidth = 500;
 }

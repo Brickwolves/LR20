@@ -18,6 +18,7 @@ import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.
 import org.firstinspires.ftc.teamcode.Hardware.Mecanum;
 import org.firstinspires.ftc.teamcode.Utilities.PID.RingBuffer;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
+import org.firstinspires.ftc.teamcode.Vision.GoalFinderPipeline;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Rect;
@@ -346,97 +347,6 @@ public class Zeta extends LinearOpMode {
             }
         }
     }
-
-
-    class GoalFinderPipeline extends OpenCvPipeline
-    {
-        private boolean viewportPaused;
-
-        // Init mats here so we don't repeat
-        private Mat modified = new Mat();
-        private Mat output = new Mat();
-
-        // Thresholding values
-        Scalar MIN_HSV, MAX_HSV;
-
-        // Rectangle settings
-        private Scalar color = new Scalar(0, 255, 0);
-        private int thickness = 2;
-
-        @Override
-        public Mat processFrame(Mat input)
-        {
-            // Convert & Copy to outPut image
-            cvtColor(input, modified, Imgproc.COLOR_RGB2HSV);
-            input.copyTo(output);
-
-            // Blurring
-            GaussianBlur(modified, modified, new Size(35, 35), 0);
-
-            // Thresholding
-            MIN_HSV = new Scalar(MIN_H, MIN_S, MIN_V);
-            MAX_HSV = new Scalar(MAX_H, MAX_S, MAX_V);
-            inRange(modified, MIN_HSV, MAX_HSV, modified);
-
-            // Erosion and Dilation
-            //erode(modified, modified, new Mat(5, 5, CV_64F));
-            //dilate(modified, modified, new Mat(5, 5, CV_64F));
-
-            // Find contours of goal
-            List<MatOfPoint> contours = new ArrayList<>();
-            Mat hierarchy = new Mat();
-            findContours(modified, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE);
-            if (contours.size() == 0) return output;
-
-            // Retrieve goal contours
-            List<MatOfPoint> new_contours = new ArrayList<>();
-            int outer_index = findLargestContourIndex(contours);
-            new_contours.add(contours.get(outer_index));
-            if (contours.size() > 2){
-                contours.remove(outer_index);
-                int inner_index = findLargestContourIndex(contours);
-                new_contours.add(contours.get(inner_index));
-            }
-
-            // Get bounding rectangles
-            List<Rect> bounding_rects = new ArrayList<>();
-            for (Mat cnt : new_contours){
-                bounding_rects.add(boundingRect(cnt));
-            }
-
-            // Draw rectangles
-            for (Rect rect : bounding_rects){
-                rectangle(output, rect, color, thickness);
-            }
-
-            // Return altered image
-            return output;
-
-        }
-
-        public int findLargestContourIndex(List<MatOfPoint> contours){
-            int index = 0;
-            double maxArea = 0;
-            for (int i=0; i < contours.size(); i++){
-                MatOfPoint cnt = contours.get(i);
-                double area = contourArea(cnt);
-                if (area > maxArea) {
-                    maxArea = area;
-                    index = i;
-                }
-            }
-            return index;
-        }
-
-        @Override
-        public void onViewportTapped()
-        {
-            viewportPaused = !viewportPaused;
-            if(viewportPaused)  webcam.pauseViewport();
-            else                webcam.resumeViewport();
-        }
-    }
-
 }
 
 
