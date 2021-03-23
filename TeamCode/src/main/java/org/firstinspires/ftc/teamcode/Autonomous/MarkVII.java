@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Hardware.Mecanum;
-import org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Vision;
+import org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_StackDetector;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -26,7 +26,7 @@ import org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.*;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.*;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.rpm;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Vision.ring_count;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_StackDetector.ring_count;
 
 @Autonomous(name="MarkVII", group="Autonomous Linear Opmode")
 public class MarkVII extends LinearOpMode {
@@ -223,16 +223,16 @@ public class MarkVII extends LinearOpMode {
             input.copyTo(outPut);
 
             // Dimensions for top rectangle
-            rectTopX1 = (int) (input.rows() * Dash_Vision.rectTopX1Percent);
-            rectTopX2 = (int) (input.rows() * Dash_Vision.rectTopX2Percent) - rectTopX1;
-            rectTopY1 = (int) (input.cols() * Dash_Vision.rectTopY1Percent);
-            rectTopY2 = (int) (input.cols() * Dash_Vision.rectTopY2Percent) - rectTopY1;
+            rectTopX1 = (int) (input.rows() * Dash_StackDetector.rectTopX1Percent);
+            rectTopX2 = (int) (input.rows() * Dash_StackDetector.rectTopX2Percent) - rectTopX1;
+            rectTopY1 = (int) (input.cols() * Dash_StackDetector.rectTopY1Percent);
+            rectTopY2 = (int) (input.cols() * Dash_StackDetector.rectTopY2Percent) - rectTopY1;
 
             // Dimensions for bottom rectangle
-            rectBottomX1 = (int) (input.rows() * Dash_Vision.rectBottomX1Percent);
-            rectBottomX2 = (int) (input.rows() * Dash_Vision.rectBottomX2Percent) - rectBottomX1;
-            rectBottomY1 = (int) (input.cols() * Dash_Vision.rectBottomY1Percent);
-            rectBottomY2 = (int) (input.cols() * Dash_Vision.rectBottomY2Percent) - rectBottomY1;
+            rectBottomX1 = (int) (input.rows() * Dash_StackDetector.rectBottomX1Percent);
+            rectBottomX2 = (int) (input.rows() * Dash_StackDetector.rectBottomX2Percent) - rectBottomX1;
+            rectBottomY1 = (int) (input.cols() * Dash_StackDetector.rectBottomY1Percent);
+            rectBottomY2 = (int) (input.cols() * Dash_StackDetector.rectBottomY2Percent) - rectBottomY1;
 
             // VISUALIZATION: Create rectangles and scalars, then draw them onto outPut
             Scalar rectangleColor = new Scalar(0, 0, 255);
@@ -264,15 +264,15 @@ public class MarkVII extends LinearOpMode {
             // Check 4 rings
             if (
 
-                    finalUpperAve > Dash_Vision.orangeMin &&
-                            finalUpperAve < Dash_Vision.orangeMax
+                    finalUpperAve > Dash_StackDetector.orangeMin &&
+                            finalUpperAve < Dash_StackDetector.orangeMax
 
             ) ringCount = 4;
                 // Check 0 rings
             else if (
 
-                    finalLowerAve > Dash_Vision.orangeMax ||
-                            finalLowerAve < Dash_Vision.orangeMin
+                    finalLowerAve > Dash_StackDetector.orangeMax ||
+                            finalLowerAve < Dash_StackDetector.orangeMin
 
             ) ringCount = 0;
             else ringCount = 1;

@@ -4,9 +4,7 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
-import org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Vision;
-import org.firstinspires.ftc.teamcode.Utilities.Utils;
-import org.opencv.core.Core;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_GoalFinder.*;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
@@ -17,23 +15,10 @@ import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import static java.lang.StrictMath.abs;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Vision.MAX_H;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Vision.MAX_S;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Vision.MAX_V;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Vision.MIN_H;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Vision.MIN_S;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Vision.MIN_V;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Vision.blur;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Vision.dilate_const;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Vision.erode_const;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Vision.goalWidth;
 import static org.opencv.core.Core.inRange;
-import static org.opencv.core.CvType.CV_32F;
 import static org.opencv.core.CvType.CV_8U;
 import static org.opencv.imgproc.Imgproc.CHAIN_APPROX_SIMPLE;
 import static org.opencv.imgproc.Imgproc.FONT_HERSHEY_COMPLEX;
