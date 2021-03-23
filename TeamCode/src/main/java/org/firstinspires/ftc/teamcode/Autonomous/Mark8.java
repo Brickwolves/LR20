@@ -29,7 +29,7 @@ import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shoote
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_StackDetector.ring_count;
 
 @Autonomous(name="MarkVIII", group="Autonomous Linear Opmode")
-public class MarkVIII extends LinearOpMode {
+public class Mark8 extends LinearOpMode {
 
     private Mecanum robot;
     private ButtonControls BC;

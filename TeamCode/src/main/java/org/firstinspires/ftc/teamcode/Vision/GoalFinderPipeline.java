@@ -1,39 +1,34 @@
 package org.firstinspires.ftc.teamcode.Vision;
 
 import android.os.Build;
-
 import androidx.annotation.RequiresApi;
-
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_GoalFinder.*;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfPoint;
-import org.opencv.core.Point;
-import org.opencv.core.Rect;
-import org.opencv.core.Scalar;
-import org.opencv.core.Size;
-import org.opencv.imgproc.Imgproc;
-import org.openftc.easyopencv.OpenCvPipeline;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static java.lang.StrictMath.abs;
-import static org.opencv.core.Core.inRange;
-import static org.opencv.core.CvType.CV_8U;
 import static org.opencv.imgproc.Imgproc.CHAIN_APPROX_SIMPLE;
 import static org.opencv.imgproc.Imgproc.FONT_HERSHEY_COMPLEX;
+import static org.opencv.imgproc.Imgproc.findContours;
 import static org.opencv.imgproc.Imgproc.GaussianBlur;
-import static org.opencv.imgproc.Imgproc.RETR_TREE;
 import static org.opencv.imgproc.Imgproc.boundingRect;
 import static org.opencv.imgproc.Imgproc.contourArea;
+import static org.opencv.imgproc.Imgproc.rectangle;
+import static org.opencv.imgproc.Imgproc.RETR_TREE;
 import static org.opencv.imgproc.Imgproc.cvtColor;
+import static org.opencv.imgproc.Imgproc.putText;
 import static org.opencv.imgproc.Imgproc.dilate;
 import static org.opencv.imgproc.Imgproc.erode;
-import static org.opencv.imgproc.Imgproc.findContours;
 import static org.opencv.imgproc.Imgproc.line;
-import static org.opencv.imgproc.Imgproc.putText;
-import static org.opencv.imgproc.Imgproc.rectangle;
-
+import static org.opencv.core.Core.inRange;
+import static org.opencv.core.CvType.CV_8U;
+import static java.lang.StrictMath.abs;
+import org.openftc.easyopencv.OpenCvPipeline;
+import org.opencv.imgproc.Imgproc;
+import org.opencv.core.MatOfPoint;
+import org.opencv.core.Scalar;
+import org.opencv.core.Point;
+import org.opencv.core.Rect;
+import org.opencv.core.Size;
+import org.opencv.core.Mat;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GoalFinderPipeline extends OpenCvPipeline
 {
