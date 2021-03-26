@@ -37,7 +37,10 @@ public class GoalFinderPipeline extends OpenCvPipeline
     // Constants
     private int IMG_WIDTH = 0;
     private int IMG_HEIGHT = 0;
-    private int FOV = 72;
+    private final int FOV = 72;
+    private final double FOCAL_LENGTH = 1;
+    private final double RING_HEIGHT = 1;
+    private final double SENSOR_HEIGHT = 1;
     private double error = 0;
 
     // Init mats here so we don't repeat
@@ -109,6 +112,11 @@ public class GoalFinderPipeline extends OpenCvPipeline
         // Return altered image
         return output;
 
+    }
+
+    public double getDistance2Ring(int object_pixel_height){
+        if (object_pixel_height == 0) return 0;
+        return (FOCAL_LENGTH * RING_HEIGHT * IMG_HEIGHT) / (object_pixel_height * SENSOR_HEIGHT);
     }
 
     public double pixels2Degrees(double pixels){
