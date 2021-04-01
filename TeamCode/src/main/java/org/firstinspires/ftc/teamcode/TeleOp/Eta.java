@@ -44,15 +44,6 @@ import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.Value.SHIFTED_X;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.Value.X;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.rpm;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_StackDetector.MAX_H;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_StackDetector.MAX_S;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_StackDetector.MAX_V;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_StackDetector.MIN_H;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_StackDetector.MIN_S;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_StackDetector.MIN_V;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_StackDetector.blur;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_StackDetector.dilate_const;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_StackDetector.erode_const;
 import static org.opencv.imgproc.Imgproc.GaussianBlur;
 import static org.opencv.imgproc.Imgproc.contourArea;
 import static org.opencv.imgproc.Imgproc.cvtColor;

@@ -25,12 +25,6 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import static java.lang.Math.abs;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.rpm;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_StackDetector.MAX_H;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_StackDetector.MAX_S;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_StackDetector.MAX_V;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_StackDetector.MIN_H;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_StackDetector.MIN_S;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_StackDetector.MIN_V;
 import static org.opencv.imgproc.Imgproc.GaussianBlur;
 import static org.opencv.imgproc.Imgproc.contourArea;
 import static org.opencv.imgproc.Imgproc.cvtColor;

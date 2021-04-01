@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Vision;
 
+import org.firstinspires.ftc.teamcode.Utilities.Utils;
+import org.opencv.core.Core;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
@@ -10,7 +12,15 @@ import org.opencv.core.Rect;
 import org.opencv.imgproc.Imgproc;
 import static java.lang.StrictMath.abs;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_RingFinder.*;
+import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.IMG_HEIGHT;
+import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.IMG_WIDTH;
+import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.RING_HEIGHT;
+import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.findNWidestContours;
+import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.getDistance2Object;
+import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.pixels2Degrees;
+import static org.opencv.core.Core.extractChannel;
 import static org.opencv.core.Core.inRange;
+import static org.opencv.core.Core.rotate;
 import static org.opencv.core.CvType.CV_8U;
 import static org.opencv.imgproc.Imgproc.CHAIN_APPROX_SIMPLE;
 import static org.opencv.imgproc.Imgproc.FONT_HERSHEY_COMPLEX;
@@ -32,11 +42,8 @@ public class RingFinderPipeline extends OpenCvPipeline
     private boolean viewportPaused;
 
     // Constants
-    private int IMG_WIDTH = 0;
-    private int IMG_HEIGHT = 0;
-    private int FOV = 72;
     private int ring_count = 0;
-    private double error = 0;
+    private double degrees_error = 0;
 
     // Init mats here so we don't repeat
     private Mat modified = new Mat();
@@ -53,11 +60,9 @@ public class RingFinderPipeline extends OpenCvPipeline
     @Override
     public Mat processFrame(Mat input)
     {
-        // Get image dimensions
-        IMG_HEIGHT = input.rows();
-        IMG_WIDTH = input.cols();
 
         // Copy to output
+        rotate(input, input, Core.ROTATE_90_CLOCKWISE);
         input.copyTo(output);
 
         // Convert & Copy to outPut image
@@ -85,74 +90,57 @@ public class RingFinderPipeline extends OpenCvPipeline
         if (contours.size() > 0) {
 
             // Retrieve widest (closest) rect
-            MatOfPoint widest_contour = findNWidestContours(1, contours).get(0);
+            List<MatOfPoint> widest_contours = findNWidestContours(3, contours);
+            MatOfPoint widest_contour = widest_contours.get(0);
             Rect widest_rect = boundingRect(widest_contour);
 
             // Check if it is below horizon line
-            if (widest_rect.y < IMG_HEIGHT * horizonLineRatio) return output;
+            double horizonLine = VisionUtils.IMG_HEIGHT * horizonLineRatio;
+            if (widest_rect.y < horizonLine) return output;
 
             // Calculate error
             int center_x = widest_rect.x + (widest_rect.width / 2);
             int center_y = widest_rect.y + (widest_rect.height / 2);
             Point center = new Point(center_x, center_y);
-            int pixel_error = (IMG_WIDTH / 2) - center_x;
-            error = pixels2Degrees(pixel_error);
+            double pixel_error = (VisionUtils.IMG_WIDTH / 2) - center_x;
+            degrees_error = pixels2Degrees(pixel_error);
             line(output, center, new Point(center_x + pixel_error, center_y), new Scalar(0, 0, 255), thickness);
+            line(output, new Point(0, horizonLine), new Point(IMG_WIDTH, horizonLine), color, thickness);
 
             // Log center
-            String coords = "(" + center_x + ", " + center_y + ")";
-            putText(output, coords, center, font, 0.5, color);
+            //String coords = "(" + center_x + ", " + center_y + ")";
+            //putText(output, coords, center, font, 0.5, color);
+
+            Point text_center = new Point(5, IMG_HEIGHT - 50);
+            putText(output, "Degree Error: " + degrees_error, text_center, font, 0.4, new Scalar(255, 255, 0));
+            putText(output, "Pixel Error: " + pixel_error, new Point(5, IMG_HEIGHT - 40), font, 0.4, new Scalar(255, 255, 0));
+
+
+            for (MatOfPoint cnt : widest_contours){
+                Rect rect = boundingRect(cnt);
+                rectangle(output, rect, color, thickness);
+            }
 
             // Update ring count
             ring_count = (widest_rect.height < (0.5 * widest_rect.width)) ? 1 : 4;
+            double distance2Ring = getDistance2Object(widest_rect.height, RING_HEIGHT);
+            Utils.multTelemetry.addData("Ring Count", ring_count);
+            Utils.multTelemetry.addData("Distance2Object", distance2Ring);
         }
 
         // Return altered image
         return output;
     }
 
-    public double pixels2Degrees(double pixels){
-        if (IMG_WIDTH == 0) return 0;
-        return pixels * (FOV / IMG_WIDTH);
-    }
-
     public int getRingCount(){
         return ring_count;
     }
 
-    public int findWidestContourIndex(List<MatOfPoint> contours){
-        int index = 0;
-        double maxWidth = 0;
-        for (int i=0; i < contours.size(); i++){
-            MatOfPoint cnt = contours.get(i);
-            double width = boundingRect(cnt).width;
-            if (width > maxWidth) {
-                maxWidth = width;
-                index = i;
-            }
-        }
-        return index;
-    }
-
-    public List<MatOfPoint> findNWidestContours(int n, List<MatOfPoint> contours){
-        List<MatOfPoint> widest_contours = new ArrayList<>();
-        for (int j=0; j < n; j++){
-            int largest_index = findWidestContourIndex(contours);
-            widest_contours.add(contours.get(largest_index));
-
-            contours.remove(largest_index);
-            if (contours.size() == 0) break;
-        }
-        return widest_contours;
-    }
 
     @Override
-    public void onViewportTapped()
-    {
-        /*
+    public void onViewportTapped() {
         viewportPaused = !viewportPaused;
-        if(viewportPaused)  webcam.pauseViewport();
-        else                webcam.resumeViewport();
-         */
+        if (viewportPaused)  VisionUtils.webcam.pauseViewport();
+        else                VisionUtils.webcam.resumeViewport();
     }
 }

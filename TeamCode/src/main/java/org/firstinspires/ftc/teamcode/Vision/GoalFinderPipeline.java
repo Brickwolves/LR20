@@ -1,14 +1,16 @@
 package org.firstinspires.ftc.teamcode.Vision;
 
-import android.os.Build;
-import androidx.annotation.RequiresApi;
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_GoalFinder.*;
+import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.IMG_HEIGHT;
+import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.IMG_WIDTH;
+import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.findNLargestContours;
+import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.pixels2Degrees;
+import static org.opencv.core.Core.rotate;
 import static org.opencv.imgproc.Imgproc.CHAIN_APPROX_SIMPLE;
 import static org.opencv.imgproc.Imgproc.FONT_HERSHEY_COMPLEX;
 import static org.opencv.imgproc.Imgproc.findContours;
 import static org.opencv.imgproc.Imgproc.GaussianBlur;
 import static org.opencv.imgproc.Imgproc.boundingRect;
-import static org.opencv.imgproc.Imgproc.contourArea;
 import static org.opencv.imgproc.Imgproc.rectangle;
 import static org.opencv.imgproc.Imgproc.RETR_TREE;
 import static org.opencv.imgproc.Imgproc.cvtColor;
@@ -19,6 +21,9 @@ import static org.opencv.imgproc.Imgproc.line;
 import static org.opencv.core.Core.inRange;
 import static org.opencv.core.CvType.CV_8U;
 import static java.lang.StrictMath.abs;
+
+import org.firstinspires.ftc.teamcode.Utilities.Utils;
+import org.opencv.core.Core;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.core.MatOfPoint;
@@ -30,18 +35,11 @@ import org.opencv.core.Mat;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GoalFinderPipeline extends OpenCvPipeline
-{
+public class GoalFinderPipeline extends OpenCvPipeline {
     private boolean viewportPaused;
 
-    // Constants
-    private int IMG_WIDTH = 0;
-    private int IMG_HEIGHT = 0;
-    private final int FOV = 72;
-    private final double FOCAL_LENGTH = 1;
-    private final double RING_HEIGHT = 1;
-    private final double SENSOR_HEIGHT = 1;
-    private double error = 0;
+
+    private double degree_error = 0;
 
     // Init mats here so we don't repeat
     private Mat modified = new Mat();
@@ -56,13 +54,10 @@ public class GoalFinderPipeline extends OpenCvPipeline
     private int font = FONT_HERSHEY_COMPLEX;
 
     @Override
-    public Mat processFrame(Mat input)
-    {
-        // Get image dimensions
-        IMG_HEIGHT = input.rows();
-        IMG_WIDTH = input.cols();
+    public Mat processFrame(Mat input) {
 
         // Copy to output
+        rotate(input, input, Core.ROTATE_90_CLOCKWISE);
         input.copyTo(output);
 
         // Convert & Copy to outPut image
@@ -92,7 +87,7 @@ public class GoalFinderPipeline extends OpenCvPipeline
         // Get and draw bounding rectangles
         Rect goalRect = getGoalRect(new_contours);
         rectangle(output, goalRect, color, thickness);
-        for (MatOfPoint cnt : new_contours){
+        for (MatOfPoint cnt : new_contours) {
             Rect rect = boundingRect(cnt);
             rectangle(output, rect, color, thickness);
         }
@@ -101,36 +96,35 @@ public class GoalFinderPipeline extends OpenCvPipeline
         int center_x = goalRect.x + (goalRect.width / 2);
         int center_y = goalRect.y + (goalRect.height / 2);
         Point center = new Point(center_x, center_y);
-        int pixel_error = (IMG_WIDTH / 2) - center_x;
-        error = pixels2Degrees(pixel_error);
+        double pixel_error = (IMG_WIDTH / 2) - center_x;
+        degree_error = pixels2Degrees(pixel_error);
         line(output, center, new Point(center_x + pixel_error, center_y), new Scalar(0, 0, 255), thickness);
 
+        Utils.multTelemetry.addData("Pixel Error", pixel_error);
+        Utils.multTelemetry.addData("Degree Error", degree_error);
+        Utils.multTelemetry.update();
+
         // Log center
-        String coords = "(" + center_x + ", " + center_y + ")";
-        putText(output, coords, center, font, 0.5, color);
+        //String coords = "(" + center_x + ", " + center_y + ")";
+        //putText(output, coords, center, font, 0.5, color);
+
+        Point text_center = new Point(5, IMG_HEIGHT - 50);
+        putText(output, "Degree Error: " + degree_error, text_center, font, 0.4, new Scalar(255, 255, 0));
+        putText(output, "Pixel Error: " + pixel_error, new Point(5, IMG_HEIGHT - 40), font, 0.4, new Scalar(255, 255, 0));
 
         // Return altered image
         return output;
 
     }
 
-    public double getDistance2Ring(int object_pixel_height){
-        if (object_pixel_height == 0) return 0;
-        return (FOCAL_LENGTH * RING_HEIGHT * IMG_HEIGHT) / (object_pixel_height * SENSOR_HEIGHT);
-    }
 
-    public double pixels2Degrees(double pixels){
-        if (IMG_WIDTH == 0) return 0;
-        return pixels * (FOV / IMG_WIDTH);
-    }
-
-    private Rect getGoalRect(List<MatOfPoint> contours){
+    private Rect getGoalRect(List<MatOfPoint> contours) {
 
         // Return first contour if there is only one
         Rect goalRect = boundingRect(contours.get(0));
 
         // Extrapolate overarching rectangle if there are two
-        if (contours.size() == 2){
+        if (contours.size() == 2) {
 
             // Init coords of both rectangles
             Rect left = new Rect(0, 0, 0, 0);
@@ -144,15 +138,14 @@ public class GoalFinderPipeline extends OpenCvPipeline
             if (diff > goalWidth) return goalRect;
 
             // Check which side rectangles are on, and calculate surrounding box
-            if (goalRect.x < secondRect.x){
+            if (goalRect.x < secondRect.x) {
                 left.x = goalRect.x;
                 left.y = goalRect.y;
                 right.x = secondRect.x;
                 right.y = secondRect.y;
                 right.width = secondRect.width;
                 right.height = secondRect.height;
-            }
-            else {
+            } else {
                 left.x = secondRect.x;
                 left.y = secondRect.y;
                 right.x = goalRect.x;
@@ -169,40 +162,10 @@ public class GoalFinderPipeline extends OpenCvPipeline
         return goalRect;
     }
 
-    public int findLargestContourIndex(List<MatOfPoint> contours){
-        int index = 0;
-        double maxArea = 0;
-        for (int i=0; i < contours.size(); i++){
-            MatOfPoint cnt = contours.get(i);
-            double area = contourArea(cnt);
-            if (area > maxArea) {
-                maxArea = area;
-                index = i;
-            }
-        }
-        return index;
-    }
-
-    public List<MatOfPoint> findNLargestContours(int n, List<MatOfPoint> contours){
-        List<MatOfPoint> new_contours = new ArrayList<>();
-
-        for (int j=0; j < n; j++){
-            int largest_index = findLargestContourIndex(contours);
-            new_contours.add(contours.get(largest_index));
-
-            contours.remove(largest_index);
-            if (contours.size() == 0) break;
-        }
-        return new_contours;
-    }
-
     @Override
-    public void onViewportTapped()
-    {
-        /*
+    public void onViewportTapped() {
         viewportPaused = !viewportPaused;
-        if(viewportPaused)  webcam.pauseViewport();
-        else                webcam.resumeViewport();
-         */
+        if (viewportPaused)  VisionUtils.webcam.pauseViewport();
+        else                VisionUtils.webcam.resumeViewport();
     }
 }
