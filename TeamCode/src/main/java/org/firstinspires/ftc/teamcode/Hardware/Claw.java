@@ -4,13 +4,13 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.CLAW_LSERVO_HOME;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.CLAW_LSERVO_MIN;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.CLAW_LSERVO_MAX;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Servos.CLAW_LSERVO_HOME;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Servos.CLAW_LSERVO_MIN;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Servos.CLAW_LSERVO_MAX;
 
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.CLAW_RSERVO_HOME;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.CLAW_RSERVO_MIN;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.CLAW_RSERVO_MAX;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Servos.CLAW_RSERVO_HOME;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Servos.CLAW_RSERVO_MIN;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Servos.CLAW_RSERVO_MAX;
 
 
 // LEFT PORT 1,  MAX CLOSED, MIN OPEN

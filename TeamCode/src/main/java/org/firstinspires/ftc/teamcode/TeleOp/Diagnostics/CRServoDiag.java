@@ -9,12 +9,12 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Hardware.Arm;
 import org.firstinspires.ftc.teamcode.Hardware.Controls.ControllerCollin;
-import org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_CRServoDiag;
+import org.firstinspires.ftc.teamcode.DashConstants.Dash_CRServoDiag;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_CRServoDiag.STATE_MACHINE_ON;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_CRServoDiag.CRSERVO_ID;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_CRServoDiag.CRSERVO_POWER;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_CRServoDiag.STATE_MACHINE_ON;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_CRServoDiag.CRSERVO_ID;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_CRServoDiag.CRSERVO_POWER;
 
 @Disabled
 @TeleOp(name = "CRServoDiag TeleOp", group="Linear TeleOp")

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Utilities.DashConstants;
+package org.firstinspires.ftc.teamcode.DashConstants;
 
 import com.acmerobotics.dashboard.config.Config;
 
@@ -7,12 +7,12 @@ public class Dash_RingFinder {
 
     // RING FINDER
     public static int MAX_Y = 110;
-    public static int MIN_Y = 70;
+    public static int MIN_Y = 60;
 
-    public static int MAX_Cr = 210;
-    public static int MIN_Cr = 170;
+    public static int MAX_Cr = 220;
+    public static int MIN_Cr = 160;
 
-    public static int MAX_Cb = 100;
+    public static int MAX_Cb = 110;
     public static int MIN_Cb = 70;
 
     public static int blur = 5;

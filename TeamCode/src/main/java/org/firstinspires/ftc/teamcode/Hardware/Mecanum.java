@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Hardware.Sensors.IMU;
-import org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Movement;
+import org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement;
 import org.firstinspires.ftc.teamcode.Utilities.MathUtils;
 import org.firstinspires.ftc.teamcode.Utilities.PID.PID;
 import org.firstinspires.ftc.teamcode.Utilities.SyncTask;

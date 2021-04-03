@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.Utilities.PID.RingBuffer;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
 import static java.lang.Math.abs;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.rpm;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Shooter.rpm;
 
 @Disabled
 @TeleOp(name = "Gamma TeleOp", group="Linear TeleOp")

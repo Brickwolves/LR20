@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.Hardware.Controls.ControllerCollin;
 import org.firstinspires.ftc.teamcode.Hardware.Mecanum;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.rpm;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Shooter.rpm;
 
 @Disabled
 @TeleOp(name = "Shooter Diagnostic TeleOp", group="Linear TeleOp")

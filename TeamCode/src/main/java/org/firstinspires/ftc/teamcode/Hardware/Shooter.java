@@ -6,17 +6,17 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter;
+import org.firstinspires.ftc.teamcode.DashConstants.Dash_Shooter;
 import org.firstinspires.ftc.teamcode.Utilities.PID.PID;
 import org.firstinspires.ftc.teamcode.Utilities.PID.RingBuffer;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.LOCK_SERVO_HOME;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.LOCK_SERVO_MAX;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.LOCK_SERVO_MIN;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.SHOOT_SERVO_HOME;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.SHOOT_SERVO_MAX;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.SHOOT_SERVO_MIN;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Servos.LOCK_SERVO_HOME;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Servos.LOCK_SERVO_MAX;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Servos.LOCK_SERVO_MIN;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Servos.SHOOT_SERVO_HOME;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Servos.SHOOT_SERVO_MAX;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Servos.SHOOT_SERVO_MIN;
 
 public class Shooter {
 

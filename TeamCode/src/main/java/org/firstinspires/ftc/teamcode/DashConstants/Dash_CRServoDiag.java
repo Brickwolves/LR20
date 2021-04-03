@@ -1,5 +1,4 @@
-package org.firstinspires.ftc.teamcode.Utilities.DashConstants;
-import com.acmerobotics.dashboard.config.Config;
+package org.firstinspires.ftc.teamcode.DashConstants;
 
 //@Config
 public class Dash_CRServoDiag {

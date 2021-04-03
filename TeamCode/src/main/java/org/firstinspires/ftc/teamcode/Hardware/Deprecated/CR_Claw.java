@@ -7,12 +7,12 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
 
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_CRServoDiag.CRSERVO_POWER;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_CRServoDiag.MOE;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_CRServoDiag.RELATIVE_OPEN_POSITION;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_CRServoDiag.RELATIVE_CLOSED_POSITION;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_CRServoDiag.GLOBAL_OPEN_POSITION;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_CRServoDiag.GLOBAL_CLOSED_POSITION;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_CRServoDiag.CRSERVO_POWER;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_CRServoDiag.MOE;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_CRServoDiag.RELATIVE_OPEN_POSITION;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_CRServoDiag.RELATIVE_CLOSED_POSITION;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_CRServoDiag.GLOBAL_OPEN_POSITION;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_CRServoDiag.GLOBAL_CLOSED_POSITION;
 
 
 public class CR_Claw {

@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.Hardware.Controls;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonCheck;
-import org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Movement;
+import org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement;
 
 
 public class Button {

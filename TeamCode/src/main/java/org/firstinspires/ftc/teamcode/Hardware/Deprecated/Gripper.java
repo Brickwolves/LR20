@@ -5,10 +5,10 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_CRServoDiag;
+import org.firstinspires.ftc.teamcode.DashConstants.Dash_CRServoDiag;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_CRServoDiag.CRSERVO_POWER;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_CRServoDiag.CRSERVO_POWER;
 
 public class Gripper {
 

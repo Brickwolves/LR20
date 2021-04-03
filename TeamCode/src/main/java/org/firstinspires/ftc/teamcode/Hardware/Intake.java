@@ -5,14 +5,14 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.INTAKE_ARM_LSERVO_HOME;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.INTAKE_ARM_LSERVO_MAX;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.INTAKE_ARM_LSERVO_MID;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.INTAKE_ARM_LSERVO_MIN;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.INTAKE_ARM_RSERVO_HOME;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.INTAKE_ARM_RSERVO_MAX;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.INTAKE_ARM_RSERVO_MID;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Servos.INTAKE_ARM_RSERVO_MIN;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Servos.INTAKE_ARM_LSERVO_HOME;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Servos.INTAKE_ARM_LSERVO_MAX;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Servos.INTAKE_ARM_LSERVO_MID;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Servos.INTAKE_ARM_LSERVO_MIN;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Servos.INTAKE_ARM_RSERVO_HOME;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Servos.INTAKE_ARM_RSERVO_MAX;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Servos.INTAKE_ARM_RSERVO_MID;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Servos.INTAKE_ARM_RSERVO_MIN;
 
 public class Intake {
 

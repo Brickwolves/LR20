@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.Vision;
 
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_GoalFinder.*;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_RingFinder.horizonLineRatio;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.*;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_RingFinder.horizonLineRatio;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.IMG_HEIGHT;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.IMG_WIDTH;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.findNLargestContours;
@@ -24,7 +24,6 @@ import static org.opencv.core.CvType.CV_8U;
 import static java.lang.StrictMath.abs;
 
 import org.firstinspires.ftc.teamcode.Autonomous.GoalFinder;
-import org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_GoalFinder;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 import org.opencv.core.Core;
 import org.openftc.easyopencv.OpenCvPipeline;
@@ -48,6 +47,8 @@ public class GoalFinderPipeline extends OpenCvPipeline {
     private Mat modified = new Mat();
     private Mat output = new Mat();
     private Mat hierarchy = new Mat();
+    private List<MatOfPoint> new_contours;
+    private List<MatOfPoint> contours;
 
     // Thresholding values
     Scalar MIN_HSV, MAX_HSV;
@@ -63,17 +64,17 @@ public class GoalFinderPipeline extends OpenCvPipeline {
         // Rotate due to camera
         rotate(input, input, Core.ROTATE_90_CLOCKWISE);
 
-        // Take upper portion
-        double horizonY = VisionUtils.IMG_HEIGHT * Dash_GoalFinder.horizonLineRatio;
+        // Get height and width
+        IMG_HEIGHT = input.rows();
+        IMG_WIDTH = input.cols();
+
+        // Take bottom portion
+        double horizonY = (int) IMG_HEIGHT * horizonLineRatio;
         Rect upperRect = new Rect(new Point(0, 0), new Point(IMG_WIDTH, horizonY));
         input = input.submat(upperRect);
 
         // Copy to output
         input.copyTo(output);
-
-        // Get height and width
-        IMG_HEIGHT = input.rows();
-        IMG_WIDTH = input.cols();
 
         // Convert & Copy to outPut image
         cvtColor(input, modified, Imgproc.COLOR_RGB2HSV);
@@ -91,12 +92,12 @@ public class GoalFinderPipeline extends OpenCvPipeline {
         dilate(modified, modified, new Mat(dilate_const, dilate_const, CV_8U));
 
         // Find contours of goal
-        List<MatOfPoint> contours = new ArrayList<>();
+        contours = new ArrayList<>();
         findContours(modified, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE);
         if (contours.size() == 0) return output;
 
         // Retrieve goal contours
-        List<MatOfPoint> new_contours = findNLargestContours(2, contours);
+        new_contours = findNLargestContours(2, contours);
 
         // Get goalRectangle
         Rect goalRect = getGoalRect(new_contours);
@@ -111,10 +112,11 @@ public class GoalFinderPipeline extends OpenCvPipeline {
         degree_error = pixels2Degrees(pixel_error);
         line(output, center, new Point(center_x + pixel_error, center_y), new Scalar(0, 0, 255), thickness);
 
+
         Utils.multTelemetry.addData("Pixel Error", pixel_error);
         Utils.multTelemetry.addData("Degree Error", degree_error);
-        Utils.multTelemetry.addData("IMU Angle", GoalFinder.imu.getAngle());
         Utils.multTelemetry.update();
+
 
         // Log center
         //String coords = "(" + center_x + ", " + center_y + ")";
@@ -126,6 +128,7 @@ public class GoalFinderPipeline extends OpenCvPipeline {
 
 
         // Release all captures
+        input.release();
         releaseAllCaptures();
 
         // Return altered image
@@ -178,10 +181,18 @@ public class GoalFinderPipeline extends OpenCvPipeline {
         return goalRect;
     }
 
+    public double getDegreeError(){
+        return degree_error;
+    }
+
     public void releaseAllCaptures(){
-        output.release();
         modified.release();
         hierarchy.release();
+        if (contours != null){
+            for (MatOfPoint cnt : contours){
+                cnt.release();
+            }
+        }
     }
 
     @Override

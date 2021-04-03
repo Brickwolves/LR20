@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Hardware.Mecanum;
-import org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_StackDetector;
+import org.firstinspires.ftc.teamcode.DashConstants.Dash_StackDetector;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -25,8 +25,8 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.*;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.*;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.rpm;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_StackDetector.ring_count;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Shooter.rpm;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_StackDetector.ring_count;
 
 @Autonomous(name="MarkVII", group="Autonomous Linear Opmode")
 public class Mark7 extends LinearOpMode {

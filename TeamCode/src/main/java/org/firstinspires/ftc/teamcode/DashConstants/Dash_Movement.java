@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Utilities.DashConstants;
+package org.firstinspires.ftc.teamcode.DashConstants;
 import com.acmerobotics.dashboard.config.Config;
 
 @Config
@@ -10,10 +10,15 @@ public class Dash_Movement {
     public static double d = .003;
      */
 
+    /*
     public static double p = .06;
     public static double i = .0;
     public static double d = .003;
+     */
 
+    public static double p = .06;
+    public static double i = .0;
+    public static double d = .003;
 
     public static double diag_deg = 60;
     public static double diag_inches = 50;

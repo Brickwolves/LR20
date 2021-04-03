@@ -1,9 +1,5 @@
 package org.firstinspires.ftc.teamcode.Vision;
 
-import org.firstinspires.ftc.teamcode.Autonomous.GoalFinder;
-import org.firstinspires.ftc.teamcode.Autonomous.RingFinder;
-import org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_GoalFinder;
-import org.firstinspires.ftc.teamcode.Utilities.Utils;
 import org.opencv.core.Core;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.opencv.core.Scalar;
@@ -15,14 +11,14 @@ import org.opencv.core.Rect;
 import org.opencv.imgproc.Imgproc;
 import static java.lang.StrictMath.abs;
 import static java.lang.StrictMath.round;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_RingFinder.*;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_RingFinder.*;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.IMG_HEIGHT;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.IMG_WIDTH;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.RING_HEIGHT;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.findNWidestContours;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.getDistance2Object;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.pixels2Degrees;
-import static org.opencv.core.Core.extractChannel;
+import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.webcam;
 import static org.opencv.core.Core.inRange;
 import static org.opencv.core.Core.rotate;
 import static org.opencv.core.CvType.CV_8U;
@@ -53,6 +49,8 @@ public class RingFinderPipeline extends OpenCvPipeline
     private Mat modified = new Mat();
     private Mat output = new Mat();
     private Mat hierarchy = new Mat();
+    private List<MatOfPoint> contours;
+    private MatOfPoint widest_rect;
 
     // Thresholding values
     Scalar MIN_YCrCb, MAX_YCrCb;
@@ -65,21 +63,22 @@ public class RingFinderPipeline extends OpenCvPipeline
     @Override
     public Mat processFrame(Mat input)
     {
+        webcam.resumeViewport();
 
         // Rotate due to camera
         rotate(input, input, Core.ROTATE_90_CLOCKWISE);
 
+        // Get height and width
+        IMG_HEIGHT = input.rows();
+        IMG_WIDTH = input.cols();
+
         // Take bottom portion
-        double horizonY = VisionUtils.IMG_HEIGHT * Dash_GoalFinder.horizonLineRatio;
+        double horizonY = (int) IMG_HEIGHT * horizonLineRatio;
         Rect bottomRect = new Rect(new Point(0, horizonY), new Point(IMG_WIDTH, IMG_HEIGHT));
         input = input.submat(bottomRect);
 
         // Copy to output
         input.copyTo(output);
-
-        // Get height and width
-        IMG_HEIGHT = input.rows();
-        IMG_WIDTH = input.cols();
 
         // Convert & Copy to outPut image
         cvtColor(input, modified, Imgproc.COLOR_RGB2YCrCb);
@@ -113,7 +112,7 @@ public class RingFinderPipeline extends OpenCvPipeline
             int center_x = widest_rect.x + (widest_rect.width / 2);
             int center_y = widest_rect.y + (widest_rect.height / 2);
             Point center = new Point(center_x, center_y);
-            double pixel_error = (VisionUtils.IMG_WIDTH / 2) - center_x;
+            double pixel_error = (IMG_WIDTH / 2) - center_x;
             degrees_error = pixels2Degrees(pixel_error);
 
             // Update ring count
@@ -145,13 +144,18 @@ public class RingFinderPipeline extends OpenCvPipeline
             putText(output, "Pixel Error: " + pixel_error, new Point(5, IMG_HEIGHT - 40), font, 0.4, new Scalar(255, 255, 0));
             line(output, center, new Point(center_x + pixel_error, center_y), new Scalar(0, 0, 255), thickness);
 
+            /*
             Utils.multTelemetry.addData("Ring Count", ring_count);
-            Utils.multTelemetry.addData("Distance2Object", distance2Ring);
+            Utils.multTelemetry.addData("Pixel Error", pixel_error);
+            Utils.multTelemetry.addData("Degree Error", degrees_error);
             Utils.multTelemetry.addData("IMU Angle", RingFinder.imu.getAngle());
+            //Utils.multTelemetry.addData("Distance2Object", distance2Ring);
             Utils.multTelemetry.update();
+             */
         }
 
         // Release all captures
+        input.release();
         releaseAllCaptures();
 
         // Return altered image
@@ -159,20 +163,29 @@ public class RingFinderPipeline extends OpenCvPipeline
     }
 
     public void releaseAllCaptures(){
-        output.release();
         modified.release();
         hierarchy.release();
+        if (contours != null){
+            for (MatOfPoint cnt : contours){
+                cnt.release();
+            }
+        }
+
+        if (widest_rect != null) widest_rect.release();
     }
 
     public int getRingCount(){
         return ring_count;
     }
 
+    public double getRingAngle(){
+        return degrees_error;
+    }
 
     @Override
     public void onViewportTapped() {
         viewportPaused = !viewportPaused;
-        if (viewportPaused)  VisionUtils.webcam.pauseViewport();
-        else                VisionUtils.webcam.resumeViewport();
+        if (viewportPaused)     webcam.pauseViewport();
+        else                    webcam.resumeViewport();
     }
 }

@@ -14,8 +14,8 @@ import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.DOWN;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.CROSS;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Movement.diag_deg;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Movement.diag_inches;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement.diag_deg;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement.diag_inches;
 
 @Autonomous(name="AutoDiag", group="Autonomous Linear Opmode")
 public class Movement extends LinearOpMode {

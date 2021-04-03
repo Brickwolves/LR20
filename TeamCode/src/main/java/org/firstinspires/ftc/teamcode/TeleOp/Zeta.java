@@ -1,7 +1,9 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
 import android.os.Build;
+
 import androidx.annotation.RequiresApi;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -10,28 +12,39 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Hardware.Arm;
 import org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls;
-import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.*;
-import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.*;
 import org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls;
-import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.Input.*;
-import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.Value.*;
 import org.firstinspires.ftc.teamcode.Hardware.Mecanum;
 import org.firstinspires.ftc.teamcode.Utilities.PID.RingBuffer;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 import org.firstinspires.ftc.teamcode.Vision.GoalFinderPipeline;
-import org.openftc.easyopencv.OpenCvCamera;
+import org.firstinspires.ftc.teamcode.Vision.VisionUtils;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.firstinspires.ftc.teamcode.Vision.VisionUtils.*;
 
 import static java.lang.Math.abs;
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.rpm;
-import static org.opencv.imgproc.Imgproc.GaussianBlur;
-import static org.opencv.imgproc.Imgproc.contourArea;
-import static org.opencv.imgproc.Imgproc.cvtColor;
-import static org.opencv.imgproc.Imgproc.dilate;
-import static org.opencv.imgproc.Imgproc.erode;
-import static org.opencv.imgproc.Imgproc.findContours;
-import static org.opencv.imgproc.Imgproc.rectangle;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Shooter.rpm;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.DOWN;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.TAP;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.TOGGLE;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.UP;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.CIRCLE;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.DPAD_DN;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.DPAD_L;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.DPAD_R;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.DPAD_UP;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.LB1;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.LB2;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.RB1;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.RB2;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.SQUARE;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.TOUCHPAD;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.TRIANGLE;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.Input.LEFT;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.Input.RIGHT;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.Value.INVERT_SHIFTED_Y;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.Value.SHIFTED_X;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.Value.X;
 
 
 @TeleOp(name = "Zeta TeleOp", group="Linear TeleOp")
@@ -41,7 +54,9 @@ public class Zeta extends LinearOpMode {
     private Mecanum robot;
     private ButtonControls BC1, BC2;
     private JoystickControls JC1;
-    private OpenCvCamera webcam;
+
+    // Camera stuff
+    private GoalFinderPipeline goalFinder = new GoalFinderPipeline();
 
     // Power Shot Angles
     private int     ps_increment = 1;
@@ -81,8 +96,6 @@ public class Zeta extends LinearOpMode {
         JC1 = new JoystickControls(gamepad1);
         startVision();
 
-
-
         Utils.multTelemetry.addLine("------USER 1----------------------------");
         Utils.multTelemetry.addData("Velocity Ranger", "[LB2]");
         Utils.multTelemetry.addData("Face Direction", "DPAD");
@@ -118,10 +131,10 @@ public class Zeta extends LinearOpMode {
         Set up camera, and pipeline
          */
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam"), cameraMonitorViewId);
+        VisionUtils.webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam"), cameraMonitorViewId);
 
-        webcam.setPipeline(new GoalFinderPipeline());
-        webcam.openCameraDeviceAsync(() -> webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT));
+        VisionUtils.webcam.setPipeline(goalFinder);
+        VisionUtils.webcam.openCameraDeviceAsync(() -> VisionUtils.webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT));
     }
 
 
@@ -266,6 +279,12 @@ public class Zeta extends LinearOpMode {
 
 
 
+            if (BC1.get(CIRCLE, TAP)){
+                double degree_error = goalFinder.getDegreeError();
+                locked_direction = Mecanum.findClosestAngle(robot.imu.getAngle() + degree_error, robot.imu.getAngle());
+            }
+
+
             /*
 
             ----------- P I D -----------
@@ -298,7 +317,6 @@ public class Zeta extends LinearOpMode {
                                                 */
 
             Utils.multTelemetry.addLine("--DRIVER-------------------------------------");
-            Utils.multTelemetry.addData("Camera Dimensions", webcam.getFps());
             Utils.multTelemetry.addData("ACM Offset", robot.imu.getOffsetAngle());
             Utils.multTelemetry.addData("Angle", robot.imu.getAngle());
             Utils.multTelemetry.addData("Locked Angle", locked_direction);

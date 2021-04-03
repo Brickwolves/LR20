@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Hardware.Controls.ControllerCollin;
 import org.firstinspires.ftc.teamcode.Hardware.Mecanum;
-import org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_StackDetector;
+import org.firstinspires.ftc.teamcode.DashConstants.Dash_StackDetector;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -23,7 +23,7 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.rpm;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Shooter.rpm;
 
 @Autonomous(name="Qualifier", group="Autonomous Linear Opmode")
 public class Qualifier extends LinearOpMode {

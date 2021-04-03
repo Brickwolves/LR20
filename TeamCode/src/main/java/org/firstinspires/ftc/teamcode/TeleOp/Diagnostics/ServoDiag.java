@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.Hardware.Controls.ControllerCollin;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_ServoDiagnostic.*;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_ServoDiagnostic.*;
 
 
 @Disabled

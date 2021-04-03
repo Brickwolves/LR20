@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Hardware.Controls.ControllerCollin;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 
-import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_Shooter.power;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Shooter.power;
 
 @Disabled
 @TeleOp(name = "DcMotor Diag TeleOp", group="Linear TeleOp")
