@@ -47,6 +47,7 @@ public class GoalFinderPipeline extends OpenCvPipeline {
     // Init mats here so we don't repeat
     private Mat modified = new Mat();
     private Mat output = new Mat();
+    private Mat hierarchy = new Mat();
 
     // Thresholding values
     Scalar MIN_HSV, MAX_HSV;
@@ -59,10 +60,18 @@ public class GoalFinderPipeline extends OpenCvPipeline {
     @Override
     public Mat processFrame(Mat input) {
 
-        // Copy to output
+        // Rotate due to camera
         rotate(input, input, Core.ROTATE_90_CLOCKWISE);
+
+        // Take upper portion
+        double horizonY = VisionUtils.IMG_HEIGHT * Dash_GoalFinder.horizonLineRatio;
+        Rect upperRect = new Rect(new Point(0, 0), new Point(IMG_WIDTH, horizonY));
+        input = input.submat(upperRect);
+
+        // Copy to output
         input.copyTo(output);
 
+        // Get height and width
         IMG_HEIGHT = input.rows();
         IMG_WIDTH = input.cols();
 
@@ -83,7 +92,6 @@ public class GoalFinderPipeline extends OpenCvPipeline {
 
         // Find contours of goal
         List<MatOfPoint> contours = new ArrayList<>();
-        Mat hierarchy = new Mat();
         findContours(modified, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE);
         if (contours.size() == 0) return output;
 
@@ -92,15 +100,6 @@ public class GoalFinderPipeline extends OpenCvPipeline {
 
         // Get goalRectangle
         Rect goalRect = getGoalRect(new_contours);
-
-        // Check if it is below horizon line
-        double horizonLine = VisionUtils.IMG_HEIGHT * Dash_GoalFinder.horizonLineRatio;
-        line(output, new Point(0, horizonLine), new Point(IMG_WIDTH, horizonLine), color, thickness);
-        if (goalRect.y > horizonLine) return output;
-
-
-
-        // Draw bounding rect
         rectangle(output, goalRect, color, thickness);
 
 
@@ -124,6 +123,10 @@ public class GoalFinderPipeline extends OpenCvPipeline {
         Point text_center = new Point(5, IMG_HEIGHT - 50);
         putText(output, "Degree Error: " + degree_error, text_center, font, 0.4, new Scalar(255, 255, 0));
         putText(output, "Pixel Error: " + pixel_error, new Point(5, IMG_HEIGHT - 40), font, 0.4, new Scalar(255, 255, 0));
+
+
+        // Release all captures
+        releaseAllCaptures();
 
         // Return altered image
         return output;
@@ -173,6 +176,12 @@ public class GoalFinderPipeline extends OpenCvPipeline {
         }
 
         return goalRect;
+    }
+
+    public void releaseAllCaptures(){
+        output.release();
+        modified.release();
+        hierarchy.release();
     }
 
     @Override
