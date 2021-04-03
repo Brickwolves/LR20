@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.Hardware.Sensors.IMU;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 import org.firstinspires.ftc.teamcode.Vision.GoalFinderPipeline;
 import org.firstinspires.ftc.teamcode.Vision.RingFinderPipeline;
@@ -15,9 +16,11 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 public class RingFinder extends LinearOpMode
 {
     private RingFinderPipeline ringFinder = new RingFinderPipeline();
+    public static IMU imu;
 
     public void initialize(){
         Utils.setOpMode(this);
+        imu = new IMU("imu");
         initVision();
     }
 

@@ -3,6 +3,9 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.Hardware.Controls.Button;
+import org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls;
+import org.firstinspires.ftc.teamcode.Hardware.Sensors.IMU;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 import org.firstinspires.ftc.teamcode.Vision.GoalFinderPipeline;
 import org.firstinspires.ftc.teamcode.Vision.VisionUtils;
@@ -13,9 +16,13 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 public class GoalFinder extends LinearOpMode
 {
     private GoalFinderPipeline goalFinder = new GoalFinderPipeline();
+    public static IMU imu;
+    private ButtonControls BC;
 
     public void initialize(){
         Utils.setOpMode(this);
+        imu = new IMU("imu");
+        BC = new ButtonControls(gamepad1);
         initVision();
     }
 

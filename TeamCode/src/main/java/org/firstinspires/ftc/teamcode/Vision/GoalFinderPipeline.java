@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Vision;
 
 import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_GoalFinder.*;
+import static org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_RingFinder.horizonLineRatio;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.IMG_HEIGHT;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.IMG_WIDTH;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.findNLargestContours;
@@ -22,6 +23,8 @@ import static org.opencv.core.Core.inRange;
 import static org.opencv.core.CvType.CV_8U;
 import static java.lang.StrictMath.abs;
 
+import org.firstinspires.ftc.teamcode.Autonomous.GoalFinder;
+import org.firstinspires.ftc.teamcode.Utilities.DashConstants.Dash_GoalFinder;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 import org.opencv.core.Core;
 import org.openftc.easyopencv.OpenCvPipeline;
@@ -60,6 +63,9 @@ public class GoalFinderPipeline extends OpenCvPipeline {
         rotate(input, input, Core.ROTATE_90_CLOCKWISE);
         input.copyTo(output);
 
+        IMG_HEIGHT = input.rows();
+        IMG_WIDTH = input.cols();
+
         // Convert & Copy to outPut image
         cvtColor(input, modified, Imgproc.COLOR_RGB2HSV);
 
@@ -84,13 +90,19 @@ public class GoalFinderPipeline extends OpenCvPipeline {
         // Retrieve goal contours
         List<MatOfPoint> new_contours = findNLargestContours(2, contours);
 
-        // Get and draw bounding rectangles
+        // Get goalRectangle
         Rect goalRect = getGoalRect(new_contours);
+
+        // Check if it is below horizon line
+        double horizonLine = VisionUtils.IMG_HEIGHT * Dash_GoalFinder.horizonLineRatio;
+        line(output, new Point(0, horizonLine), new Point(IMG_WIDTH, horizonLine), color, thickness);
+        if (goalRect.y > horizonLine) return output;
+
+
+
+        // Draw bounding rect
         rectangle(output, goalRect, color, thickness);
-        for (MatOfPoint cnt : new_contours) {
-            Rect rect = boundingRect(cnt);
-            rectangle(output, rect, color, thickness);
-        }
+
 
         // Calculate error
         int center_x = goalRect.x + (goalRect.width / 2);
@@ -102,6 +114,7 @@ public class GoalFinderPipeline extends OpenCvPipeline {
 
         Utils.multTelemetry.addData("Pixel Error", pixel_error);
         Utils.multTelemetry.addData("Degree Error", degree_error);
+        Utils.multTelemetry.addData("IMU Angle", GoalFinder.imu.getAngle());
         Utils.multTelemetry.update();
 
         // Log center

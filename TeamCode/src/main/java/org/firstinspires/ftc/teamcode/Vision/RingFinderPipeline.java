@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Vision;
 
+import org.firstinspires.ftc.teamcode.Autonomous.GoalFinder;
+import org.firstinspires.ftc.teamcode.Autonomous.RingFinder;
 import org.firstinspires.ftc.teamcode.Utilities.Utils;
 import org.opencv.core.Core;
 import org.openftc.easyopencv.OpenCvPipeline;
@@ -65,6 +67,9 @@ public class RingFinderPipeline extends OpenCvPipeline
         rotate(input, input, Core.ROTATE_90_CLOCKWISE);
         input.copyTo(output);
 
+        IMG_HEIGHT = input.rows();
+        IMG_WIDTH = input.cols();
+
         // Convert & Copy to outPut image
         cvtColor(input, modified, Imgproc.COLOR_RGB2YCrCb);
 
@@ -96,6 +101,7 @@ public class RingFinderPipeline extends OpenCvPipeline
 
             // Check if it is below horizon line
             double horizonLine = VisionUtils.IMG_HEIGHT * horizonLineRatio;
+            line(output, new Point(0, horizonLine), new Point(IMG_WIDTH, horizonLine), color, thickness);
             if (widest_rect.y < horizonLine) return output;
 
             // Calculate error
@@ -105,7 +111,6 @@ public class RingFinderPipeline extends OpenCvPipeline
             double pixel_error = (VisionUtils.IMG_WIDTH / 2) - center_x;
             degrees_error = pixels2Degrees(pixel_error);
             line(output, center, new Point(center_x + pixel_error, center_y), new Scalar(0, 0, 255), thickness);
-            line(output, new Point(0, horizonLine), new Point(IMG_WIDTH, horizonLine), color, thickness);
 
             // Log center
             //String coords = "(" + center_x + ", " + center_y + ")";
@@ -126,6 +131,8 @@ public class RingFinderPipeline extends OpenCvPipeline
             double distance2Ring = getDistance2Object(widest_rect.height, RING_HEIGHT);
             Utils.multTelemetry.addData("Ring Count", ring_count);
             Utils.multTelemetry.addData("Distance2Object", distance2Ring);
+            Utils.multTelemetry.addData("IMU Angle", RingFinder.imu.getAngle());
+            Utils.multTelemetry.update();
         }
 
         // Return altered image
