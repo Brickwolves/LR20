@@ -1,13 +1,9 @@
 package org.firstinspires.ftc.teamcode.Hardware;
 
 import android.os.Build;
-
 import androidx.annotation.RequiresApi;
-
 import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
-
 import org.firstinspires.ftc.teamcode.Hardware.Sensors.IMU;
 import org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement;
 import org.firstinspires.ftc.teamcode.Navigation.Odometry;
@@ -16,10 +12,6 @@ import org.firstinspires.ftc.teamcode.Navigation.Point;
 import org.firstinspires.ftc.teamcode.Utilities.MathUtils;
 import org.firstinspires.ftc.teamcode.Utilities.PID.PID;
 import org.firstinspires.ftc.teamcode.Utilities.SyncTask;
-import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
-
-
-import static android.os.SystemClock.sleep;
 import static com.qualcomm.robotcore.util.Range.clip;
 import static java.lang.Math.floorMod;
 import static java.lang.StrictMath.PI;
@@ -34,25 +26,35 @@ import static java.lang.StrictMath.sqrt;
 import static java.lang.StrictMath.toDegrees;
 import static java.lang.StrictMath.toRadians;
 import static org.firstinspires.ftc.teamcode.Hardware.Mecanum.PSState.*;
-import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.convertInches2Ticks;
 import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.hardwareMap;
 import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.isActive;
-import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.map;
 import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.multTelemetry;
+import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.convertInches2Ticks;
+import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.map;
 
 
 public class Mecanum implements Robot {
 
    private DcMotor fr, fl, br, bl;
 
-   public IMU imu;
    public Odometry odom;
+   public IMU imu;
    public Arm arm;
    public Claw claw;
    public Intake intake;
    public Shooter shooter;
 
    public PID rotationPID = new PID(Dash_Movement.p, Dash_Movement.i, Dash_Movement.d, 0, 100, true);
+   public ElapsedTime time = new ElapsedTime();
+
+   public enum Units {
+      TICKS, INCHES, FEET
+   }
+
+   public enum PSState {
+      LEFT, CENTER, RIGHT, TURNING_CENTER, TURNING_LEFT, END
+   }
+   public PSState current_ps_state = RIGHT;
 
    public Mecanum(){
       initRobot();
@@ -77,6 +79,7 @@ public class Mecanum implements Robot {
       intake = new Intake("intake", "cservo_2", "cservo_4");
       shooter = new Shooter("spinny_1", "spinny_2", "cservo_1", "cservo_0");
    }
+
 
    /**
     * (Re)Init Motors
@@ -223,10 +226,6 @@ public class Mecanum implements Robot {
       double c1 = 7.8631064977;
       double c2 = 8;
       return x + toRadians(c2) * sin(4 * x - 0.2);
-   }
-
-   public enum Units {
-      TICKS, INCHES, FEET
    }
 
 
@@ -420,47 +419,8 @@ public class Mecanum implements Robot {
 
 
 
-   @RequiresApi(api = Build.VERSION_CODES.N)
-   public double giveTurn(double target_angle, double MOE, SyncTask task, double acceleration) {
-
-      //            Calc Power Ramping and PID Values           //
-      double turn_direction, pid_return, power, powerRampPosition;
-      double current_angle = imu.getAngle();
-      double startAngle = current_angle;
-      double actual_target_angle = findClosestAngle(target_angle, current_angle);
-      double startDeltaAngle = Math.abs(actual_target_angle - current_angle);
-      double error = actual_target_angle - current_angle;
 
 
-      if ((Math.abs(error) > MOE) && isActive()) {
-
-         if (task != null) task.execute();
-
-         //                   PID                 //
-         error = actual_target_angle - current_angle;
-         pid_return = rotationPID.update(error) * -1;
-         turn_direction = (pid_return > 0) ? 1 : -1;
-
-         //              Power Ramping            //
-         powerRampPosition = MathUtils.map(current_angle, startAngle, actual_target_angle, 0, startDeltaAngle);
-         power = powerRamp(powerRampPosition, startDeltaAngle, acceleration);
-
-         //             Set Power                 //
-         return turn_direction * power;
-      }
-      else return 0.0;
-   }
-
-
-
-
-
-
-   public enum PSState {
-      LEFT, CENTER, RIGHT, TURNING_CENTER, TURNING_LEFT, END
-   }
-   public PSState current_ps_state = RIGHT;
-   public ElapsedTime time = new ElapsedTime();
 
    @RequiresApi(api = Build.VERSION_CODES.N)
    public void turnPowerShot(double MOE, SyncTask syncTask) {
@@ -535,49 +495,4 @@ public class Mecanum implements Robot {
 
       setDrivePower(0, 0, turn_direction, power);
    }
-
-   public void turnPowerRamp(double targetAngle, double MOE) {
-         System.out.println("Turning to " + targetAngle + " degrees");
-         double power;
-         double startAngle = imu.getAngle();
-         double currentAngle = imu.getAngle();
-         double deltaAngle = Math.abs(targetAngle - currentAngle);
-
-         // Retrieve angle and MOE
-         double upperBound = targetAngle + MOE;
-         double lowerBound = targetAngle - MOE;
-         while ((lowerBound >= currentAngle || currentAngle >= upperBound) && isActive()) {
-
-            // Power Ramping based off a logistic piecewise
-            double currentDeltaAngle = targetAngle - currentAngle;
-            double anglePosition = deltaAngle - currentDeltaAngle + 0.01; // Added the 0.01 so that it doesn't get stuck at 0
-            double relativePosition = map(currentAngle, startAngle, targetAngle, 0, deltaAngle);
-            double direction = -Math.signum(currentDeltaAngle);
-            // RelativePosition must be calculated to match domain restrictions of powerRamp
-            // We want to map our currentAngle relative to a range of [0, and distance it needs to travel]
-
-            // Modeling a piece wise of power as a function of distance
-            power = powerRamp(relativePosition, deltaAngle, 0.05);
-
-            // Handle clockwise (+) and counterclockwise (-) motion
-            setDrivePower(0, 0, direction, power);
-
-            currentAngle = imu.getAngle();
-
-            OpModeUtils.telemetry.addData("IMU", imu.getAngle());
-            OpModeUtils.telemetry.addData("Direction", direction);
-            OpModeUtils.telemetry.addData("Relative Position", relativePosition);
-            OpModeUtils.telemetry.addData("Delta Angle", deltaAngle);
-            OpModeUtils.telemetry.addData("Power", power);
-
-            OpModeUtils.telemetry.addData("Lower", lowerBound);
-            OpModeUtils.telemetry.addData("Upper", upperBound);
-            OpModeUtils.telemetry.update();
-         }
-
-         // Stop power
-         setAllPower(0);
-
-         sleep(100);
-      }
 }
