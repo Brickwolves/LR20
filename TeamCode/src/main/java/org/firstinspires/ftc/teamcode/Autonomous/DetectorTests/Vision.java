@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Autonomous;
+package org.firstinspires.ftc.teamcode.Autonomous.DetectorTests;
 
 import android.os.Build;
 
@@ -6,37 +6,31 @@ import androidx.annotation.RequiresApi;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls;
-import org.firstinspires.ftc.teamcode.Hardware.Mecanum;
-import org.firstinspires.ftc.teamcode.Hardware.Sensors.IMU;
 import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
-import org.firstinspires.ftc.teamcode.Vision.GoalFinderPipe;
 import org.firstinspires.ftc.teamcode.Vision.VisionUtils;
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvPipeline;
 
-@Autonomous(name="GoalFinder", group="Autonomous Linear Opmode")
-public class GoalFinder extends LinearOpMode
+import static org.opencv.core.Core.rotate;
+
+@Autonomous(name="Vision", group="Autonomous Linear Opmode")
+public class Vision extends LinearOpMode
 {
-    private GoalFinderPipe goalFinder = new GoalFinderPipe();
-    public static IMU imu;
-    private Mecanum robot;
-    private ButtonControls BC;
 
     public void initialize(){
         OpModeUtils.setOpMode(this);
-        robot = new Mecanum();
-        BC = new ButtonControls(gamepad1);
-
-        imu = new IMU("imu");
-        initVision();
+        setUpWebcam();
     }
 
-    public void initVision(){
+    public void setUpWebcam(){
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         VisionUtils.webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam"), cameraMonitorViewId);
-        VisionUtils.webcam.setPipeline(goalFinder);
+        VisionUtils.webcam.setPipeline(new Pipeline());
         VisionUtils.webcam.openCameraDeviceAsync(() -> VisionUtils.webcam.startStreaming((int) VisionUtils.IMG_WIDTH, (int) VisionUtils.IMG_HEIGHT, OpenCvCameraRotation.UPRIGHT));
     }
 
@@ -51,23 +45,35 @@ public class GoalFinder extends LinearOpMode
         OpModeUtils.multTelemetry.update();
         waitForStart();
 
-        double degree_error = goalFinder.getDegreeError();
-        double target_angle = robot.imu.getAngle() + degree_error;
 
-        OpModeUtils.multTelemetry.addData("Status", "Turning to " + target_angle);
-        OpModeUtils.multTelemetry.update();
+        /*
+        ACTION
+         */
+        if (opModeIsActive()){
 
-        robot.linearTurn(target_angle, 0.1);
-
-        while (opModeIsActive()){
-
-            degree_error = goalFinder.getDegreeError();
-            double turn = robot.rotationPID.update(degree_error) * -1;
-            robot.setDrivePower(0, 0, turn, 1);
-
-            OpModeUtils.multTelemetry.addData("Goal Error", goalFinder.getDegreeError());
             OpModeUtils.multTelemetry.addData("FPS", String.format("%.2f", VisionUtils.webcam.getFps()));
             OpModeUtils.multTelemetry.update();
+            VisionUtils.webcam.stopStreaming();
+        }
+    }
+
+    class Pipeline extends OpenCvPipeline
+    {
+        boolean viewportPaused;
+
+        @Override
+        public Mat processFrame(Mat input)
+        {
+            rotate(input, input, Core.ROTATE_90_CLOCKWISE);
+            return input;
+        }
+
+        @Override
+        public void onViewportTapped()
+        {
+            viewportPaused = !viewportPaused;
+            if (viewportPaused) VisionUtils.webcam.pauseViewport();
+            else VisionUtils.webcam.resumeViewport();
         }
     }
 }

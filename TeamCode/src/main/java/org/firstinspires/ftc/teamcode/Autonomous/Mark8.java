@@ -115,83 +115,15 @@ public class Mark8 extends LinearOpMode {
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void A(){
 
-        robot.strafe(90, 57, 90, 0.1, null);
-        robot.linearTurn(-60, 0.05, 0.1, () -> robot.arm.out());
-
-        // Claw Open
-        // Arm Up
-
-        // Strafe to power shot
-        robot.strafe(8, 32.5, -60, 0.1, null);
-
-
-        // POWER SHOTS
-        robot.linearTurn(84, 0.5, 0.1, () -> robot.shooter.setRPM(3600));
-        shoot(1, 0.5);
-        robot.linearTurn(88, 0.5, 0.01, () -> robot.shooter.setRPM(3600));
-        shoot(1, 0.5);
-        robot.linearTurn(92, 0.5, 0.01, () -> robot.shooter.setRPM(3600));
-        shoot(1, 0.5);
-        robot.linearTurn(90, 0.5, 0.01, null);
-
-
-
-        // DROP WOBBLE GOAL
-        robot.strafe(-126, 31.5, 90, 0.1, () -> robot.arm.out());
-
-        time.reset();
-        while (time.seconds() < 1) { robot.claw.open(); }
-
-        // Strafe to new wobble goal position
-        robot.strafe(125, 33, 90, 0.1, null);
-        robot.linearTurn(0, 0.5, 0.1, () -> robot.arm.out());
-        time.reset();
-        while (time.seconds() < 1) { robot.claw.open(); }
-
-        // Set up facing 0
-        robot.strafe(0, 10, 0,0.1, null);
-        robot.linearTurn(90, 0.5, 0.1, null);
-
-        while (!BC.get(CROSS, DOWN) && opModeIsActive()) {
-            OpModeUtils.multTelemetry.addLine("BREAKPOINT");
-            OpModeUtils.multTelemetry.addData("Angle", robot.imu.getAngle());
-            OpModeUtils.multTelemetry.update();
-        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void B(){
 
-        robot.strafe(90, 60, 90, 0.5, null);
-
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void C(){
-
-
-
-        /*
-
-        Auto for getting the last ring
-
-        // Get ready to intake last ring
-        robot.strafe(-100, 30, 90, 0.1, null);
-
-        // Intake last ring while strafing
-        robot.intake.setIntakePower(1);
-        robot.strafe(0, 25, 90, 0.01, null);
-        sleep(1000);
-        robot.intake.setIntakePower(0);
-
-        // Strafe to shooting position and shoot last ring
-        robot.strafe(110, 34, 90, 0.1, null);
-        shoot(2);
-
-        // Strafe to C for WG
-        robot.strafe(0, diagnostic_inches, 90, 0.1, null);
-        robot.turn(diag_deg, 0.01);
-         */
 
     }
 
