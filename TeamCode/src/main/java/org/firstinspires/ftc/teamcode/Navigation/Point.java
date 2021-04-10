@@ -1,8 +1,8 @@
 package org.firstinspires.ftc.teamcode.Navigation;
 
-import android.os.Build;
+//import android.os.Build;
 
-import androidx.annotation.RequiresApi;
+//import androidx.annotation.RequiresApi;
 
 import java.util.Objects;
 
@@ -33,7 +33,7 @@ public class Point {
                 Double.compare(point.y, this.y) == 0;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    //@RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public int hashCode() {
         return Objects.hash(x, y);

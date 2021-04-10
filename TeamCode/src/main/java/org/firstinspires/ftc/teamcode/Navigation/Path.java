@@ -1,8 +1,7 @@
 package org.firstinspires.ftc.teamcode.Navigation;
 
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
+//import android.os.Build;
+//import androidx.annotation.RequiresApi;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -19,7 +18,7 @@ public class Path {
      * @param rawPoints Array of X, Y points, Duplicate points are discarded
      *                  A path must have at least 2 non-identical points
      */
-    @RequiresApi(api = Build.VERSION_CODES.N)
+    //@RequiresApi(api = Build.VERSION_CODES.N)
     public Path(Point[] rawPoints) {
 
         wayPoints = new ArrayList<WayPoint>();
@@ -33,7 +32,7 @@ public class Path {
             // Initialize first WayPoint
             if (i == 0) wayPoints.add(new WayPoint(rawPoints[0], 0, 0, 0, 0, 0));
 
-            // Check prev != current (already checks if i==0 in previous conditional)
+                // Check prev != current (already checks if i==0 in previous conditional)
             else if (!rawPoints[i - 1].equals(rawPoints[i])){
 
                 // Calculate distance values from current point to previous point
@@ -285,7 +284,7 @@ public class Path {
                     '}';
         }
 
-        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+        //@RequiresApi(api = Build.VERSION_CODES.KITKAT)
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
@@ -299,7 +298,7 @@ public class Path {
                     Objects.equals(point, wayPoint.point);
         }
 
-        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+        //@RequiresApi(api = Build.VERSION_CODES.KITKAT)
         @Override
         public int hashCode() {
             return Objects.hash(point, deltaXFromPrevious, deltaYFromPrevious, distanceFromPrevious, distanceFromStart, distanceToEnd);

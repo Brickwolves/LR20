@@ -16,11 +16,6 @@ public interface Robot {
     public void resetMotors();
 
     /**
-     * @return {double} Robot's current position
-     */
-    public double getPosition();
-
-    /**
      * Set power to all motors
      */
     public void setAllPower(double power);

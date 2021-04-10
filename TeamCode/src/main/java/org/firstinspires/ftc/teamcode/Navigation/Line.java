@@ -142,3 +142,4 @@ public class Line {
         return "Points: " + a + ", " + b + "\nSlope: " + slope + "\nB: " + yInt;
     }
 }
+
