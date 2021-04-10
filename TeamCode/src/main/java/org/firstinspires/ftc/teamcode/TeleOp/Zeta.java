@@ -47,6 +47,8 @@ import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.Value.SHIFTED_X;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.Value.X;
 import static org.firstinspires.ftc.teamcode.Hardware.Mecanum.findClosestAngle;
+import static org.firstinspires.ftc.teamcode.TeleOp.Zeta.Target.GOAL;
+import static org.firstinspires.ftc.teamcode.TeleOp.Zeta.Target.POWERSHOTS;
 import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.multTelemetry;
 
 
@@ -59,12 +61,14 @@ public class Zeta extends LinearOpMode {
     private JoystickControls JC1;
 
     // Camera stuff
-    //private GoalFinderPipe goalFinder = new GoalFinderPipe();
+    private GoalFinderPipe goalFinder = new GoalFinderPipe();
     private PSFinderPipe psFinder = new PSFinderPipe();
+    private Target aimTarget = GOAL;
+    private PSFinderPipe.PS powerShot = PSFinderPipe.PS.RIGHT;
+    public enum Target {
+        GOAL, POWERSHOTS
+    }
 
-    // Power Shot Angles
-    private int     ps_increment = 1;
-    private double  ps_delta_angle = 5.5;
 
     // Square button
     private boolean square_pressed = false;
@@ -155,6 +159,7 @@ public class Zeta extends LinearOpMode {
 
         while (opModeIsActive()) {
 
+            double velocity = 1;
 
 
              /*
@@ -224,6 +229,15 @@ public class Zeta extends LinearOpMode {
             if (BC2.get(DPAD_DN, TOGGLE)) robot.intake.armUp();
             else robot.intake.armDown();
 
+            // Square toggles aiming at goal or powershots
+            if (BC2.get(SQUARE, TOGGLE)){
+                aimTarget = POWERSHOTS;
+                rpm = 3000;
+            }
+            else {
+                aimTarget = GOAL;
+                rpm = 3500;
+            }
 
             // SHOOTER
             robot.shooter.feederState(BC2.get(RB2, DOWN));
@@ -231,28 +245,40 @@ public class Zeta extends LinearOpMode {
                 robot.intake.armDown();
                 robot.shooter.setRPM(rpm);
 
+                // Slow down the robot
+                velocity = 0.5;
+
+                // Get degree error and correct
+                double degree_error = 0;
+                if (aimTarget == GOAL){
+                    VisionUtils.webcam.setPipeline(goalFinder);
+                    degree_error = goalFinder.getDegreeError();
+                }
+                else if (aimTarget == POWERSHOTS){
+                    VisionUtils.webcam.setPipeline(psFinder);
+                    degree_error = psFinder.getPSError(powerShot);
+                }
+                locked_direction = findClosestAngle(robot.imu.getAngle() + degree_error, robot.imu.getAngle());
+
+                // If we're not facing near the goal, turn nearby it
                 /*
-                // Turn if we aren't facing near goal
-                double degree_error = goalFinder.getDegreeError();
-                double modAngle = robot.imu.getModAngle();
-                double leftAngle = findClosestAngle(180 - 25, robot.imu.getAngle());
-                double rightAngle = findClosestAngle(180 + 25, robot.imu.getAngle());
+                double modAngle = robot.imu.getAngle();
+                double leftAngle = findClosestAngle(180 + 25, robot.imu.getAngle());
+                double rightAngle = findClosestAngle(180 - 25, robot.imu.getAngle());
                 if (modAngle > leftAngle && modAngle < rightAngle){
                     double leftDiff = robot.imu.getAngle() - leftAngle;
                     double rightDiff = robot.imu.getAngle() - rightAngle;
                     if (leftDiff < rightDiff) locked_direction = leftAngle;
                     else locked_direction = rightAngle;
                 }
-                // Auto Aim at goal
+                // If we're facing nearby, auto aim
                 else locked_direction = findClosestAngle(robot.imu.getAngle() + degree_error, robot.imu.getAngle());
                  */
             }
             else robot.shooter.setPower(0);
 
 
-            multTelemetry.addData("LEFT PS_ERROR", psFinder.getPSError(PSFinderPipe.PS.LEFT));
-            multTelemetry.addData("MIDDLE PS_ERROR", psFinder.getPSError(PSFinderPipe.PS.MIDDLE));
-            multTelemetry.addData("RIGHT PS_ERROR", psFinder.getPSError(PSFinderPipe.PS.RIGHT));
+
 
             /*
 
@@ -261,7 +287,7 @@ public class Zeta extends LinearOpMode {
                                                                                 */
 
             //           ABSOLUTE CONTROL MODE          //
-            JC1.setShifted(RIGHT, robot.imu.getAngle() % 360);
+            JC1.setShifted(RIGHT, (robot.imu.getAngle() - 90) % 360);
             if (BC1.get(SQUARE, TAP) && !square_pressed) {
                 robot.imu.setOffsetAngle(-((robot.imu.getAngle() + 180) % 360));
                 robot.imu.resetDeltaAngle();
@@ -274,29 +300,38 @@ public class Zeta extends LinearOpMode {
             double turn = JC1.get(LEFT, X);
 
             //              VELOCITY RANGER             //
-            double velocity = 1;
             if (BC1.get(LB2, DOWN)) velocity = Range.clip((1 - gamepad1.left_trigger), 0.5, 1);
             else if (BC1.get(RB2, DOWN)) velocity = Range.clip((1 - gamepad1.right_trigger), 0.2, 1);
 
             //              DPAD AUTO TURN              //
-            if (BC1.get(DPAD_UP, DOWN)) locked_direction            = findClosestAngle(0, robot.imu.getAngle());
-            else if (BC1.get(DPAD_R, DOWN)) locked_direction        = findClosestAngle(-90, robot.imu.getAngle());
-            else if (BC1.get(DPAD_L, DOWN)) locked_direction        = findClosestAngle(90, robot.imu.getAngle());
-            else if (BC1.get(DPAD_DN, DOWN)) locked_direction       = findClosestAngle(180, robot.imu.getAngle());
+            if (BC1.get(DPAD_UP, DOWN)) locked_direction            = findClosestAngle(90, robot.imu.getAngle());
+            else if (BC1.get(DPAD_R, DOWN)) locked_direction        = findClosestAngle(0, robot.imu.getAngle());
+            else if (BC1.get(DPAD_L, DOWN)) locked_direction        = findClosestAngle(180, robot.imu.getAngle());
+            else if (BC1.get(DPAD_DN, DOWN)) locked_direction       = findClosestAngle(270, robot.imu.getAngle());
 
             //            POWER SHOT INCREMENT          //
             if (BC1.get(RB1, TAP)){
-                if (ps_increment == 2) ps_increment = 0;
-                else ps_increment++;
+                if (powerShot == PSFinderPipe.PS.LEFT){
+                    powerShot = PSFinderPipe.PS.MIDDLE;
+                }
+                else if (powerShot == PSFinderPipe.PS.MIDDLE){
+                    powerShot = PSFinderPipe.PS.RIGHT;
+                }
+                else if (powerShot == PSFinderPipe.PS.RIGHT){
+                    powerShot = PSFinderPipe.PS.LEFT;
+                }
             }
             else if (BC1.get(LB1, TAP)) {
-                if (ps_increment == 0) ps_increment = 2;
-                else ps_increment--;
+                if (powerShot == PSFinderPipe.PS.LEFT){
+                    powerShot = PSFinderPipe.PS.RIGHT;
+                }
+                else if (powerShot == PSFinderPipe.PS.MIDDLE){
+                    powerShot = PSFinderPipe.PS.LEFT;
+                }
+                else if (powerShot == PSFinderPipe.PS.RIGHT){
+                    powerShot =PSFinderPipe.PS.MIDDLE;
+                }
             }
-            if (BC1.get(RB1, TAP) || BC1.get(LB1, TAP))
-                if (ps_increment == 0)      locked_direction = findClosestAngle(robot.imu.getAngle() + psFinder.getPSError(PSFinderPipe.PS.LEFT), robot.imu.getAngle());
-                else if (ps_increment == 1) locked_direction = findClosestAngle(robot.imu.getAngle() + psFinder.getPSError(PSFinderPipe.PS.MIDDLE), robot.imu.getAngle());
-                else if (ps_increment == 2) locked_direction = findClosestAngle(robot.imu.getAngle() + psFinder.getPSError(PSFinderPipe.PS.RIGHT), robot.imu.getAngle());
 
 
 
@@ -332,12 +367,17 @@ public class Zeta extends LinearOpMode {
                                                 */
 
             multTelemetry.addLine("--DRIVER-------------------------------------");
+            multTelemetry.addData("Aim Target", aimTarget);
+            multTelemetry.addData("Goal Error", goalFinder.getDegreeError());
+            multTelemetry.addData("PowerShot", powerShot);
+            multTelemetry.addData("LEFT PS_ERROR", psFinder.getPSError(PSFinderPipe.PS.LEFT));
+            multTelemetry.addData("MIDDLE PS_ERROR", psFinder.getPSError(PSFinderPipe.PS.MIDDLE));
+            multTelemetry.addData("RIGHT PS_ERROR", psFinder.getPSError(PSFinderPipe.PS.RIGHT));
+            multTelemetry.addData("RPM", robot.shooter.getRPM());
             multTelemetry.addData("ACM Offset", robot.imu.getOffsetAngle());
             multTelemetry.addData("Angle", robot.imu.getAngle());
             multTelemetry.addData("Locked Angle", locked_direction);
-            multTelemetry.addData("PS Increment", ps_increment);
             multTelemetry.addData("Angular Velocity", current_angular_velocity);
-            multTelemetry.addData("RPM", robot.shooter.getRPM());
 
 
 

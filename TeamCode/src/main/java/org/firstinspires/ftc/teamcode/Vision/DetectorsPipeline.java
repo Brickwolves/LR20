@@ -43,7 +43,7 @@ import static org.opencv.imgproc.Imgproc.line;
 import static org.opencv.imgproc.Imgproc.putText;
 import static org.opencv.imgproc.Imgproc.rectangle;
 
-public class GoalFinderPipe extends OpenCvPipeline {
+public class DetectorsPipeline extends OpenCvPipeline {
     private boolean viewportPaused;
 
 
@@ -79,6 +79,11 @@ public class GoalFinderPipe extends OpenCvPipeline {
         // Get height and width
         IMG_HEIGHT = input.rows();
         IMG_WIDTH = input.cols();
+
+        // Take bottom portion
+        double horizonY = (int) IMG_HEIGHT * Dash_GoalFinder.horizonLineRatio;
+        Rect upperRect = new Rect(new Point(0, 0), new Point(IMG_WIDTH, horizonY));
+        input = input.submat(upperRect);
 
         // Copy to output
         input.copyTo(output);
@@ -133,11 +138,9 @@ public class GoalFinderPipe extends OpenCvPipeline {
         putText(output, "Pixel Error: " + pixel_error, new Point(5, IMG_HEIGHT - 40), font, 0.4, new Scalar(255, 255, 0));
 
 
-        /*
         // Release all captures
         input.release();
         releaseAllCaptures();
-         */
 
         // Return altered image
         return output;

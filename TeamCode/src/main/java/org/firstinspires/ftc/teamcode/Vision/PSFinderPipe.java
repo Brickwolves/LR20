@@ -126,25 +126,30 @@ public class PSFinderPipe extends OpenCvPipeline {
         // Find contours of goal
         contours = new ArrayList<>();
         findContours(modified, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE);
-        if (contours.size() == 0) return output;
 
-        // Remove contour if it's the size of the FREAKING SCREEN
-        int removeI = 0;
-        boolean screenContourFound = false;
+        // Remove unnecessary contours (screen size and rings)
+        ArrayList<Integer> indexes2Remove = new ArrayList<>();
         for (int i=0; i < contours.size(); i++){
-            if (contourArea(contours.get(i)) > 1000){
-                removeI = i;
-                screenContourFound = true;
+            Rect rect = boundingRect(contours.get(i));
+            if (rect.width > rect.height) indexes2Remove.add(i);
+        }
+        for (int i =0; i < indexes2Remove.size(); i++){
+            int index1 = indexes2Remove.get(i);
+            if (contours.size() > 0) contours.remove(index1);
+            else return output;
+
+            // adjust other indexes that move down
+            for (int j=0; j < indexes2Remove.size(); j++){
+                int index2 = indexes2Remove.get(j);
+                if (index1 < index2) indexes2Remove.set(j, index2 - 1);
             }
         }
-        if (screenContourFound) contours.remove(removeI);
-
         if (contours.size() == 0) return output;
-
 
         // Retrieve powershot contours
         largest_contours = findNLargestContours(3, contours);
 
+        // count power shots detected
         n_ps_found = largest_contours.size();
 
         // Sort the contours from left to right
@@ -174,7 +179,6 @@ public class PSFinderPipe extends OpenCvPipeline {
             c++;
         }
 
-        return output;
 
 
         /*
@@ -184,15 +188,14 @@ public class PSFinderPipe extends OpenCvPipeline {
          */
 
 
-        /*
-        // Release all captures
+        /* Release all captures
         input.release();
         releaseAllCaptures();
+         */
 
         // Return altered image
         return output;
 
-         */
 
 
     }
@@ -220,10 +223,6 @@ public class PSFinderPipe extends OpenCvPipeline {
             }
         }
         return betaI;
-    }
-
-    public double getDegreeError(){
-        return degree_error;
     }
 
     public void releaseAllCaptures(){
