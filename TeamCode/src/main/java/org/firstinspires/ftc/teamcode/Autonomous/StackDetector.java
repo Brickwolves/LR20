@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.DashConstants.Dash_StackDetector;
-import org.firstinspires.ftc.teamcode.Utilities.Utils;
+import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
@@ -28,7 +28,7 @@ public class StackDetector extends LinearOpMode
     private static double ringCount = 0;
 
     public void initialize(){
-        Utils.setOpMode(this);
+        OpModeUtils.setOpMode(this);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -49,8 +49,8 @@ public class StackDetector extends LinearOpMode
 
 
 
-        Utils.multTelemetry.addLine("Waiting for start");
-        Utils.multTelemetry.update();
+        OpModeUtils.multTelemetry.addLine("Waiting for start");
+        OpModeUtils.multTelemetry.update();
         waitForStart();
 
 
@@ -61,19 +61,19 @@ public class StackDetector extends LinearOpMode
 
             if (ringCount == 1.0){
                 // drive somewhere
-                Utils.multTelemetry.addData("RingCount", 1.0);
+                OpModeUtils.multTelemetry.addData("RingCount", 1.0);
             }
             else if (ringCount == 4.0){
                 // drive somewhere else
-                Utils.multTelemetry.addData("RingCount", 4.0);
+                OpModeUtils.multTelemetry.addData("RingCount", 4.0);
             }
             else {
                 // drive somewhere other than else
-                Utils.multTelemetry.addData("RingCount", 0.0);
+                OpModeUtils.multTelemetry.addData("RingCount", 0.0);
             }
 
-            Utils.multTelemetry.addData("FPS", String.format("%.2f", webcam.getFps()));
-            Utils.multTelemetry.update();
+            OpModeUtils.multTelemetry.addData("FPS", String.format("%.2f", webcam.getFps()));
+            OpModeUtils.multTelemetry.update();
             webcam.stopStreaming();
         }
     }
@@ -182,10 +182,10 @@ public class StackDetector extends LinearOpMode
             multTelemetry.addData("RECT_BOTTOM_Y2", DashConstants.rectBottomY2Percent);
             */
 
-            Utils.multTelemetry.addData("Ring Count", ringCount);
-            Utils.multTelemetry.addData("finalLowerAve: ", finalLowerAve);
-            Utils.multTelemetry.addData("finalUpperAve: ", finalUpperAve);
-            Utils.multTelemetry.update();
+            OpModeUtils.multTelemetry.addData("Ring Count", ringCount);
+            OpModeUtils.multTelemetry.addData("finalLowerAve: ", finalLowerAve);
+            OpModeUtils.multTelemetry.addData("finalUpperAve: ", finalUpperAve);
+            OpModeUtils.multTelemetry.update();
 
             // Return altered image
             return outPut;

@@ -1,10 +1,10 @@
-package org.firstinspires.ftc.teamcode.Vision.sampleVIS;
+package org.firstinspires.ftc.teamcode.Vision.ExampleVision;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.Utilities.Utils;
+import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.*;
@@ -18,7 +18,7 @@ public class PhoneStackDetector extends OpMode {
 
     @Override
     public void init(){
-        Utils.setOpMode(this);
+        OpModeUtils.setOpMode(this);
     }
 
     @Override

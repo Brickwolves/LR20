@@ -12,7 +12,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls;
 import org.firstinspires.ftc.teamcode.Hardware.Mecanum;
 import org.firstinspires.ftc.teamcode.DashConstants.Dash_StackDetector;
-import org.firstinspires.ftc.teamcode.Utilities.Utils;
+import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
@@ -39,7 +39,7 @@ public class Mark8 extends LinearOpMode {
     OpenCvCamera webcam;
 
     public void initialize(){
-        Utils.setOpMode(this);
+        OpModeUtils.setOpMode(this);
         robot = new Mecanum();
         BC = new ButtonControls(gamepad1);
         time = new ElapsedTime();
@@ -47,8 +47,8 @@ public class Mark8 extends LinearOpMode {
 
     public void BREAKPOINT(){
         while (true){
-            Utils.multTelemetry.addData("Status", "Holding");
-            Utils.multTelemetry.update();
+            OpModeUtils.multTelemetry.addData("Status", "Holding");
+            OpModeUtils.multTelemetry.update();
             if (BC.get(CROSS, DOWN)) break;
         }
     }
@@ -63,10 +63,10 @@ public class Mark8 extends LinearOpMode {
                 else break;
             }
 
-            Utils.multTelemetry.addData("Position", robot.shooter.getPosition());
-            Utils.multTelemetry.addData("RPM", robot.shooter.getRPM());
+            OpModeUtils.multTelemetry.addData("Position", robot.shooter.getPosition());
+            OpModeUtils.multTelemetry.addData("RPM", robot.shooter.getRPM());
 
-            Utils.multTelemetry.update();
+            OpModeUtils.multTelemetry.update();
         }
         robot.shooter.setPower(0);
         robot.shooter.setFeederCount(0);
@@ -153,9 +153,9 @@ public class Mark8 extends LinearOpMode {
         robot.turn(90, 0.5, 0.1, null);
 
         while (!BC.get(CROSS, DOWN) && opModeIsActive()) {
-            Utils.multTelemetry.addLine("BREAKPOINT");
-            Utils.multTelemetry.addData("Angle", robot.imu.getAngle());
-            Utils.multTelemetry.update();
+            OpModeUtils.multTelemetry.addLine("BREAKPOINT");
+            OpModeUtils.multTelemetry.addData("Angle", robot.imu.getAngle());
+            OpModeUtils.multTelemetry.update();
         }
     }
 
@@ -277,10 +277,10 @@ public class Mark8 extends LinearOpMode {
             ) ringCount = 0;
             else ringCount = 1;
 
-            Utils.multTelemetry.addData("Ring Count", ringCount);
-            Utils.multTelemetry.addData("finalLowerAve: ", finalLowerAve);
-            Utils.multTelemetry.addData("finalUpperAve: ", finalUpperAve);
-            Utils.multTelemetry.update();
+            OpModeUtils.multTelemetry.addData("Ring Count", ringCount);
+            OpModeUtils.multTelemetry.addData("finalLowerAve: ", finalLowerAve);
+            OpModeUtils.multTelemetry.addData("finalUpperAve: ", finalUpperAve);
+            OpModeUtils.multTelemetry.update();
 
             // Return altered image
             return outPut;

@@ -12,7 +12,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Hardware.Controls.ControllerCollin;
 import org.firstinspires.ftc.teamcode.Hardware.Mecanum;
 import org.firstinspires.ftc.teamcode.DashConstants.Dash_StackDetector;
-import org.firstinspires.ftc.teamcode.Utilities.Utils;
+import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
@@ -36,7 +36,7 @@ public class Qualifier extends LinearOpMode {
     OpenCvCamera webcam;
 
     public void initialize(){
-        Utils.setOpMode(this);
+        OpModeUtils.setOpMode(this);
         robot = new Mecanum();
         controller = new ControllerCollin(gamepad1);
         time = new ElapsedTime();
@@ -44,8 +44,8 @@ public class Qualifier extends LinearOpMode {
 
     public void BREAKPOINT(){
         while (true){
-            Utils.multTelemetry.addData("Status", "Holding");
-            Utils.multTelemetry.update();
+            OpModeUtils.multTelemetry.addData("Status", "Holding");
+            OpModeUtils.multTelemetry.update();
             if (controller.src.cross) break;
         }
     }
@@ -60,10 +60,10 @@ public class Qualifier extends LinearOpMode {
                 else break;
             }
 
-            Utils.multTelemetry.addData("Position", robot.shooter.getPosition());
-            Utils.multTelemetry.addData("RPM", robot.shooter.getRPM());
+            OpModeUtils.multTelemetry.addData("Position", robot.shooter.getPosition());
+            OpModeUtils.multTelemetry.addData("RPM", robot.shooter.getRPM());
 
-            Utils.multTelemetry.update();
+            OpModeUtils.multTelemetry.update();
         }
         robot.shooter.setPower(0);
         robot.shooter.setFeederCount(0);
@@ -320,10 +320,10 @@ public class Qualifier extends LinearOpMode {
             ) ringCount = 0;
             else ringCount = 1;
 
-            Utils.multTelemetry.addData("Ring Count", ringCount);
-            Utils.multTelemetry.addData("finalLowerAve: ", finalLowerAve);
-            Utils.multTelemetry.addData("finalUpperAve: ", finalUpperAve);
-            Utils.multTelemetry.update();
+            OpModeUtils.multTelemetry.addData("Ring Count", ringCount);
+            OpModeUtils.multTelemetry.addData("finalLowerAve: ", finalLowerAve);
+            OpModeUtils.multTelemetry.addData("finalUpperAve: ", finalUpperAve);
+            OpModeUtils.multTelemetry.update();
 
             // Return altered image
             return outPut;

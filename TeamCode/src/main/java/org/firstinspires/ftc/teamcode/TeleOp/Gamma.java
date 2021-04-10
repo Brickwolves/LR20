@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.teamcode.Hardware.Controls.ControllerCollin;
 import org.firstinspires.ftc.teamcode.Hardware.Mecanum;
 import org.firstinspires.ftc.teamcode.Utilities.PID.RingBuffer;
-import org.firstinspires.ftc.teamcode.Utilities.Utils;
+import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
 
 import static java.lang.Math.abs;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Shooter.rpm;
@@ -55,38 +55,38 @@ public class Gamma extends LinearOpMode {
 
 
     public void initialize() {
-        Utils.setOpMode(this);
+        OpModeUtils.setOpMode(this);
         robot = new Mecanum();
         controller1 = new ControllerCollin(gamepad1);
         controller2 = new ControllerCollin(gamepad2);
 
 
-        Utils.multTelemetry.addLine("------USER 1----------------------------");
-        Utils.multTelemetry.addData("Velocity Ranger", "[LB2]");
-        Utils.multTelemetry.addData("Face Direction", "DPAD");
-        Utils.multTelemetry.addData("Power Shot Increment", "[TRIANGLE]");
+        OpModeUtils.multTelemetry.addLine("------USER 1----------------------------");
+        OpModeUtils.multTelemetry.addData("Velocity Ranger", "[LB2]");
+        OpModeUtils.multTelemetry.addData("Face Direction", "DPAD");
+        OpModeUtils.multTelemetry.addData("Power Shot Increment", "[TRIANGLE]");
 
-        Utils.multTelemetry.addLine("");
+        OpModeUtils.multTelemetry.addLine("");
 
-        Utils.multTelemetry.addLine("------USER 2----------------------------");
-        Utils.multTelemetry.addData("Claw", "[TRIANGLE]");
-        Utils.multTelemetry.addData("Intake ON/OFF", "[RB1]");
-        Utils.multTelemetry.addData("Intake Direction", "[LB1]");
-        Utils.multTelemetry.addData("Bumper Toggle", "[DPAD DOWN]");
-        Utils.multTelemetry.addData("Arm Out", "[DPAD RIGHT]");
-        Utils.multTelemetry.addData("Arm Up", "[DPAD UP]");
-        Utils.multTelemetry.addData("Arm In", "[DPAD LEFT]");
-        Utils.multTelemetry.addData("Shooter ON/OFF", "[CIRCLE]");
-        Utils.multTelemetry.addData("Shoot", "[RB2]");
+        OpModeUtils.multTelemetry.addLine("------USER 2----------------------------");
+        OpModeUtils.multTelemetry.addData("Claw", "[TRIANGLE]");
+        OpModeUtils.multTelemetry.addData("Intake ON/OFF", "[RB1]");
+        OpModeUtils.multTelemetry.addData("Intake Direction", "[LB1]");
+        OpModeUtils.multTelemetry.addData("Bumper Toggle", "[DPAD DOWN]");
+        OpModeUtils.multTelemetry.addData("Arm Out", "[DPAD RIGHT]");
+        OpModeUtils.multTelemetry.addData("Arm Up", "[DPAD UP]");
+        OpModeUtils.multTelemetry.addData("Arm In", "[DPAD LEFT]");
+        OpModeUtils.multTelemetry.addData("Shooter ON/OFF", "[CIRCLE]");
+        OpModeUtils.multTelemetry.addData("Shoot", "[RB2]");
 
-        Utils.multTelemetry.addData("Shutdown Keys", "[TOUCHPAD] simultaneously");
-        Utils.multTelemetry.update();
+        OpModeUtils.multTelemetry.addData("Shutdown Keys", "[TOUCHPAD] simultaneously");
+        OpModeUtils.multTelemetry.update();
 
     }
 
     public void shutdown(){
-        Utils.multTelemetry.addData("Status", "Shutting Down");
-        Utils.multTelemetry.update();
+        OpModeUtils.multTelemetry.addData("Status", "Shutting Down");
+        OpModeUtils.multTelemetry.update();
         robot.intake.shutdown();
         robot.arm.up();
     }
@@ -263,16 +263,16 @@ public class Gamma extends LinearOpMode {
 
                                                 */
 
-            Utils.multTelemetry.addLine("--DRIVER-------------------------------------");
-            Utils.multTelemetry.addData("Angle", robot.imu.getAngle());
-            Utils.multTelemetry.addData("Locked Angle", locked_direction);
-            Utils.multTelemetry.addData("PS Increment", ps_increment);
+            OpModeUtils.multTelemetry.addLine("--DRIVER-------------------------------------");
+            OpModeUtils.multTelemetry.addData("Angle", robot.imu.getAngle());
+            OpModeUtils.multTelemetry.addData("Locked Angle", locked_direction);
+            OpModeUtils.multTelemetry.addData("PS Increment", ps_increment);
 
-            Utils.multTelemetry.addLine("--HARDWARE-------------------------------------");
-            Utils.multTelemetry.addData("Intake Forward", controller2.LB1_toggle);
-            Utils.multTelemetry.addData("Shooter ON?", controller2.circle_toggle);
+            OpModeUtils.multTelemetry.addLine("--HARDWARE-------------------------------------");
+            OpModeUtils.multTelemetry.addData("Intake Forward", controller2.LB1_toggle);
+            OpModeUtils.multTelemetry.addData("Shooter ON?", controller2.circle_toggle);
 
-            Utils.multTelemetry.update();
+            OpModeUtils.multTelemetry.update();
 
 
 

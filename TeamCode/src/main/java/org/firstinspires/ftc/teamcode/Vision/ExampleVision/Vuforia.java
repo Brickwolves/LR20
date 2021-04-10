@@ -1,17 +1,10 @@
-package org.firstinspires.ftc.teamcode.Vision;
+package org.firstinspires.ftc.teamcode.Vision.sampleVIS;
 
 import android.graphics.Bitmap;
 
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.Warning;
-
-import org.firstinspires.ftc.teamcode.Utilities.Utils;
-
-import static org.firstinspires.ftc.teamcode.Utilities.Utils.hardwareMap;
 
 public class Vuforia {
     private VuforiaLocalizer vuforiaLocalizer;

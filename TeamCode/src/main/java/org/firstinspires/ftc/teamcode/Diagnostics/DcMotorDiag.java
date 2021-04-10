@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.TeleOp.Diagnostics;
+package org.firstinspires.ftc.teamcode.Diagnostics;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Hardware.Controls.ControllerCollin;
-import org.firstinspires.ftc.teamcode.Utilities.Utils;
+import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
 
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Shooter.power;
 
@@ -30,23 +30,23 @@ public class DcMotorDiag extends LinearOpMode {
 
 
     public void initialize() {
-        Utils.setOpMode(this);
+        OpModeUtils.setOpMode(this);
         controller = new ControllerCollin(gamepad1);
 
 
-        motor = Utils.hardwareMap.get(DcMotor.class, motor_id);
+        motor = OpModeUtils.hardwareMap.get(DcMotor.class, motor_id);
         motor.setDirection(DcMotorSimple.Direction.REVERSE);
         motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        Utils.multTelemetry.addData("Status", "Initialized");
-        Utils.multTelemetry.addData("Start Keys", "Press [>] to begin");
-        Utils.multTelemetry.addData("Shutdown Keys", "Press [RB] & [LB] simultaneously");
-        Utils.multTelemetry.update();
+        OpModeUtils.multTelemetry.addData("Status", "Initialized");
+        OpModeUtils.multTelemetry.addData("Start Keys", "Press [>] to begin");
+        OpModeUtils.multTelemetry.addData("Shutdown Keys", "Press [RB] & [LB] simultaneously");
+        OpModeUtils.multTelemetry.update();
     }
 
     public void shutdown(){
-        Utils.multTelemetry.addData("Status", "Shutting Down");
-        Utils.multTelemetry.update();
+        OpModeUtils.multTelemetry.addData("Status", "Shutting Down");
+        OpModeUtils.multTelemetry.update();
         sleep(3000);
     }
 
@@ -79,12 +79,12 @@ public class DcMotorDiag extends LinearOpMode {
 
 
 
-            Utils.multTelemetry.addData("Motor Position", motor.getCurrentPosition());
-            Utils.multTelemetry.addData("Motor Power", motor.getPower());
+            OpModeUtils.multTelemetry.addData("Motor Position", motor.getCurrentPosition());
+            OpModeUtils.multTelemetry.addData("Motor Power", motor.getPower());
 
-            Utils.multTelemetry.addData("Motor RPMillis", motor_RPM);
+            OpModeUtils.multTelemetry.addData("Motor RPMillis", motor_RPM);
 
-            Utils.multTelemetry.update();
+            OpModeUtils.multTelemetry.update();
 
 
 

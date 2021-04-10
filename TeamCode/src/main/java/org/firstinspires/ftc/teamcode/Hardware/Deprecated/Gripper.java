@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.DashConstants.Dash_CRServoDiag;
-import org.firstinspires.ftc.teamcode.Utilities.Utils;
+import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
 
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_CRServoDiag.CRSERVO_POWER;
 
@@ -38,13 +38,13 @@ public class Gripper {
     }
 
     public void initArm(){
-        arm = Utils.hardwareMap.get(Servo.class, arm_id);
+        arm = OpModeUtils.hardwareMap.get(Servo.class, arm_id);
         arm.setDirection(Servo.Direction.FORWARD);
         arm.setPosition(SERVO_ARM_HOME);
     }
 
     public void initClaw(){
-        claw = Utils.hardwareMap.get(CRServo.class, claw_id);
+        claw = OpModeUtils.hardwareMap.get(CRServo.class, claw_id);
         claw.setDirection(CRServo.Direction.FORWARD);
 
         time = new ElapsedTime();

@@ -1,19 +1,17 @@
-package org.firstinspires.ftc.teamcode.Vision.sampleVIS;
+package org.firstinspires.ftc.teamcode.Vision.ExampleVision;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.Utilities.Utils;
+import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.*;
-
-import static android.os.SystemClock.sleep;
 
 @Autonomous(name = "WebCamStackDetectorAuto", group = "Autonomous")
 @Disabled
@@ -24,15 +22,15 @@ public class WebCamStackDetector extends OpMode {
 
     @Override
     public void init(){
-        Utils.setOpMode(this);
+        OpModeUtils.setOpMode(this);
     }
 
     @Override
     public void init_loop(){
 
         // Init the phone
-        int cameraMonitorViewId = Utils.hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        webCam = OpenCvCameraFactory.getInstance().createWebcam(Utils.hardwareMap.get(WebcamName.class, "webcam"), cameraMonitorViewId);
+        int cameraMonitorViewId = OpModeUtils.hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        webCam = OpenCvCameraFactory.getInstance().createWebcam(OpModeUtils.hardwareMap.get(WebcamName.class, "webcam"), cameraMonitorViewId);
 
         webCam.setPipeline(new RingDetectingPipeline());
         // Start Streaming
@@ -50,15 +48,15 @@ public class WebCamStackDetector extends OpMode {
 
         if (ringCount == 1.0){
             // drive somewhere
-            Utils.telemetry.addData("RingCount", 1.0);
+            OpModeUtils.telemetry.addData("RingCount", 1.0);
         }
         else if (ringCount == 4.0){
             // drive somewhere else
-            Utils.telemetry.addData("RingCount", 4.0);
+            OpModeUtils.telemetry.addData("RingCount", 4.0);
         }
         else {
             // drive somewhere other than else
-            Utils.telemetry.addData("RingCount", 0.0);
+            OpModeUtils.telemetry.addData("RingCount", 0.0);
         }
 
     }

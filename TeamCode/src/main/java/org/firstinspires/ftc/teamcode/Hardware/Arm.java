@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.Hardware;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.teamcode.Utilities.Utils;
+import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
 
 import static org.firstinspires.ftc.teamcode.Hardware.Arm.STATUS.*;
 
@@ -26,7 +26,7 @@ public class Arm {
     }
 
     public Arm(String id) {
-        servo = Utils.hardwareMap.get(Servo.class, id);
+        servo = OpModeUtils.hardwareMap.get(Servo.class, id);
         servo.setDirection(Servo.Direction.FORWARD);
         servo.setPosition(IN_POS);
     }

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.TeleOp.Diagnostics;
+package org.firstinspires.ftc.teamcode.Diagnostics;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -6,11 +6,10 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Hardware.Controls.ControllerCollin;
 import org.firstinspires.ftc.teamcode.Hardware.Mecanum;
-import org.firstinspires.ftc.teamcode.Utilities.Utils;
+import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
 
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Shooter.rpm;
 
-@Disabled
 @TeleOp(name = "Shooter Diagnostic TeleOp", group="Linear TeleOp")
 public class ShooterDiag extends LinearOpMode {
 
@@ -18,7 +17,7 @@ public class ShooterDiag extends LinearOpMode {
     private ControllerCollin controller;
 
     public void initialize() {
-        Utils.setOpMode(this);
+        OpModeUtils.setOpMode(this);
         robot = new Mecanum();
         controller = new ControllerCollin(gamepad1);
     }
@@ -43,12 +42,12 @@ public class ShooterDiag extends LinearOpMode {
 
 
 
-            Utils.multTelemetry.addData("RPM", robot.shooter.getRPM());
-            Utils.multTelemetry.addData("Power", robot.shooter.getPower());
-            Utils.multTelemetry.addData("Position", robot.shooter.getPosition());
-            Utils.multTelemetry.addData("Imu", robot.imu.getAngle());
+            OpModeUtils.multTelemetry.addData("RPM", robot.shooter.getRPM());
+            OpModeUtils.multTelemetry.addData("Power", robot.shooter.getPower());
+            OpModeUtils.multTelemetry.addData("Position", robot.shooter.getPosition());
+            OpModeUtils.multTelemetry.addData("Imu", robot.imu.getAngle());
 
-            Utils.multTelemetry.update();
+            OpModeUtils.multTelemetry.update();
 
         }
     }

@@ -1,13 +1,12 @@
 package org.firstinspires.ftc.teamcode.Hardware.Sensors;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.teamcode.Utilities.Utils;
+import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
 
 public class IMU {
     private BNO055IMU imu;
@@ -18,7 +17,7 @@ public class IMU {
 
     public IMU(String deviceName) {
 
-        imu = Utils.hardwareMap.get(BNO055IMU.class, deviceName);
+        imu = OpModeUtils.hardwareMap.get(BNO055IMU.class, deviceName);
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         imu.initialize(parameters);
 
@@ -54,6 +53,10 @@ public class IMU {
         // Update the previous angle
         previousAngle = currentAngle;
         return currentAngle + deltaAngle + offsetAngle;
+    }
+
+    public double getModAngle(){
+        return getAngle() % 360;
     }
 
     public double getAngleActual(){

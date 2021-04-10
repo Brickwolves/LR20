@@ -1,7 +1,9 @@
 package org.firstinspires.ftc.teamcode.Hardware.Controls;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
-import org.firstinspires.ftc.teamcode.Utilities.Point;
+
+import org.firstinspires.ftc.teamcode.Navigation.Point;
+
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.Input.*;
 
 import java.util.ArrayList;

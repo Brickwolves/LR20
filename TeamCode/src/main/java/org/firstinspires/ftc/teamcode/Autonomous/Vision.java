@@ -8,11 +8,10 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.Utilities.Utils;
+import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
 import org.firstinspires.ftc.teamcode.Vision.VisionUtils;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
-import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
@@ -24,7 +23,7 @@ public class Vision extends LinearOpMode
 {
 
     public void initialize(){
-        Utils.setOpMode(this);
+        OpModeUtils.setOpMode(this);
         setUpWebcam();
     }
 
@@ -42,8 +41,8 @@ public class Vision extends LinearOpMode
 
         initialize();
 
-        Utils.multTelemetry.addLine("Waiting for start");
-        Utils.multTelemetry.update();
+        OpModeUtils.multTelemetry.addLine("Waiting for start");
+        OpModeUtils.multTelemetry.update();
         waitForStart();
 
 
@@ -52,8 +51,8 @@ public class Vision extends LinearOpMode
          */
         if (opModeIsActive()){
 
-            Utils.multTelemetry.addData("FPS", String.format("%.2f", VisionUtils.webcam.getFps()));
-            Utils.multTelemetry.update();
+            OpModeUtils.multTelemetry.addData("FPS", String.format("%.2f", VisionUtils.webcam.getFps()));
+            OpModeUtils.multTelemetry.update();
             VisionUtils.webcam.stopStreaming();
         }
     }

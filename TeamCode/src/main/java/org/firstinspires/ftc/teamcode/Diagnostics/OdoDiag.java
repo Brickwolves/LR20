@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.TeleOp.Diagnostics;
+package org.firstinspires.ftc.teamcode.Diagnostics;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Hardware.Controls.ControllerCollin;
-import org.firstinspires.ftc.teamcode.Utilities.Utils;
+import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
 
 
 @Disabled
@@ -19,14 +19,14 @@ public class OdoDiag extends LinearOpMode {
     private double position;
 
     public void initialize() {
-        Utils.setOpMode(this);
+        OpModeUtils.setOpMode(this);
         controller = new ControllerCollin(gamepad1);
 
-        od = Utils.hardwareMap.get(DcMotor.class, od_id);
+        od = OpModeUtils.hardwareMap.get(DcMotor.class, od_id);
 
-        Utils.multTelemetry.addData("Status", "Initialized");
-        Utils.multTelemetry.addData("Start Keys", "Press [>] to begin");
-        Utils.multTelemetry.update();
+        OpModeUtils.multTelemetry.addData("Status", "Initialized");
+        OpModeUtils.multTelemetry.addData("Start Keys", "Press [>] to begin");
+        OpModeUtils.multTelemetry.update();
     }
 
 
@@ -41,9 +41,9 @@ public class OdoDiag extends LinearOpMode {
 
             position = od.getCurrentPosition();
 
-            Utils.multTelemetry.addData("Encoder ID", od_id);
-            Utils.multTelemetry.addData("Position", position);
-            Utils.multTelemetry.update();
+            OpModeUtils.multTelemetry.addData("Encoder ID", od_id);
+            OpModeUtils.multTelemetry.addData("Position", position);
+            OpModeUtils.multTelemetry.update();
         }
     }
 }

@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.Utilities;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -10,7 +9,7 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-public class Utils {
+public class OpModeUtils {
 
     public static HardwareMap hardwareMap;
     public static OpMode opMode;
@@ -31,7 +30,7 @@ public class Utils {
      * @param opMode
      */
     public static void setOpMode(OpMode opMode) {
-        Utils.opMode = opMode;
+        OpModeUtils.opMode = opMode;
         hardwareMap = opMode.hardwareMap;
         telemetry = opMode.telemetry;
         multTelemetry = new MultipleTelemetry(telemetry, dashboardTelemetry);
@@ -93,47 +92,14 @@ public class Utils {
         double p3 = normFactor * (Math.sqrt(acceleration * Math.abs(distance - position)));
         double power = Math.min(Math.min(p1, p2), p3);
         power = Range.clip(power, 0.1, 1);
-        Utils.multTelemetry.addData("Distance", distance);
-        Utils.multTelemetry.addData("Position", position);
+        OpModeUtils.multTelemetry.addData("Distance", distance);
+        OpModeUtils.multTelemetry.addData("Position", position);
 
         return power;
     }
 
 
-    /**
-     * Super simple method to check toggles on buttons
-     * @param current
-     * @param previous
-     * @return
-     */
-    public static Boolean buttonTapped(boolean current, boolean previous){
-        if (current && !previous )return true;
-        else if (!current) return false;
-        else return previous;
-    }
-
     public static double map(double x, double a_min, double a_max, double b_min, double b_max){
         return (x - a_min) / (a_max - a_min) * (b_max - b_min) + b_min;
-    }
-
-
-
-    /**
-     * @param baseRGB
-     * @param currentRGB
-     * @return
-     */
-    public static double distance2Color(double[] baseRGB, double[] currentRGB){
-        return Math.sqrt(Math.pow(baseRGB[0] - currentRGB[0], 2) + Math.pow(baseRGB[1] - currentRGB[1], 2) + Math.pow(baseRGB[2] - currentRGB[2], 2));
-    }
-
-    /**
-     * @param angle
-     * @return coTermAngle
-     */
-    public static double coTerminal(double angle){
-        double coTermAngle = (angle + 180) % 360;
-        coTermAngle -= 180;
-        return coTermAngle;
     }
 }

@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.Utilities.Utils;
+import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
 
 
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_CRServoDiag.CRSERVO_POWER;
@@ -49,11 +49,11 @@ public class CR_Claw {
 
     public CR_Claw(String crServo_id, String encoder_id, MODE mode){
 
-        crServo = Utils.hardwareMap.get(CRServo.class, crServo_id);
+        crServo = OpModeUtils.hardwareMap.get(CRServo.class, crServo_id);
         crServo.setDirection(CRServo.Direction.FORWARD);
         crServo.setPower(0);
 
-        encoder = Utils.hardwareMap.get(DcMotor.class, encoder_id);
+        encoder = OpModeUtils.hardwareMap.get(DcMotor.class, encoder_id);
         this.mode = mode;
         if (mode == MODE.RELATIVE) {
             resetEncoder();

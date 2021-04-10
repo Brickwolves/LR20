@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.TeleOp.Diagnostics;
+package org.firstinspires.ftc.teamcode.Diagnostics;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Hardware.Controls.ControllerCollin;
-import org.firstinspires.ftc.teamcode.Utilities.Utils;
+import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
 
 @Disabled
 @TeleOp(name = "Drive Diag TeleOp", group="Linear TeleOp")
@@ -21,19 +21,19 @@ public class DriveDiag extends LinearOpMode {
 
 
     public void initialize(){
-        Utils.setOpMode(this);
+        OpModeUtils.setOpMode(this);
         controller = new ControllerCollin(gamepad1);
 
-        fr = Utils.hardwareMap.get(DcMotor.class, "front_right_motor");
-        fl = Utils.hardwareMap.get(DcMotor.class, "front_left_motor");
-        br = Utils.hardwareMap.get(DcMotor.class, "back_right_motor");
-        bl = Utils.hardwareMap.get(DcMotor.class, "back_left_motor");
+        fr = OpModeUtils.hardwareMap.get(DcMotor.class, "front_right_motor");
+        fl = OpModeUtils.hardwareMap.get(DcMotor.class, "front_left_motor");
+        br = OpModeUtils.hardwareMap.get(DcMotor.class, "back_right_motor");
+        bl = OpModeUtils.hardwareMap.get(DcMotor.class, "back_left_motor");
         resetMotors();
 
-        Utils.multTelemetry.addData("Status", "Initialized");
-        Utils.multTelemetry.addData("Start Keys", "Press [>] to begin");
-        Utils.multTelemetry.addData("Shutdown Keys", "Press [RB] & [LB] simultaneously");
-        Utils.multTelemetry.update();
+        OpModeUtils.multTelemetry.addData("Status", "Initialized");
+        OpModeUtils.multTelemetry.addData("Start Keys", "Press [>] to begin");
+        OpModeUtils.multTelemetry.addData("Shutdown Keys", "Press [RB] & [LB] simultaneously");
+        OpModeUtils.multTelemetry.update();
     }
 
     public void resetMotors(){
@@ -54,8 +54,8 @@ public class DriveDiag extends LinearOpMode {
     }
 
     public void shutdown(){
-        Utils.multTelemetry.addData("Status", "Shutting Down");
-        Utils.multTelemetry.update();
+        OpModeUtils.multTelemetry.addData("Status", "Shutting Down");
+        OpModeUtils.multTelemetry.update();
         sleep(3000);
     }
 
@@ -92,11 +92,11 @@ public class DriveDiag extends LinearOpMode {
 
             setDrivePower(drive, strafe, turn, 1);
 
-            Utils.multTelemetry.addData("Position", getPosition());
-            Utils.multTelemetry.addData("Drive", drive);
-            Utils.multTelemetry.addData("Strafe", strafe);
-            Utils.multTelemetry.addData("Turn", turn);
-            Utils.multTelemetry.update();
+            OpModeUtils.multTelemetry.addData("Position", getPosition());
+            OpModeUtils.multTelemetry.addData("Drive", drive);
+            OpModeUtils.multTelemetry.addData("Strafe", strafe);
+            OpModeUtils.multTelemetry.addData("Turn", turn);
+            OpModeUtils.multTelemetry.update();
 
 
 

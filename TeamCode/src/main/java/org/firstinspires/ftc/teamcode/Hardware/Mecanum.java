@@ -12,14 +12,14 @@ import org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement;
 import org.firstinspires.ftc.teamcode.Utilities.MathUtils;
 import org.firstinspires.ftc.teamcode.Utilities.PID.PID;
 import org.firstinspires.ftc.teamcode.Utilities.SyncTask;
-import org.firstinspires.ftc.teamcode.Utilities.Utils;
+import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
 
 
 import static android.os.SystemClock.sleep;
 import static java.lang.Math.floorMod;
 import static org.firstinspires.ftc.teamcode.Hardware.Mecanum.PSState.*;
-import static org.firstinspires.ftc.teamcode.Utilities.Utils.convertInches2Ticks;
-import static org.firstinspires.ftc.teamcode.Utilities.Utils.map;
+import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.convertInches2Ticks;
+import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.map;
 
 
 public class Mecanum implements Robot {
@@ -39,20 +39,20 @@ public class Mecanum implements Robot {
    private double initAngle;
    private double currentPosition;
 
-   public PID rotationPID = new PID(Dash_Movement.p, Dash_Movement.i, Dash_Movement.d, 100, true);
+   public PID rotationPID = new PID(Dash_Movement.p, Dash_Movement.i, Dash_Movement.d, 0, 100, true);
 
    public Mecanum(){
       initRobot();
    }
 
    public void initRobot() {
-      Utils.telemetry.addData("Status", "Initialized");
+      OpModeUtils.telemetry.addData("Status", "Initialized");
 
       // Init Motors
-      fr = Utils.hardwareMap.get(DcMotor.class, "front_right_motor");
-      fl = Utils.hardwareMap.get(DcMotor.class, "front_left_motor");
-      br = Utils.hardwareMap.get(DcMotor.class, "back_right_motor");
-      bl = Utils.hardwareMap.get(DcMotor.class, "back_left_motor");
+      fr = OpModeUtils.hardwareMap.get(DcMotor.class, "front_right_motor");
+      fl = OpModeUtils.hardwareMap.get(DcMotor.class, "front_left_motor");
+      br = OpModeUtils.hardwareMap.get(DcMotor.class, "back_right_motor");
+      bl = OpModeUtils.hardwareMap.get(DcMotor.class, "back_left_motor");
       resetMotors();
 
       // Sensors
@@ -61,10 +61,10 @@ public class Mecanum implements Robot {
       //colorSensor = new ColorSensorImpl(colorSensorBase);
       imu = new IMU("imu");
       //gripper = new Gripper("claw", "arm");
-      claw = new Claw("left_claw", "right_claw");
-      arm = new Arm("arm");
-      intake = new Intake("intake", "servo_0", "servo_1");
-      shooter = new Shooter("spinny_1", "spinny_2", "servo_4", "servo_5");
+      claw = new Claw("eservo_2", "eservo_1");
+      arm = new Arm("eservo_0");
+      intake = new Intake("intake", "cservo_2", "cservo_4");
+      shooter = new Shooter("spinny_1", "spinny_2", "cservo_1", "cservo_0");
 
       initAngle = imu.getAngle();
    }
@@ -163,13 +163,13 @@ public class Mecanum implements Robot {
 
 
       currentPosition = getPosition();
-      while (getPosition() < distance && Utils.isActive()){
+      while (getPosition() < distance && OpModeUtils.isActive()){
 
          // Execute task synchronously
          if (task != null) task.execute();
 
          // Power ramping
-         double power = Utils.powerRamp(currentPosition, distance, acceleration);
+         double power = OpModeUtils.powerRamp(currentPosition, distance, acceleration);
 
          // PID Controller
          double error = directionFacingAngle - imu.getAngle();
@@ -181,8 +181,8 @@ public class Mecanum implements Robot {
          currentPosition = getPosition();
 
 
-         Utils.telemetry.addData("Error", error);
-         Utils.telemetry.update();
+         OpModeUtils.telemetry.addData("Error", error);
+         OpModeUtils.telemetry.update();
       }
       setAllPower(0);
    }
@@ -210,7 +210,7 @@ public class Mecanum implements Robot {
 
 
 
-      while ((Math.abs(error) > MOE) && Utils.isActive()) {
+      while ((Math.abs(error) > MOE) && OpModeUtils.isActive()) {
 
          //              PID                     //
          error = actual_target_angle - current_angle;
@@ -220,7 +220,7 @@ public class Mecanum implements Robot {
 
          //              Power Ramping            //
          powerRampPosition = MathUtils.map(current_angle, startAngle, actual_target_angle, 0, startDeltaAngle);
-         power = Utils.powerRamp(powerRampPosition, startDeltaAngle, 0.1);
+         power = OpModeUtils.powerRamp(powerRampPosition, startDeltaAngle, 0.1);
 
 
          //turn = (turn > 0) ? Range.clip(turn, 0.1, 1) : Range.clip(turn, -1, -0.1);
@@ -238,12 +238,12 @@ public class Mecanum implements Robot {
 
 
          //          Logging                 //
-         Utils.multTelemetry.addData("Error", error);
-         Utils.multTelemetry.addData("Turn", turn_direction);
-         Utils.multTelemetry.addData("Power", power);
-         Utils.multTelemetry.addData("IMU", current_angle);
-         Utils.multTelemetry.addData("Finished", (Math.abs(error) <= MOE));
-         Utils.multTelemetry.update();
+         OpModeUtils.multTelemetry.addData("Error", error);
+         OpModeUtils.multTelemetry.addData("Turn", turn_direction);
+         OpModeUtils.multTelemetry.addData("Power", power);
+         OpModeUtils.multTelemetry.addData("IMU", current_angle);
+         OpModeUtils.multTelemetry.addData("Finished", (Math.abs(error) <= MOE));
+         OpModeUtils.multTelemetry.update();
       }
       setAllPower(0);
    }
@@ -266,7 +266,7 @@ public class Mecanum implements Robot {
 
 
 
-      while ((Math.abs(error) > MOE) && Utils.isActive()) {
+      while ((Math.abs(error) > MOE) && OpModeUtils.isActive()) {
 
          if (task != null) task.execute();
 
@@ -279,7 +279,7 @@ public class Mecanum implements Robot {
 
          //              Power Ramping            //
          powerRampPosition = MathUtils.map(current_angle, startAngle, actual_target_angle, 0, startDeltaAngle);
-         power = Utils.powerRamp(powerRampPosition, startDeltaAngle, acceleration);
+         power = OpModeUtils.powerRamp(powerRampPosition, startDeltaAngle, acceleration);
 
 
          //        Set Power                 //
@@ -289,12 +289,12 @@ public class Mecanum implements Robot {
 
 
          //          Logging                 //
-         Utils.multTelemetry.addData("Error", error);
-         Utils.multTelemetry.addData("Turn", turn_direction);
-         Utils.multTelemetry.addData("Power", power);
-         Utils.multTelemetry.addData("IMU", current_angle);
-         Utils.multTelemetry.addData("Finished", (Math.abs(error) <= MOE));
-         Utils.multTelemetry.update();
+         OpModeUtils.multTelemetry.addData("Error", error);
+         OpModeUtils.multTelemetry.addData("Turn", turn_direction);
+         OpModeUtils.multTelemetry.addData("Power", power);
+         OpModeUtils.multTelemetry.addData("IMU", current_angle);
+         OpModeUtils.multTelemetry.addData("Finished", (Math.abs(error) <= MOE));
+         OpModeUtils.multTelemetry.update();
       }
       setAllPower(0);
    }
@@ -313,7 +313,7 @@ public class Mecanum implements Robot {
       double error = actual_target_angle - current_angle;
 
 
-      if ((Math.abs(error) > MOE) && Utils.isActive()) {
+      if ((Math.abs(error) > MOE) && OpModeUtils.isActive()) {
 
          if (task != null) task.execute();
 
@@ -324,7 +324,7 @@ public class Mecanum implements Robot {
 
          //              Power Ramping            //
          powerRampPosition = MathUtils.map(current_angle, startAngle, actual_target_angle, 0, startDeltaAngle);
-         power = Utils.powerRamp(powerRampPosition, startDeltaAngle, acceleration);
+         power = OpModeUtils.powerRamp(powerRampPosition, startDeltaAngle, acceleration);
 
          //             Set Power                 //
          return turn_direction * power;
@@ -355,7 +355,7 @@ public class Mecanum implements Robot {
          case RIGHT:
             if (shooter.getFeederCount() < 1) shooter.feederState(true);
             else current_ps_state = TURNING_CENTER;
-            Utils.multTelemetry.addData("Status", "Shooting RIGHT");
+            OpModeUtils.multTelemetry.addData("Status", "Shooting RIGHT");
             break;
 
 
@@ -372,7 +372,7 @@ public class Mecanum implements Robot {
                shooter.setFeederCount(0);
             }
 
-            Utils.multTelemetry.addData("Finished Turning CENTER", (Math.abs(error) <= MOE));
+            OpModeUtils.multTelemetry.addData("Finished Turning CENTER", (Math.abs(error) <= MOE));
             break;
 
 
@@ -380,7 +380,7 @@ public class Mecanum implements Robot {
             power = 0;
             if (shooter.getFeederCount() < 1) shooter.feederState(true);
             else current_ps_state = TURNING_LEFT;
-            Utils.multTelemetry.addData("Status", "Shooting CENTER");
+            OpModeUtils.multTelemetry.addData("Status", "Shooting CENTER");
             break;
 
 
@@ -399,7 +399,7 @@ public class Mecanum implements Robot {
                current_ps_state = CENTER;
             }
 
-            Utils.multTelemetry.addData("Finished Turning LEFT", (Math.abs(error) <= MOE));
+            OpModeUtils.multTelemetry.addData("Finished Turning LEFT", (Math.abs(error) <= MOE));
             break;
 
          case LEFT:
@@ -407,7 +407,7 @@ public class Mecanum implements Robot {
             if (shooter.getFeederCount() < 1) shooter.feederState(true);
             else current_ps_state = END;
 
-            Utils.multTelemetry.addData("Status", "Shooting LEFT");
+            OpModeUtils.multTelemetry.addData("Status", "Shooting LEFT");
             break;
       }
 
@@ -425,7 +425,7 @@ public class Mecanum implements Robot {
          // Retrieve angle and MOE
          double upperBound = targetAngle + MOE;
          double lowerBound = targetAngle - MOE;
-         while ((lowerBound >= currentAngle || currentAngle >= upperBound) && Utils.isActive()) {
+         while ((lowerBound >= currentAngle || currentAngle >= upperBound) && OpModeUtils.isActive()) {
 
             // Power Ramping based off a logistic piecewise
             double currentDeltaAngle = targetAngle - currentAngle;
@@ -436,22 +436,22 @@ public class Mecanum implements Robot {
             // We want to map our currentAngle relative to a range of [0, and distance it needs to travel]
 
             // Modeling a piece wise of power as a function of distance
-            power = Utils.powerRamp(relativePosition, deltaAngle, 0.05);
+            power = OpModeUtils.powerRamp(relativePosition, deltaAngle, 0.05);
 
             // Handle clockwise (+) and counterclockwise (-) motion
             setDrivePower(0, 0, direction, power);
 
             currentAngle = imu.getAngle();
 
-            Utils.telemetry.addData("IMU", imu.getAngle());
-            Utils.telemetry.addData("Direction", direction);
-            Utils.telemetry.addData("Relative Position", relativePosition);
-            Utils.telemetry.addData("Delta Angle", deltaAngle);
-            Utils.telemetry.addData("Power", power);
+            OpModeUtils.telemetry.addData("IMU", imu.getAngle());
+            OpModeUtils.telemetry.addData("Direction", direction);
+            OpModeUtils.telemetry.addData("Relative Position", relativePosition);
+            OpModeUtils.telemetry.addData("Delta Angle", deltaAngle);
+            OpModeUtils.telemetry.addData("Power", power);
 
-            Utils.telemetry.addData("Lower", lowerBound);
-            Utils.telemetry.addData("Upper", upperBound);
-            Utils.telemetry.update();
+            OpModeUtils.telemetry.addData("Lower", lowerBound);
+            OpModeUtils.telemetry.addData("Upper", upperBound);
+            OpModeUtils.telemetry.update();
          }
 
          // Stop power

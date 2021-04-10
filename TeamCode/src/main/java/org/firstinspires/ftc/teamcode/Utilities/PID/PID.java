@@ -9,6 +9,7 @@ public class PID {
     private double proportional;
     private double integral;
     private double derivative;
+    private double f;
     private double result = 0;
     private double integralSum = 0;
     private double previousError = 0;
@@ -19,13 +20,18 @@ public class PID {
     private boolean debugMode;
 
     public PID(double proportional, double integral, double derivative, int integralLength) {
-        this(proportional, integral, derivative, integralLength, false);
+        this(proportional, integral, derivative, 0, integralLength, false);
     }
 
-    public PID(double proportional, double integral, double derivative, int integralLength, boolean debugMode) {
+    public PID(double proportional, double integral, double derivative, double f, int integralLength) {
+        this(proportional, integral, derivative, f, integralLength, false);
+    }
+
+    public PID(double proportional, double integral, double derivative, double f, int integralLength, boolean debugMode) {
         this.proportional = proportional;
         this.integral = integral;
         this.derivative = derivative;
+        this.f = f;
         this.debugMode = debugMode;
         //errors = new PIDRingBuffer(integralLength);
         previousTime = System.currentTimeMillis();
@@ -46,12 +52,16 @@ public class PID {
             dashboardTelemetry.addData("Proportional", pComponent);
             dashboardTelemetry.addData("Integral", iComponent);
             dashboardTelemetry.addData("Derivative", dComponent);
+            dashboardTelemetry.addData("Feedforward", f);
         }
-        this.result = pComponent + iComponent + dComponent;
+        this.result = pComponent + iComponent + dComponent + f;
         return result;
     }
     public double getResult() {
         return result;
+    }
+    public void setF(double f){
+        this.f = f;
     }
 }
 

@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls;
 import org.firstinspires.ftc.teamcode.Hardware.Mecanum;
-import org.firstinspires.ftc.teamcode.Utilities.Utils;
+import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
 
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.DOWN;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.CROSS;
@@ -26,17 +26,17 @@ public class Movement extends LinearOpMode {
 
     public void BREAKPOINT(){
         while (true && opModeIsActive()){
-            Utils.multTelemetry.addData("Status", "Holding");
-            Utils.multTelemetry.addData("Turn", robot.getTurn());
-            Utils.multTelemetry.update();
+            OpModeUtils.multTelemetry.addData("Status", "Holding");
+            OpModeUtils.multTelemetry.addData("Turn", robot.getTurn());
+            OpModeUtils.multTelemetry.update();
             if (BC.get(CROSS, DOWN)) break;
         }
-        Utils.multTelemetry.addData("Status", "Continuing");
-        Utils.multTelemetry.update();
+        OpModeUtils.multTelemetry.addData("Status", "Continuing");
+        OpModeUtils.multTelemetry.update();
     }
 
     public void initialize(){
-        Utils.setOpMode(this);
+        OpModeUtils.setOpMode(this);
         robot = new Mecanum();
         BC = new ButtonControls(gamepad1);
     }
@@ -47,16 +47,16 @@ public class Movement extends LinearOpMode {
 
         initialize();
 
-        Utils.multTelemetry.addLine("Waiting for start");
-        Utils.multTelemetry.update();
+        OpModeUtils.multTelemetry.addLine("Waiting for start");
+        OpModeUtils.multTelemetry.update();
         waitForStart();
 
         B();
 
         while (!BC.get(CROSS, DOWN) && opModeIsActive()) {
-            Utils.multTelemetry.addLine("BREAKPOINT");
-            Utils.multTelemetry.addData("Angle", robot.imu.getAngle());
-            Utils.multTelemetry.update();
+            OpModeUtils.multTelemetry.addLine("BREAKPOINT");
+            OpModeUtils.multTelemetry.addData("Angle", robot.imu.getAngle());
+            OpModeUtils.multTelemetry.update();
         }
     }
 

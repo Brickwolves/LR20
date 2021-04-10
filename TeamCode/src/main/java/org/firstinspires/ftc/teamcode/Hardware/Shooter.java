@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.teamcode.DashConstants.Dash_Shooter;
 import org.firstinspires.ftc.teamcode.Utilities.PID.PID;
 import org.firstinspires.ftc.teamcode.Utilities.PID.RingBuffer;
-import org.firstinspires.ftc.teamcode.Utilities.Utils;
+import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
 
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Servos.LOCK_SERVO_HOME;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Servos.LOCK_SERVO_MAX;
@@ -25,7 +25,7 @@ public class Shooter {
     private Servo shoot_servo;
     private Servo lock_servo;
     //public PID shooterPID = new PID(.0002, 0.000008, 0.000009, 0, false);
-    public PID shooterPID = new PID(Dash_Shooter.p, Dash_Shooter.i, Dash_Shooter.d, 0, false);
+    public PID shooterPID = new PID(Dash_Shooter.p, Dash_Shooter.i, Dash_Shooter.d, 0.3, 0, false);
 
     private static final double TICKS_PER_ROTATION = 28;
 
@@ -58,21 +58,21 @@ public class Shooter {
     public Shooter(String shooter1_id, String shooter2_id, String shooter_id, String lock_id) {
 
 
-        shooter1 = Utils.hardwareMap.get(DcMotor.class, shooter1_id);
+        shooter1 = OpModeUtils.hardwareMap.get(DcMotor.class, shooter1_id);
         shooter1.setDirection(DcMotorSimple.Direction.REVERSE);
         shooter1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shooter1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
-        shooter2 = Utils.hardwareMap.get(DcMotor.class, shooter2_id);
+        shooter2 = OpModeUtils.hardwareMap.get(DcMotor.class, shooter2_id);
         shooter2.setDirection(DcMotorSimple.Direction.REVERSE);
         shooter2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shooter2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
-        shoot_servo = Utils.hardwareMap.get(Servo.class, shooter_id);
+        shoot_servo = OpModeUtils.hardwareMap.get(Servo.class, shooter_id);
         shoot_servo.setDirection(Servo.Direction.FORWARD);
         shoot_servo.setPosition(SHOOT_SERVO_HOME);
 
-        lock_servo = Utils.hardwareMap.get(Servo.class, lock_id);
+        lock_servo = OpModeUtils.hardwareMap.get(Servo.class, lock_id);
         lock_servo.setDirection(Servo.Direction.FORWARD);
         lock_servo.setPosition(LOCK_SERVO_HOME);
     }
@@ -182,7 +182,8 @@ public class Shooter {
     }
 
     public void setRPM(int targetRPM){
-        shooterPower = shooterPID.update( targetRPM + 1500 - updateRPM());
+        shooterPID.setF(targetRPM / 10000.0);
+        shooterPower = shooterPID.update( targetRPM + updateRPM());
 
         shooterPower = Range.clip(shooterPower,0.0, 1.0);
         setPower(shooterPower);

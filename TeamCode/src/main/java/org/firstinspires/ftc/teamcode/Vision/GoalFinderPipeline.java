@@ -1,41 +1,51 @@
 package org.firstinspires.ftc.teamcode.Vision;
 
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.*;
+import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
+import org.opencv.core.Point;
+import org.opencv.core.Rect;
+import org.opencv.core.Scalar;
+import org.opencv.core.Size;
+import org.opencv.imgproc.Imgproc;
+import org.openftc.easyopencv.OpenCvPipeline;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.lang.StrictMath.abs;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.MAX_H;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.MAX_S;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.MAX_V;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.MIN_H;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.MIN_S;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.MIN_V;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.blur;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.dilate_const;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.erode_const;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.goalWidth;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_RingFinder.horizonLineRatio;
+import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.multTelemetry;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.IMG_HEIGHT;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.IMG_WIDTH;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.findNLargestContours;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.pixels2Degrees;
+import static org.opencv.core.Core.inRange;
 import static org.opencv.core.Core.rotate;
+import static org.opencv.core.CvType.CV_8U;
 import static org.opencv.imgproc.Imgproc.CHAIN_APPROX_SIMPLE;
 import static org.opencv.imgproc.Imgproc.FONT_HERSHEY_COMPLEX;
-import static org.opencv.imgproc.Imgproc.findContours;
 import static org.opencv.imgproc.Imgproc.GaussianBlur;
-import static org.opencv.imgproc.Imgproc.boundingRect;
-import static org.opencv.imgproc.Imgproc.rectangle;
 import static org.opencv.imgproc.Imgproc.RETR_TREE;
+import static org.opencv.imgproc.Imgproc.boundingRect;
 import static org.opencv.imgproc.Imgproc.cvtColor;
-import static org.opencv.imgproc.Imgproc.putText;
 import static org.opencv.imgproc.Imgproc.dilate;
 import static org.opencv.imgproc.Imgproc.erode;
+import static org.opencv.imgproc.Imgproc.findContours;
 import static org.opencv.imgproc.Imgproc.line;
-import static org.opencv.core.Core.inRange;
-import static org.opencv.core.CvType.CV_8U;
-import static java.lang.StrictMath.abs;
-
-import org.firstinspires.ftc.teamcode.Autonomous.GoalFinder;
-import org.firstinspires.ftc.teamcode.Utilities.Utils;
-import org.opencv.core.Core;
-import org.openftc.easyopencv.OpenCvPipeline;
-import org.opencv.imgproc.Imgproc;
-import org.opencv.core.MatOfPoint;
-import org.opencv.core.Scalar;
-import org.opencv.core.Point;
-import org.opencv.core.Rect;
-import org.opencv.core.Size;
-import org.opencv.core.Mat;
-import java.util.ArrayList;
-import java.util.List;
+import static org.opencv.imgproc.Imgproc.putText;
+import static org.opencv.imgproc.Imgproc.rectangle;
 
 public class GoalFinderPipeline extends OpenCvPipeline {
     private boolean viewportPaused;
@@ -62,7 +72,7 @@ public class GoalFinderPipeline extends OpenCvPipeline {
     public Mat processFrame(Mat input) {
 
         // Rotate due to camera
-        rotate(input, input, Core.ROTATE_90_CLOCKWISE);
+        //rotate(input, input, Core.ROTATE_90_CLOCKWISE);
 
         // Get height and width
         IMG_HEIGHT = input.rows();
@@ -113,9 +123,9 @@ public class GoalFinderPipeline extends OpenCvPipeline {
         line(output, center, new Point(center_x + pixel_error, center_y), new Scalar(0, 0, 255), thickness);
 
 
-        Utils.multTelemetry.addData("Pixel Error", pixel_error);
-        Utils.multTelemetry.addData("Degree Error", degree_error);
-        Utils.multTelemetry.update();
+        multTelemetry.addData("Pixel Error", pixel_error);
+        multTelemetry.addData("Degree Error", degree_error);
+        multTelemetry.update();
 
 
         // Log center

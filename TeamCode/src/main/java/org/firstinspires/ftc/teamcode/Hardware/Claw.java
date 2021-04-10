@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.Hardware;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.Utilities.Utils;
+import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Servos.CLAW_LSERVO_HOME;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Servos.CLAW_LSERVO_MIN;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Servos.CLAW_LSERVO_MAX;
@@ -25,10 +25,10 @@ public class Claw {
 
     public Claw(String left_servo_id, String right_servo_id){
 
-        left_servo = Utils.hardwareMap.get(Servo.class, left_servo_id);
+        left_servo = OpModeUtils.hardwareMap.get(Servo.class, left_servo_id);
         left_servo.setDirection(Servo.Direction.FORWARD);
 
-        right_servo = Utils.hardwareMap.get(Servo.class, right_servo_id);
+        right_servo = OpModeUtils.hardwareMap.get(Servo.class, right_servo_id);
         right_servo.setDirection(Servo.Direction.FORWARD);
 
         resetHome();

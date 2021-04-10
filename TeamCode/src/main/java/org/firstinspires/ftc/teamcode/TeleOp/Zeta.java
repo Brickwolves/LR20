@@ -15,12 +15,11 @@ import org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls;
 import org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls;
 import org.firstinspires.ftc.teamcode.Hardware.Mecanum;
 import org.firstinspires.ftc.teamcode.Utilities.PID.RingBuffer;
-import org.firstinspires.ftc.teamcode.Utilities.Utils;
+import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
 import org.firstinspires.ftc.teamcode.Vision.GoalFinderPipeline;
 import org.firstinspires.ftc.teamcode.Vision.VisionUtils;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.firstinspires.ftc.teamcode.Vision.VisionUtils.*;
 
 import static java.lang.Math.abs;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Shooter.rpm;
@@ -45,6 +44,7 @@ import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.Value.INVERT_SHIFTED_Y;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.Value.SHIFTED_X;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.Value.X;
+import static org.firstinspires.ftc.teamcode.Hardware.Mecanum.findClosestAngle;
 
 
 @TeleOp(name = "Zeta TeleOp", group="Linear TeleOp")
@@ -89,39 +89,39 @@ public class Zeta extends LinearOpMode {
 
 
     public void initialize() {
-        Utils.setOpMode(this);
+        OpModeUtils.setOpMode(this);
         robot = new Mecanum();
         BC1 = new ButtonControls(gamepad1);
         BC2 = new ButtonControls(gamepad2);
         JC1 = new JoystickControls(gamepad1);
         startVision();
 
-        Utils.multTelemetry.addLine("------USER 1----------------------------");
-        Utils.multTelemetry.addData("Velocity Ranger", "[LB2]");
-        Utils.multTelemetry.addData("Face Direction", "DPAD");
-        Utils.multTelemetry.addData("Power Shot Increment", "[TRIANGLE]");
+        OpModeUtils.multTelemetry.addLine("------USER 1----------------------------");
+        OpModeUtils.multTelemetry.addData("Velocity Ranger", "[LB2]");
+        OpModeUtils.multTelemetry.addData("Face Direction", "DPAD");
+        OpModeUtils.multTelemetry.addData("Power Shot Increment", "[TRIANGLE]");
 
-        Utils.multTelemetry.addLine("");
+        OpModeUtils.multTelemetry.addLine("");
 
-        Utils.multTelemetry.addLine("------USER 2----------------------------");
-        Utils.multTelemetry.addData("Claw", "[TRIANGLE]");
-        Utils.multTelemetry.addData("Intake ON/OFF", "[RB1]");
-        Utils.multTelemetry.addData("Intake Direction", "[LB1]");
-        Utils.multTelemetry.addData("Bumper Toggle", "[DPAD DOWN]");
-        Utils.multTelemetry.addData("Arm Out", "[DPAD RIGHT]");
-        Utils.multTelemetry.addData("Arm Up", "[DPAD UP]");
-        Utils.multTelemetry.addData("Arm In", "[DPAD LEFT]");
-        Utils.multTelemetry.addData("Shooter ON/OFF", "[CIRCLE]");
-        Utils.multTelemetry.addData("Shoot", "[RB2]");
+        OpModeUtils.multTelemetry.addLine("------USER 2----------------------------");
+        OpModeUtils.multTelemetry.addData("Claw", "[TRIANGLE]");
+        OpModeUtils.multTelemetry.addData("Intake ON/OFF", "[RB1]");
+        OpModeUtils.multTelemetry.addData("Intake Direction", "[LB1]");
+        OpModeUtils.multTelemetry.addData("Bumper Toggle", "[DPAD DOWN]");
+        OpModeUtils.multTelemetry.addData("Arm Out", "[DPAD RIGHT]");
+        OpModeUtils.multTelemetry.addData("Arm Up", "[DPAD UP]");
+        OpModeUtils.multTelemetry.addData("Arm In", "[DPAD LEFT]");
+        OpModeUtils.multTelemetry.addData("Shooter ON/OFF", "[CIRCLE]");
+        OpModeUtils.multTelemetry.addData("Shoot", "[RB2]");
 
-        Utils.multTelemetry.addData("Shutdown Keys", "[TOUCHPAD] simultaneously");
-        Utils.multTelemetry.update();
+        OpModeUtils.multTelemetry.addData("Shutdown Keys", "[TOUCHPAD] simultaneously");
+        OpModeUtils.multTelemetry.update();
 
     }
 
     public void shutdown(){
-        Utils.multTelemetry.addData("Status", "Shutting Down");
-        Utils.multTelemetry.update();
+        OpModeUtils.multTelemetry.addData("Status", "Shutting Down");
+        OpModeUtils.multTelemetry.update();
         robot.intake.shutdown();
         robot.arm.up();
     }
@@ -226,6 +226,20 @@ public class Zeta extends LinearOpMode {
             if (BC2.get(CIRCLE, TOGGLE)) {
                 robot.intake.armDown();
                 robot.shooter.setRPM(rpm);
+
+                // Turn if we aren't facing near goal
+                double degree_error = goalFinder.getDegreeError();
+                double modAngle = robot.imu.getModAngle();
+                double leftAngle = findClosestAngle(90 - 25, robot.imu.getAngle());
+                double rightAngle = findClosestAngle(90 + 25, robot.imu.getAngle());
+                if (modAngle > leftAngle && modAngle < rightAngle){
+                    double leftDiff = robot.imu.getAngle() - leftAngle;
+                    double rightDiff = robot.imu.getAngle() - rightAngle;
+                    if (leftDiff < rightDiff) locked_direction = leftAngle;
+                    else locked_direction = rightAngle;
+                }
+                // Auto Aim at goal
+                else locked_direction = findClosestAngle(robot.imu.getAngle() + degree_error, robot.imu.getAngle());
             }
             else robot.shooter.setPower(0);
 
@@ -255,13 +269,11 @@ public class Zeta extends LinearOpMode {
             if (BC1.get(LB2, DOWN)) velocity = Range.clip((1 - gamepad1.left_trigger), 0.5, 1);
             else if (BC1.get(RB2, DOWN)) velocity = Range.clip((1 - gamepad1.right_trigger), 0.2, 1);
 
-
-
             //              DPAD AUTO TURN              //
-            if (BC1.get(DPAD_UP, DOWN)) locked_direction            = Mecanum.findClosestAngle(0, robot.imu.getAngle());
-            else if (BC1.get(DPAD_R, DOWN)) locked_direction        = Mecanum.findClosestAngle(-90, robot.imu.getAngle());
-            else if (BC1.get(DPAD_L, DOWN)) locked_direction        = Mecanum.findClosestAngle(90, robot.imu.getAngle());
-            else if (BC1.get(DPAD_DN, DOWN)) locked_direction       = Mecanum.findClosestAngle(180, robot.imu.getAngle());
+            if (BC1.get(DPAD_UP, DOWN)) locked_direction            = findClosestAngle(0, robot.imu.getAngle());
+            else if (BC1.get(DPAD_R, DOWN)) locked_direction        = findClosestAngle(-90, robot.imu.getAngle());
+            else if (BC1.get(DPAD_L, DOWN)) locked_direction        = findClosestAngle(90, robot.imu.getAngle());
+            else if (BC1.get(DPAD_DN, DOWN)) locked_direction       = findClosestAngle(180, robot.imu.getAngle());
 
             //            POWER SHOT INCREMENT          //
             if (BC1.get(RB1, TAP)){
@@ -273,16 +285,10 @@ public class Zeta extends LinearOpMode {
                 else ps_increment--;
             }
             if (BC1.get(RB1, TAP) || BC1.get(LB1, TAP))
-                if (ps_increment == 0)      locked_direction = Mecanum.findClosestAngle(ps_delta_angle + 90, robot.imu.getAngle());
-                else if (ps_increment == 1) locked_direction = Mecanum.findClosestAngle(90, robot.imu.getAngle());
-                else if (ps_increment == 2) locked_direction = Mecanum.findClosestAngle(-ps_delta_angle + 90, robot.imu.getAngle());
+                if (ps_increment == 0)      locked_direction = findClosestAngle(ps_delta_angle + 90, robot.imu.getAngle());
+                else if (ps_increment == 1) locked_direction = findClosestAngle(90, robot.imu.getAngle());
+                else if (ps_increment == 2) locked_direction = findClosestAngle(-ps_delta_angle + 90, robot.imu.getAngle());
 
-
-
-            if (BC1.get(CIRCLE, TAP)){
-                double degree_error = goalFinder.getDegreeError();
-                locked_direction = Mecanum.findClosestAngle(robot.imu.getAngle() + degree_error, robot.imu.getAngle());
-            }
 
 
             /*
@@ -316,21 +322,21 @@ public class Zeta extends LinearOpMode {
 
                                                 */
 
-            Utils.multTelemetry.addLine("--DRIVER-------------------------------------");
-            Utils.multTelemetry.addData("ACM Offset", robot.imu.getOffsetAngle());
-            Utils.multTelemetry.addData("Angle", robot.imu.getAngle());
-            Utils.multTelemetry.addData("Locked Angle", locked_direction);
-            Utils.multTelemetry.addData("PS Increment", ps_increment);
-            Utils.multTelemetry.addData("Angular Velocity", current_angular_velocity);
-            Utils.multTelemetry.addData("RPM", robot.shooter.getRPM());
+            OpModeUtils.multTelemetry.addLine("--DRIVER-------------------------------------");
+            OpModeUtils.multTelemetry.addData("ACM Offset", robot.imu.getOffsetAngle());
+            OpModeUtils.multTelemetry.addData("Angle", robot.imu.getAngle());
+            OpModeUtils.multTelemetry.addData("Locked Angle", locked_direction);
+            OpModeUtils.multTelemetry.addData("PS Increment", ps_increment);
+            OpModeUtils.multTelemetry.addData("Angular Velocity", current_angular_velocity);
+            OpModeUtils.multTelemetry.addData("RPM", robot.shooter.getRPM());
 
 
 
-            Utils.multTelemetry.addLine("--HARDWARE-------------------------------------");
-            Utils.multTelemetry.addData("Intake Forward", BC2.get(LB1, TOGGLE));
-            Utils.multTelemetry.addData("Shooter ON?", BC2.get(CIRCLE, TOGGLE));
+            OpModeUtils.multTelemetry.addLine("--HARDWARE-------------------------------------");
+            OpModeUtils.multTelemetry.addData("Intake Forward", BC2.get(LB1, TOGGLE));
+            OpModeUtils.multTelemetry.addData("Shooter ON?", BC2.get(CIRCLE, TOGGLE));
 
-            Utils.multTelemetry.update();
+            OpModeUtils.multTelemetry.update();
 
 
 

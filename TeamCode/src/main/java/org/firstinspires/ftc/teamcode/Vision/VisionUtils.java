@@ -28,6 +28,10 @@ public class VisionUtils {
         return pixels * (FOV / IMG_WIDTH);
     }
 
+    public static enum CONTOUR_OPTION {
+        AREA, WIDTH, HEIGHT
+    }
+
     public static int findWidestContourIndex(List<MatOfPoint> contours){
         int index = 0;
         double maxWidth = 0;
@@ -51,6 +55,11 @@ public class VisionUtils {
             contours.remove(largest_index);
             if (contours.size() == 0) break;
         }
+
+        for (MatOfPoint cnt : contours){
+            cnt.release();
+        }
+
         return widest_contours;
     }
 
@@ -78,6 +87,11 @@ public class VisionUtils {
             contours.remove(largest_index);
             if (contours.size() == 0) break;
         }
+
+        for (MatOfPoint cnt : contours){
+            cnt.release();
+        }
+
         return new_contours;
     }
 

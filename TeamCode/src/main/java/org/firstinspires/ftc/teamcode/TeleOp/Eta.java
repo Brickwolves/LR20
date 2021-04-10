@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls;
 import org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls;
 import org.firstinspires.ftc.teamcode.Hardware.Mecanum;
 import org.firstinspires.ftc.teamcode.Utilities.PID.RingBuffer;
-import org.firstinspires.ftc.teamcode.Utilities.Utils;
+import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
 import org.firstinspires.ftc.teamcode.Vision.GoalFinderPipeline;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -93,7 +93,7 @@ public class Eta extends LinearOpMode {
 
 
     public void initialize() {
-        Utils.setOpMode(this);
+        OpModeUtils.setOpMode(this);
         robot = new Mecanum();
         BC1 = new ButtonControls(gamepad1);
         BC2 = new ButtonControls(gamepad2);
@@ -103,15 +103,15 @@ public class Eta extends LinearOpMode {
 
 
         while (!opModeIsActive()) {
-            Utils.multTelemetry.addData("FPS", webcam.getFps());
-            Utils.multTelemetry.update();
+            OpModeUtils.multTelemetry.addData("FPS", webcam.getFps());
+            OpModeUtils.multTelemetry.update();
         }
 
     }
 
     public void shutdown(){
-        Utils.multTelemetry.addData("Status", "Shutting Down");
-        Utils.multTelemetry.update();
+        OpModeUtils.multTelemetry.addData("Status", "Shutting Down");
+        OpModeUtils.multTelemetry.update();
         robot.intake.shutdown();
         robot.arm.up();
     }
@@ -292,22 +292,22 @@ public class Eta extends LinearOpMode {
 
                                                 */
 
-            Utils.multTelemetry.addLine("--DRIVER-------------------------------------");
-            Utils.multTelemetry.addData("Camera Dimensions", webcam.getFps());
-            Utils.multTelemetry.addData("ACM Offset", robot.imu.getOffsetAngle());
-            Utils.multTelemetry.addData("Angle", robot.imu.getAngle());
-            Utils.multTelemetry.addData("Locked Angle", locked_direction);
-            Utils.multTelemetry.addData("PS Increment", ps_increment);
-            Utils.multTelemetry.addData("Angular Velocity", current_angular_velocity);
-            Utils.multTelemetry.addData("RPM", robot.shooter.getRPM());
+            OpModeUtils.multTelemetry.addLine("--DRIVER-------------------------------------");
+            OpModeUtils.multTelemetry.addData("Camera Dimensions", webcam.getFps());
+            OpModeUtils.multTelemetry.addData("ACM Offset", robot.imu.getOffsetAngle());
+            OpModeUtils.multTelemetry.addData("Angle", robot.imu.getAngle());
+            OpModeUtils.multTelemetry.addData("Locked Angle", locked_direction);
+            OpModeUtils.multTelemetry.addData("PS Increment", ps_increment);
+            OpModeUtils.multTelemetry.addData("Angular Velocity", current_angular_velocity);
+            OpModeUtils.multTelemetry.addData("RPM", robot.shooter.getRPM());
 
 
 
-            Utils.multTelemetry.addLine("--HARDWARE-------------------------------------");
-            Utils.multTelemetry.addData("Intake Forward", BC2.get(LB1, TOGGLE));
-            Utils.multTelemetry.addData("Shooter ON?", BC2.get(CIRCLE, TOGGLE));
+            OpModeUtils.multTelemetry.addLine("--HARDWARE-------------------------------------");
+            OpModeUtils.multTelemetry.addData("Intake Forward", BC2.get(LB1, TOGGLE));
+            OpModeUtils.multTelemetry.addData("Shooter ON?", BC2.get(CIRCLE, TOGGLE));
 
-            Utils.multTelemetry.update();
+            OpModeUtils.multTelemetry.update();
 
 
 

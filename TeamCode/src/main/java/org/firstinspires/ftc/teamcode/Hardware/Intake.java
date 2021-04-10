@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.Hardware;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.Utilities.Utils;
+import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
 
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Servos.INTAKE_ARM_LSERVO_HOME;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Servos.INTAKE_ARM_LSERVO_MAX;
@@ -39,15 +39,15 @@ public class Intake {
         this.left_servo_id = left_servo_id;
         this.right_servo_id = right_servo_id;
 
-        intake_motor = Utils.hardwareMap.get(DcMotor.class, intake_motor_id);
+        intake_motor = OpModeUtils.hardwareMap.get(DcMotor.class, intake_motor_id);
         intake_motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         intake_motor.setDirection(DcMotor.Direction.REVERSE);
 
-        left_arm_servo = Utils.hardwareMap.get(Servo.class, left_servo_id);
+        left_arm_servo = OpModeUtils.hardwareMap.get(Servo.class, left_servo_id);
         left_arm_servo.setDirection(Servo.Direction.FORWARD);
         left_arm_servo.setPosition(INTAKE_ARM_LSERVO_HOME);
 
-        right_arm_servo = Utils.hardwareMap.get(Servo.class, right_servo_id);
+        right_arm_servo = OpModeUtils.hardwareMap.get(Servo.class, right_servo_id);
         right_arm_servo.setDirection(Servo.Direction.FORWARD);
         right_arm_servo.setPosition(INTAKE_ARM_RSERVO_HOME);
 

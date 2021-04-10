@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.TeleOp.Diagnostics;
+package org.firstinspires.ftc.teamcode.Diagnostics;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Hardware.Arm;
 import org.firstinspires.ftc.teamcode.Hardware.Controls.ControllerCollin;
 import org.firstinspires.ftc.teamcode.DashConstants.Dash_CRServoDiag;
-import org.firstinspires.ftc.teamcode.Utilities.Utils;
+import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
 
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_CRServoDiag.STATE_MACHINE_ON;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_CRServoDiag.CRSERVO_ID;
@@ -38,31 +38,31 @@ public class CRServoDiag extends LinearOpMode {
     private STATE current_state;
 
     public void initialize() {
-        Utils.setOpMode(this);
+        OpModeUtils.setOpMode(this);
         controller = new ControllerCollin(gamepad1);
 
         arm = new Arm("arm");
 
-        claw_encoder = Utils.hardwareMap.get(DcMotor.class, "claw_encoder");
+        claw_encoder = OpModeUtils.hardwareMap.get(DcMotor.class, "claw_encoder");
 
         start_position = claw_encoder.getCurrentPosition();
 
-        crServo = Utils.hardwareMap.get(CRServo.class, CRSERVO_ID);
+        crServo = OpModeUtils.hardwareMap.get(CRServo.class, CRSERVO_ID);
         crServo.setDirection(CRServo.Direction.FORWARD);
 
         time = new ElapsedTime();
         current_state = STATE.IDLE;
 
-        Utils.multTelemetry.addData("Status", "Initialized");
-        Utils.multTelemetry.addData("Start Keys", "Press [>] to begin");
-        Utils.multTelemetry.addData("Shutdown Keys", "Press [RB] & [LB] simultaneously");
-        Utils.multTelemetry.addData("MODE", claw_encoder.getMode());
-        Utils.multTelemetry.update();
+        OpModeUtils.multTelemetry.addData("Status", "Initialized");
+        OpModeUtils.multTelemetry.addData("Start Keys", "Press [>] to begin");
+        OpModeUtils.multTelemetry.addData("Shutdown Keys", "Press [RB] & [LB] simultaneously");
+        OpModeUtils.multTelemetry.addData("MODE", claw_encoder.getMode());
+        OpModeUtils.multTelemetry.update();
     }
 
     public void shutdown(){
-        Utils.multTelemetry.addData("Status", "Shutting Down");
-        Utils.multTelemetry.update();
+        OpModeUtils.multTelemetry.addData("Status", "Shutting Down");
+        OpModeUtils.multTelemetry.update();
         crServo.setPower(0);
     }
 
@@ -78,7 +78,7 @@ public class CRServoDiag extends LinearOpMode {
 
                 if (controller.src.dpad_up) current_state = STATE.OPEN;
                 else if (controller.src.dpad_down) current_state = STATE.CLOSE;
-                Utils.multTelemetry.addData("Power", 0);
+                OpModeUtils.multTelemetry.addData("Power", 0);
 
 
                 break;
@@ -92,7 +92,7 @@ public class CRServoDiag extends LinearOpMode {
                 else if (time.milliseconds() < Dash_CRServoDiag.millis_to_open) crServo.setPower(CRSERVO_POWER);
                 else current_state = STATE.IDLE;
 
-                Utils.multTelemetry.addData("Power", CRSERVO_POWER);
+                OpModeUtils.multTelemetry.addData("Power", CRSERVO_POWER);
                 break;
 
             case CLOSE:
@@ -104,7 +104,7 @@ public class CRServoDiag extends LinearOpMode {
                 else if (time.milliseconds() < Dash_CRServoDiag.millis_to_close) crServo.setPower(-CRSERVO_POWER);
                 else current_state = STATE.IDLE;
 
-                Utils.multTelemetry.addData("Power", -CRSERVO_POWER);
+                OpModeUtils.multTelemetry.addData("Power", -CRSERVO_POWER);
                 break;
         }
     }
@@ -158,14 +158,14 @@ public class CRServoDiag extends LinearOpMode {
 
 
 
-            Utils.multTelemetry.addData("Duration", duration);
-            Utils.multTelemetry.addData("Encoder Position", claw_encoder.getCurrentPosition());
-            Utils.multTelemetry.addData("Encoder Delta", start_position - claw_encoder.getCurrentPosition());
+            OpModeUtils.multTelemetry.addData("Duration", duration);
+            OpModeUtils.multTelemetry.addData("Encoder Position", claw_encoder.getCurrentPosition());
+            OpModeUtils.multTelemetry.addData("Encoder Delta", start_position - claw_encoder.getCurrentPosition());
 
-            Utils.multTelemetry.addData("CServo ID", CRSERVO_ID);
-            Utils.multTelemetry.addData("Servo Status", status);
-            Utils.multTelemetry.addData("Servo Power", crServo.getPower());
-            Utils.multTelemetry.update();
+            OpModeUtils.multTelemetry.addData("CServo ID", CRSERVO_ID);
+            OpModeUtils.multTelemetry.addData("Servo Status", status);
+            OpModeUtils.multTelemetry.addData("Servo Power", crServo.getPower());
+            OpModeUtils.multTelemetry.update();
 
 
 
