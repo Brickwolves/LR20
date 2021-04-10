@@ -32,6 +32,37 @@ public class VisionUtils {
         AREA, WIDTH, HEIGHT
     }
 
+    public static int findLeftMostContourIndex(List<MatOfPoint> contours){
+        int index = 0;
+        double minX = Integer.MAX_VALUE;
+        for (int i=0; i < contours.size(); i++){
+            MatOfPoint cnt = contours.get(i);
+            double x = boundingRect(cnt).x;
+            if (x < minX) {
+                minX = x;
+                index = i;
+            }
+        }
+        return index;
+    }
+
+    public static List<MatOfPoint> findNLeftMostContours(int n, List<MatOfPoint> contours){
+        List<MatOfPoint> widest_contours = new ArrayList<>();
+        for (int j=0; j < n; j++){
+            int largest_index = findLeftMostContourIndex(contours);
+            widest_contours.add(contours.get(largest_index));
+
+            contours.remove(largest_index);
+            if (contours.size() == 0) break;
+        }
+
+        for (MatOfPoint cnt : contours){
+            cnt.release();
+        }
+
+        return widest_contours;
+    }
+
     public static int findWidestContourIndex(List<MatOfPoint> contours){
         int index = 0;
         double maxWidth = 0;

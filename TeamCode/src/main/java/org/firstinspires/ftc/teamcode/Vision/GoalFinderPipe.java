@@ -83,11 +83,6 @@ public class GoalFinderPipe extends OpenCvPipeline {
         IMG_HEIGHT = input.rows();
         IMG_WIDTH = input.cols();
 
-        // Take bottom portion
-        double horizonY = (int) IMG_HEIGHT * horizonLineRatio;
-        Rect upperRect = new Rect(new Point(0, 0), new Point(IMG_WIDTH, horizonY));
-        input = input.submat(upperRect);
-
         // Copy to output
         input.copyTo(output);
 
