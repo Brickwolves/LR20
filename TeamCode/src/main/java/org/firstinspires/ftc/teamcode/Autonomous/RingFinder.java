@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls;
 import org.firstinspires.ftc.teamcode.Hardware.Mecanum;
 import org.firstinspires.ftc.teamcode.Hardware.Sensors.IMU;
 import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
-import org.firstinspires.ftc.teamcode.Vision.RingFinderPipeline;
+import org.firstinspires.ftc.teamcode.Vision.RingFinderPipe;
 import org.firstinspires.ftc.teamcode.Vision.VisionUtils;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -20,7 +20,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 @Autonomous(name="RingFinder", group="Autonomous Linear Opmode")
 public class RingFinder extends LinearOpMode
 {
-    private RingFinderPipeline ringFinder = new RingFinderPipeline();
+    private RingFinderPipe ringFinder = new RingFinderPipe();
     public static IMU imu;
     private Mecanum robot;
     private ButtonControls BC;
@@ -58,7 +58,7 @@ public class RingFinder extends LinearOpMode
         OpModeUtils.multTelemetry.addData("Status", "Turning to " + target_angle);
         OpModeUtils.multTelemetry.update();
 
-        robot.turn(target_angle, 0.1);
+        robot.linearTurn(target_angle, 0.1);
 
         while (opModeIsActive()){
 

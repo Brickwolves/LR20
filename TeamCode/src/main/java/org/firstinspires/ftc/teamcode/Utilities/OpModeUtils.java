@@ -9,6 +9,8 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+import static java.lang.Math.floorMod;
+
 public class OpModeUtils {
 
     public static HardwareMap hardwareMap;
@@ -63,41 +65,6 @@ public class OpModeUtils {
    public static double convertTicks2Inches(double inches){
         return (0.0207 * inches) + 4.38; // Calculated using desmos
    }
-
-
-
-    /**
-     * @param position
-     * @param distance
-     * @param acceleration
-     * @return
-     */
-    public static double powerRamp(double position, double distance, double acceleration){
-        /**
-         * The piece wise function has domain restriction [0, inf] and range restriction [0, 1]
-         * Simply returns a proportional constant
-         */
-
-
-        position = Math.abs(position);
-        distance = Math.abs(distance);
-        acceleration = Math.abs(acceleration);
-
-        position += 2;
-        double normFactor = 1 / Math.sqrt(0.1 * distance);
-
-        // Modeling a piece wise of power as a function of distance
-        double p1 = normFactor * Math.sqrt(acceleration * position);
-        double p2 = 1;
-        double p3 = normFactor * (Math.sqrt(acceleration * Math.abs(distance - position)));
-        double power = Math.min(Math.min(p1, p2), p3);
-        power = Range.clip(power, 0.1, 1);
-        OpModeUtils.multTelemetry.addData("Distance", distance);
-        OpModeUtils.multTelemetry.addData("Position", position);
-
-        return power;
-    }
-
 
     public static double map(double x, double a_min, double a_max, double b_min, double b_max){
         return (x - a_min) / (a_max - a_min) * (b_max - b_min) + b_min;

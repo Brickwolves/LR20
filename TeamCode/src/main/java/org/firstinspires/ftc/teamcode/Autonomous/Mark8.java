@@ -116,7 +116,7 @@ public class Mark8 extends LinearOpMode {
     public void A(){
 
         robot.strafe(90, 57, 90, 0.1, null);
-        robot.turn(-60, 0.05, 0.1, () -> robot.arm.out());
+        robot.linearTurn(-60, 0.05, 0.1, () -> robot.arm.out());
 
         // Claw Open
         // Arm Up
@@ -126,13 +126,13 @@ public class Mark8 extends LinearOpMode {
 
 
         // POWER SHOTS
-        robot.turn(84, 0.5, 0.1, () -> robot.shooter.setRPM(3600));
+        robot.linearTurn(84, 0.5, 0.1, () -> robot.shooter.setRPM(3600));
         shoot(1, 0.5);
-        robot.turn(88, 0.5, 0.01, () -> robot.shooter.setRPM(3600));
+        robot.linearTurn(88, 0.5, 0.01, () -> robot.shooter.setRPM(3600));
         shoot(1, 0.5);
-        robot.turn(92, 0.5, 0.01, () -> robot.shooter.setRPM(3600));
+        robot.linearTurn(92, 0.5, 0.01, () -> robot.shooter.setRPM(3600));
         shoot(1, 0.5);
-        robot.turn(90, 0.5, 0.01, null);
+        robot.linearTurn(90, 0.5, 0.01, null);
 
 
 
@@ -144,13 +144,13 @@ public class Mark8 extends LinearOpMode {
 
         // Strafe to new wobble goal position
         robot.strafe(125, 33, 90, 0.1, null);
-        robot.turn(0, 0.5, 0.1, () -> robot.arm.out());
+        robot.linearTurn(0, 0.5, 0.1, () -> robot.arm.out());
         time.reset();
         while (time.seconds() < 1) { robot.claw.open(); }
 
         // Set up facing 0
         robot.strafe(0, 10, 0,0.1, null);
-        robot.turn(90, 0.5, 0.1, null);
+        robot.linearTurn(90, 0.5, 0.1, null);
 
         while (!BC.get(CROSS, DOWN) && opModeIsActive()) {
             OpModeUtils.multTelemetry.addLine("BREAKPOINT");

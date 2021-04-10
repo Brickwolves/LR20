@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls;
 import org.firstinspires.ftc.teamcode.Hardware.Mecanum;
 import org.firstinspires.ftc.teamcode.Utilities.PID.RingBuffer;
 import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
-import org.firstinspires.ftc.teamcode.Vision.GoalFinderPipeline;
+import org.firstinspires.ftc.teamcode.Vision.GoalFinderPipe;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -122,7 +122,7 @@ public class Eta extends LinearOpMode {
          */
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam"), cameraMonitorViewId);
-        webcam.setPipeline(new GoalFinderPipeline());
+        webcam.setPipeline(new GoalFinderPipe());
         webcam.openCameraDeviceAsync(() -> webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT));
     }
 

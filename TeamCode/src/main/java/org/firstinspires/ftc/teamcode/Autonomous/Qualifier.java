@@ -142,7 +142,7 @@ public class Qualifier extends LinearOpMode {
 
         // Intake Rings
         robot.strafe(180, 10, 90, 0.1, null);
-        robot.turn(0, 0.01);
+        robot.linearTurn(0, 0.01);
         robot.intake.setIntakePower(1);
         robot.strafe(90, 20, 0, 0.1, null);
         sleep(500);
@@ -150,14 +150,14 @@ public class Qualifier extends LinearOpMode {
 
 
         robot.strafe(270, 10, 0, 0.05, () -> robot.intake.armDown());
-        robot.turn(90, 0.05);
+        robot.linearTurn(90, 0.05);
         robot.strafe(90, 5, 90, 0.1, null);
 
         shoot(2);
 
         robot.strafe(110, 40, 90, 0.1, null);
 
-        robot.turn(-90, 0.05);
+        robot.linearTurn(-90, 0.05);
 
         time.reset();
         while (time.seconds() < 1){
@@ -205,7 +205,7 @@ public class Qualifier extends LinearOpMode {
 
         // Strafe to C for WG
         robot.strafe(90, 70, 90, 0.5, null);
-        robot.turn(-50, 0.01);
+        robot.linearTurn(-50, 0.01);
 
         time.reset();
         while (time.seconds() < 1){ robot.arm.out(); }

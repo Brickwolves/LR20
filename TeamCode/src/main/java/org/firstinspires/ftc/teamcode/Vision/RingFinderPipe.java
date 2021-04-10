@@ -37,7 +37,7 @@ import static org.opencv.imgproc.Imgproc.rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RingFinderPipeline extends OpenCvPipeline
+public class RingFinderPipe extends OpenCvPipeline
 {
     private boolean viewportPaused;
 

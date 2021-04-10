@@ -6,6 +6,7 @@ import androidx.annotation.RequiresApi;
 
 import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.Hardware.Sensors.IMU;
 import org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement;
@@ -59,6 +60,7 @@ public class Mecanum implements Robot {
 
    public void initRobot() {
       multTelemetry.addData("Status", "Initialized");
+      multTelemetry.update();
 
       // Init Motors
       fr = hardwareMap.get(DcMotor.class, "front_right_motor");
@@ -67,10 +69,7 @@ public class Mecanum implements Robot {
       bl = hardwareMap.get(DcMotor.class, "back_left_motor");
       resetMotors();
 
-      // Sensors
-      //touchSensor = Utils.hardwareMap.get(TouchSensor.class, "touch_sensor");
-      //colorSensorBase = Utils.hardwareMap.get(ColorSensor.class, "color_sensor");
-      //colorSensor = new ColorSensorImpl(colorSensorBase);
+
       imu = new IMU("imu");
       odom = new Odometry(0, 0, imu.getAngle());
       claw = new Claw("eservo_2", "eservo_1");
@@ -123,6 +122,48 @@ public class Mecanum implements Robot {
    }
 
    /**
+    * @param position
+    * @param distance
+    * @param acceleration
+    * @return
+    */
+   public static double powerRamp(double position, double distance, double acceleration){
+      /**
+       * The piece wise function has domain restriction [0, inf] and range restriction [0, 1]
+       * Simply returns a proportional constant
+       */
+
+
+      position = abs(position);
+      distance = abs(distance);
+      acceleration = abs(acceleration);
+
+      position += 2;
+      double normFactor = 1 / sqrt(0.1 * distance);
+
+      // Modeling a piece wise of power as a function of distance
+      double p1 = normFactor * sqrt(acceleration * position);
+      double p2 = 1;
+      double p3 = normFactor * (sqrt(acceleration * abs(distance - position)));
+      double power = min(min(p1, p2), p3);
+      power = clip(power, 0.1, 1);
+
+      return power;
+   }
+
+   private double powerRamp(double percentageDistance, double a){
+
+      double p1 = sqrt(a * percentageDistance);
+      double p2 = 1;
+      double p3 = sqrt(a * (1 - percentageDistance));
+
+      double p = min(min(p1, p2), p3);
+      p = clip(p, 0.1, 1);
+
+      return p;
+   }
+
+   /**
     * @param targetAngle
     * @return
     */
@@ -138,51 +179,11 @@ public class Mecanum implements Robot {
     * @param currentAngle
     * @return
     */
-   //@RequiresApi(api = Build.VERSION_CODES.N)
    @RequiresApi(api = Build.VERSION_CODES.N)
    public static double findClosestAngle(double targetAngle, double currentAngle){
       double simpleTargetDelta = floorMod(Math.round(((360 - targetAngle) + currentAngle) * 1e6), Math.round(360.000 * 1e6)) / 1e6;
       double alternateTargetDelta = -1 * (360 - simpleTargetDelta);
       return StrictMath.abs(simpleTargetDelta) <= StrictMath.abs(alternateTargetDelta) ? currentAngle - simpleTargetDelta : currentAngle - alternateTargetDelta;
-   }
-
-
-   /**
-    * @param position
-    * @param distance
-    * @param acceleration
-    * @return
-    */
-   public static double powerRamp(double position, double distance, double acceleration, double maxVelocity){
-      /*
-       *  The piece wise function has domain restriction [0, inf] and range restriction [0, 1]
-       *  Simply returns a proportional constant
-       */
-
-
-      // Constant to map power to [0, 1]
-      double normFactor = maxVelocity / Math.sqrt(acceleration * distance);
-
-      // Modeling a piece wise of power as a function of distance
-      double p1       = normFactor * Math.sqrt(acceleration * position);
-      double p2       = maxVelocity;
-      double p3       = normFactor * (Math.sqrt(acceleration * (distance - position)));
-      double power    = Math.min(Math.min(p1, p2), p3) + 0.1;
-      power           = clip(power, 0.1, 1);
-
-      return power;
-   }
-
-   private double powerRamp(double percentageDistance, double a){
-
-      double p1 = sqrt(a * percentageDistance);
-      double p2 = 1;
-      double p3 = sqrt(a * (1 - percentageDistance));
-
-      double p = min(min(p1, p2), p3);
-      p = clip(p, 0.1, 1);
-
-      return p;
    }
 
    public static Point shift(double x, double y, double shiftAngle){
@@ -228,6 +229,11 @@ public class Mecanum implements Robot {
       TICKS, INCHES, FEET
    }
 
+
+
+
+
+
    public void linearStrafe(Point dest, double acceleration, SyncTask task){
 
       // Initialize starter variables
@@ -263,7 +269,7 @@ public class Mecanum implements Robot {
          if (task != null) task.execute();
 
          // Power ramping
-         power = powerRamp(curC, distC, acceleration, maxPower);
+         power = powerRamp(curC, distC, acceleration);
 
          // PID CONTROLLER
          pr0 = clip(rotationPID.update(startO.a - imu.getAngle()) * -1, -1, 1);
@@ -296,7 +302,6 @@ public class Mecanum implements Robot {
     * @param angle
     */
    public void linearStrafe(double angle, double distance, double acceleration, SyncTask task) {
-
       double r = angle * PI / 180.0;
       Point dest = new Point(distance * cos(r), distance * sin(r) * -1);
       linearStrafe(dest, acceleration, task);
@@ -310,9 +315,8 @@ public class Mecanum implements Robot {
 
 
    @RequiresApi(api = Build.VERSION_CODES.N)
-   public void turn(double target_angle, double MOE) {
+   public void linearTurn(double target_angle, double MOE) {
 
-      double startTime = System.currentTimeMillis();
       double turn_direction, pid_return, power, powerRampPosition;
 
 
@@ -335,7 +339,7 @@ public class Mecanum implements Robot {
 
          //              Power Ramping            //
          powerRampPosition = MathUtils.map(current_angle, startAngle, actual_target_angle, 0, startDeltaAngle);
-         power = OpModeUtils.powerRamp(powerRampPosition, startDeltaAngle, 0.1);
+         power = powerRamp(powerRampPosition, startDeltaAngle, 0.1);
 
 
          //turn = (turn > 0) ? Range.clip(turn, 0.1, 1) : Range.clip(turn, -1, -0.1);
@@ -366,7 +370,7 @@ public class Mecanum implements Robot {
 
 
    @RequiresApi(api = Build.VERSION_CODES.N)
-   public void turn(double target_angle, double MOE, double acceleration, SyncTask task) {
+   public void linearTurn(double target_angle, double MOE, double acceleration, SyncTask task) {
 
       double startTime = System.currentTimeMillis();
       double turn_direction, pid_return, power, powerRampPosition;
@@ -394,7 +398,7 @@ public class Mecanum implements Robot {
 
          //              Power Ramping            //
          powerRampPosition = MathUtils.map(current_angle, startAngle, actual_target_angle, 0, startDeltaAngle);
-         power = OpModeUtils.powerRamp(powerRampPosition, startDeltaAngle, acceleration);
+         power = powerRamp(powerRampPosition, startDeltaAngle, acceleration);
 
 
          //        Set Power                 //
@@ -439,7 +443,7 @@ public class Mecanum implements Robot {
 
          //              Power Ramping            //
          powerRampPosition = MathUtils.map(current_angle, startAngle, actual_target_angle, 0, startDeltaAngle);
-         power = OpModeUtils.powerRamp(powerRampPosition, startDeltaAngle, acceleration);
+         power = powerRamp(powerRampPosition, startDeltaAngle, acceleration);
 
          //             Set Power                 //
          return turn_direction * power;
@@ -553,7 +557,7 @@ public class Mecanum implements Robot {
             // We want to map our currentAngle relative to a range of [0, and distance it needs to travel]
 
             // Modeling a piece wise of power as a function of distance
-            power = OpModeUtils.powerRamp(relativePosition, deltaAngle, 0.05);
+            power = powerRamp(relativePosition, deltaAngle, 0.05);
 
             // Handle clockwise (+) and counterclockwise (-) motion
             setDrivePower(0, 0, direction, power);

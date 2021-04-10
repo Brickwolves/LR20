@@ -47,11 +47,12 @@ import static org.opencv.imgproc.Imgproc.line;
 import static org.opencv.imgproc.Imgproc.putText;
 import static org.opencv.imgproc.Imgproc.rectangle;
 
-public class GoalFinderPipeline extends OpenCvPipeline {
+public class GoalFinderPipe extends OpenCvPipeline {
     private boolean viewportPaused;
 
 
     private double degree_error = 0;
+    private boolean goalFound = false;
 
     // Init mats here so we don't repeat
     private Mat modified = new Mat();
@@ -67,6 +68,10 @@ public class GoalFinderPipeline extends OpenCvPipeline {
     private Scalar color = new Scalar(255, 0, 255);
     private int thickness = 2;
     private int font = FONT_HERSHEY_COMPLEX;
+
+    public boolean isGoalFound(){
+        return goalFound;
+    }
 
     @Override
     public Mat processFrame(Mat input) {
@@ -104,7 +109,11 @@ public class GoalFinderPipeline extends OpenCvPipeline {
         // Find contours of goal
         contours = new ArrayList<>();
         findContours(modified, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE);
-        if (contours.size() == 0) return output;
+        if (contours.size() == 0) {
+            goalFound = false;
+            return output;
+        }
+        goalFound = true;
 
         // Retrieve goal contours
         new_contours = findNLargestContours(2, contours);

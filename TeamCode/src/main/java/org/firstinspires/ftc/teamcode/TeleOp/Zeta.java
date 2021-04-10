@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls;
 import org.firstinspires.ftc.teamcode.Hardware.Mecanum;
 import org.firstinspires.ftc.teamcode.Utilities.PID.RingBuffer;
 import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
-import org.firstinspires.ftc.teamcode.Vision.GoalFinderPipeline;
+import org.firstinspires.ftc.teamcode.Vision.GoalFinderPipe;
 import org.firstinspires.ftc.teamcode.Vision.VisionUtils;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -56,7 +56,7 @@ public class Zeta extends LinearOpMode {
     private JoystickControls JC1;
 
     // Camera stuff
-    private GoalFinderPipeline goalFinder = new GoalFinderPipeline();
+    private GoalFinderPipe goalFinder = new GoalFinderPipe();
 
     // Power Shot Angles
     private int     ps_increment = 1;
@@ -230,8 +230,8 @@ public class Zeta extends LinearOpMode {
                 // Turn if we aren't facing near goal
                 double degree_error = goalFinder.getDegreeError();
                 double modAngle = robot.imu.getModAngle();
-                double leftAngle = findClosestAngle(90 - 25, robot.imu.getAngle());
-                double rightAngle = findClosestAngle(90 + 25, robot.imu.getAngle());
+                double leftAngle = findClosestAngle(180 - 25, robot.imu.getAngle());
+                double rightAngle = findClosestAngle(180 + 25, robot.imu.getAngle());
                 if (modAngle > leftAngle && modAngle < rightAngle){
                     double leftDiff = robot.imu.getAngle() - leftAngle;
                     double rightDiff = robot.imu.getAngle() - rightAngle;
