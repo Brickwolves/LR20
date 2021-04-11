@@ -13,7 +13,10 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.Math.tan;
 import static java.lang.StrictMath.abs;
+import static java.lang.StrictMath.pow;
+import static java.lang.StrictMath.sqrt;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.MAX_H;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.MAX_S;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.MAX_V;
@@ -24,6 +27,7 @@ import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.blur;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.dilate_const;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.erode_const;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.goalWidth;
+import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.multTelemetry;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.IMG_HEIGHT;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.IMG_WIDTH;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.findNLargestContours;
@@ -65,6 +69,7 @@ public class GoalFinderPipe extends OpenCvPipeline {
     private Scalar color = new Scalar(255, 0, 255);
     private int thickness = 2;
     private int font = FONT_HERSHEY_COMPLEX;
+    private double final_rpm = 0;
 
     public boolean isGoalFound(){
         return goalFound;
@@ -115,12 +120,25 @@ public class GoalFinderPipe extends OpenCvPipeline {
         rectangle(output, goalRect, color, thickness);
 
 
+        // Calculate RPM
+        double opp = 240 - goalRect.y + 10;
+        double thetaRads = opp / 240 * 0.75;
+        double goalDistance = (90 / tan(thetaRads) + 20) / 100;
+
+        double numerator = 9.8 * pow(goalDistance, 3);
+        double denominator = (0.79 * goalDistance) - 1.185;
+        final_rpm = 250 * sqrt(numerator / denominator);
+        multTelemetry.addData("Goal Distance", goalDistance);
+        multTelemetry.addData("RPM", final_rpm);
+
+
+
         // Calculate error
         int center_x = goalRect.x + (goalRect.width / 2);
         int center_y = goalRect.y + (goalRect.height / 2);
         Point center = new Point(center_x, center_y);
         double pixel_error = (IMG_WIDTH / 2) - center_x;
-        degree_error = pixels2Degrees(pixel_error);
+        degree_error = pixels2Degrees(pixel_error) + 3;
         line(output, center, new Point(center_x + pixel_error, center_y), new Scalar(0, 0, 255), thickness);
 
 
@@ -148,6 +166,9 @@ public class GoalFinderPipe extends OpenCvPipeline {
         return  goalRect;
     }
 
+    public double getRPM(){
+        return final_rpm;
+    }
 
     private Rect calcGoalRect(List<MatOfPoint> contours) {
 

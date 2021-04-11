@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.Utilities.PID.RingBuffer;
 import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
 
 import static java.lang.Math.abs;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Shooter.rpm;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Shooter.goal_rpm;
 
 @Disabled
 @TeleOp(name = "Gamma TeleOp", group="Linear TeleOp")
@@ -174,7 +174,7 @@ public class Gamma extends LinearOpMode {
             if (controller2.circle_toggle) {
                 //robot.intake.armDown();
                 //robot.shooter.setRPM(4500);
-                robot.shooter.setRPM(rpm);
+                robot.shooter.setRPM(goal_rpm);
             }
             else {
                 robot.shooter.setPower(0);

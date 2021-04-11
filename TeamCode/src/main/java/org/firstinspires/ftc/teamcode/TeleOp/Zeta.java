@@ -19,12 +19,15 @@ import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
 import org.firstinspires.ftc.teamcode.Vision.GoalFinderPipe;
 import org.firstinspires.ftc.teamcode.Vision.PSFinderPipe;
 import org.firstinspires.ftc.teamcode.Vision.VisionUtils;
-import org.opencv.android.Utils;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import static java.lang.Math.abs;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Shooter.rpm;
+import static java.lang.Math.tan;
+import static java.lang.StrictMath.pow;
+import static java.lang.StrictMath.round;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Shooter.ps_rpm;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Shooter.goal_rpm;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.DOWN;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.TAP;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.TOGGLE;
@@ -230,20 +233,21 @@ public class Zeta extends LinearOpMode {
             else robot.intake.armDown();
 
             // Square toggles aiming at goal or powershots
+            double rpm = 0;
             if (BC2.get(SQUARE, TOGGLE)){
                 aimTarget = POWERSHOTS;
-                rpm = 3000;
+                rpm = ps_rpm;
             }
             else {
                 aimTarget = GOAL;
-                rpm = 3500;
+                rpm = goal_rpm;
             }
 
             // SHOOTER
             robot.shooter.feederState(BC2.get(RB2, DOWN));
             if (BC2.get(CIRCLE, TOGGLE)) {
+
                 robot.intake.armDown();
-                robot.shooter.setRPM(rpm);
 
                 // Slow down the robot
                 velocity = 0.5;
@@ -253,12 +257,19 @@ public class Zeta extends LinearOpMode {
                 if (aimTarget == GOAL){
                     VisionUtils.webcam.setPipeline(goalFinder);
                     degree_error = goalFinder.getDegreeError();
+
+                    // Get RPM dynamically
+                    rpm = goalFinder.getRPM();
+
                 }
                 else if (aimTarget == POWERSHOTS){
                     VisionUtils.webcam.setPipeline(psFinder);
                     degree_error = psFinder.getPSError(powerShot);
                 }
                 locked_direction = findClosestAngle(robot.imu.getAngle() + degree_error, robot.imu.getAngle());
+
+
+                robot.shooter.setRPM(rpm);
 
                 // If we're not facing near the goal, turn nearby it
                 /*

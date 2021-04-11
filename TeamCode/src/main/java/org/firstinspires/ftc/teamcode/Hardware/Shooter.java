@@ -181,7 +181,7 @@ public class Shooter {
         return shooterRPM;
     }
 
-    public void setRPM(int targetRPM){
+    public void setRPM(double targetRPM){
         shooterPID.setF(targetRPM / 10000.0);
         shooterPower = shooterPID.update( targetRPM + updateRPM());
 

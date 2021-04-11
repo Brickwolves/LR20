@@ -25,7 +25,7 @@ import org.openftc.easyopencv.OpenCvPipeline;
 
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.DOWN;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.CROSS;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Shooter.rpm;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Shooter.goal_rpm;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_StackDetector.ring_count;
 
 @Autonomous(name="MarkVIII", group="Autonomous Linear Opmode")
@@ -56,7 +56,7 @@ public class Mark8 extends LinearOpMode {
     public void shoot(int rings, double waitSeconds){
         time.reset();
         while (true) {
-            robot.shooter.setRPM(rpm);
+            robot.shooter.setRPM(goal_rpm);
 
             if (time.seconds() > waitSeconds) {
                 if (robot.shooter.getFeederCount() < rings) robot.shooter.feederState(true);
