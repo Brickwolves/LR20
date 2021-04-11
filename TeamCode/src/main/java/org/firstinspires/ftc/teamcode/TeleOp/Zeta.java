@@ -367,6 +367,8 @@ public class Zeta extends LinearOpMode {
             ----------- S E T    P O W E R -----------
 
                                                     */
+
+            if (abs(locked_direction) % 90 == 0) turn *= 0.5;
             robot.setDrivePower(drive, strafe, turn, velocity);
 
 
