@@ -109,8 +109,8 @@ public class Zeta extends LinearOpMode {
 
         multTelemetry.addLine("------USER 1----------------------------");
         multTelemetry.addData("Velocity Ranger", "[LB2]");
-        multTelemetry.addData("Face Direction", "DPAD");
-        multTelemetry.addData("Power Shot Increment", "[TRIANGLE]");
+        multTelemetry.addData("Quick Turn", "[DPAD]");
+        multTelemetry.addData("Power Shot", "[RB1 / RB2]");
 
         multTelemetry.addLine("");
 
@@ -124,6 +124,8 @@ public class Zeta extends LinearOpMode {
         multTelemetry.addData("Arm In", "[DPAD LEFT]");
         multTelemetry.addData("Shooter ON/OFF", "[CIRCLE]");
         multTelemetry.addData("Shoot", "[RB2]");
+        multTelemetry.addData("Switch Target", "[SQUARE]");
+
 
         multTelemetry.addData("Shutdown Keys", "[TOUCHPAD] simultaneously");
         multTelemetry.update();
@@ -378,23 +380,17 @@ public class Zeta extends LinearOpMode {
                                                 */
 
             multTelemetry.addLine("--DRIVER-------------------------------------");
-            multTelemetry.addData("Aim Target", aimTarget);
-            multTelemetry.addData("Goal Error", goalFinder.getDegreeError());
             multTelemetry.addData("PowerShot", powerShot);
-            multTelemetry.addData("LEFT PS_ERROR", psFinder.getPSError(PSFinderPipe.PS.LEFT));
-            multTelemetry.addData("MIDDLE PS_ERROR", psFinder.getPSError(PSFinderPipe.PS.MIDDLE));
-            multTelemetry.addData("RIGHT PS_ERROR", psFinder.getPSError(PSFinderPipe.PS.RIGHT));
-            multTelemetry.addData("RPM", robot.shooter.getRPM());
-            multTelemetry.addData("ACM Offset", robot.imu.getOffsetAngle());
+            multTelemetry.addData("Aim Target", aimTarget);
             multTelemetry.addData("Angle", robot.imu.getAngle());
             multTelemetry.addData("Locked Angle", locked_direction);
-            multTelemetry.addData("Angular Velocity", current_angular_velocity);
-
 
 
             multTelemetry.addLine("--HARDWARE-------------------------------------");
-            multTelemetry.addData("Intake Forward", BC2.get(LB1, TOGGLE));
-            multTelemetry.addData("Shooter ON?", BC2.get(CIRCLE, TOGGLE));
+            multTelemetry.addData("Intake Forward", (BC2.get(LB1, TOGGLE)) ? "FORWARD" : "REVERSE");
+            multTelemetry.addData("Shooter", (BC2.get(CIRCLE, TOGGLE)) ? "ON" : "OFF");
+            multTelemetry.addData("RPM", robot.shooter.getRPM());
+
 
             multTelemetry.update();
 
