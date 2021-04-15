@@ -50,6 +50,7 @@ import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.Value.SHIFTED_X;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.Value.X;
 import static org.firstinspires.ftc.teamcode.Hardware.Mecanum.findClosestAngle;
+import static org.firstinspires.ftc.teamcode.Hardware.Mecanum.findClosestAngleNearGoal;
 import static org.firstinspires.ftc.teamcode.TeleOp.Zeta.Target.GOAL;
 import static org.firstinspires.ftc.teamcode.TeleOp.Zeta.Target.POWERSHOTS;
 import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.multTelemetry;
@@ -235,7 +236,7 @@ public class Zeta extends LinearOpMode {
             else robot.intake.armDown();
 
             // Square toggles aiming at goal or powershots
-            double rpm = 0;
+            double rpm;
             if (BC2.get(SQUARE, TOGGLE)){
                 aimTarget = POWERSHOTS;
                 rpm = ps_rpm;
@@ -258,35 +259,26 @@ public class Zeta extends LinearOpMode {
                 double degree_error = 0;
                 if (aimTarget == GOAL){
                     VisionUtils.webcam.setPipeline(goalFinder);
-                    degree_error = goalFinder.getDegreeError();
+                    if (goalFinder.isGoalFound()){
 
-                    // Get RPM dynamically
-                    rpm = goalFinder.getRPM();
-
+                        rpm = goalFinder.getRPM();
+                        degree_error = goalFinder.getDegreeError();
+                        locked_direction = findClosestAngle(robot.imu.getAngle() + degree_error, robot.imu.getAngle());
+                    }
                 }
                 else if (aimTarget == POWERSHOTS){
                     VisionUtils.webcam.setPipeline(psFinder);
                     degree_error = psFinder.getPSError(powerShot);
+                    locked_direction = findClosestAngle(robot.imu.getAngle() + degree_error, robot.imu.getAngle());
                 }
-                locked_direction = findClosestAngle(robot.imu.getAngle() + degree_error, robot.imu.getAngle());
 
+                double error_to_goal = (abs(robot.imu.getModAngle()) - 180);
+                if (error_to_goal > 20){
+                    locked_direction = findClosestAngleNearGoal(robot.imu.getAngle());
+                }
+                multTelemetry.addData("Error to 180", error_to_goal);
 
                 robot.shooter.setRPM(rpm);
-
-                // If we're not facing near the goal, turn nearby it
-                /*
-                double modAngle = robot.imu.getAngle();
-                double leftAngle = findClosestAngle(180 + 25, robot.imu.getAngle());
-                double rightAngle = findClosestAngle(180 - 25, robot.imu.getAngle());
-                if (modAngle > leftAngle && modAngle < rightAngle){
-                    double leftDiff = robot.imu.getAngle() - leftAngle;
-                    double rightDiff = robot.imu.getAngle() - rightAngle;
-                    if (leftDiff < rightDiff) locked_direction = leftAngle;
-                    else locked_direction = rightAngle;
-                }
-                // If we're facing nearby, auto aim
-                else locked_direction = findClosestAngle(robot.imu.getAngle() + degree_error, robot.imu.getAngle());
-                 */
             }
             else robot.shooter.setPower(0);
 

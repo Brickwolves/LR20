@@ -9,36 +9,23 @@ import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import static java.lang.StrictMath.abs;
-import static java.lang.StrictMath.round;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.MAX_H;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.MAX_S;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.MAX_V;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.MIN_H;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.MIN_S;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.MIN_V;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.blur;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.dilate_const;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.erode_const;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.goalWidth;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_PSFinder.MAX_Cb;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_PSFinder.MAX_Cr;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_PSFinder.MAX_Y;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_PSFinder.MIN_Cb;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_PSFinder.MIN_Cr;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_PSFinder.MIN_Y;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_RingFinder.horizonLineRatio;
-import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.multTelemetry;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.IMG_HEIGHT;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.IMG_WIDTH;
-import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.findNLargestContours;
-import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.findNLeftMostContours;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.pixels2Degrees;
+import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.sortRectsByMaxOption;
+import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.sortRectsByMinOption;
 import static org.opencv.core.Core.inRange;
 import static org.opencv.core.CvType.CV_8U;
 import static org.opencv.imgproc.Imgproc.CHAIN_APPROX_SIMPLE;
@@ -46,12 +33,10 @@ import static org.opencv.imgproc.Imgproc.FONT_HERSHEY_COMPLEX;
 import static org.opencv.imgproc.Imgproc.GaussianBlur;
 import static org.opencv.imgproc.Imgproc.RETR_TREE;
 import static org.opencv.imgproc.Imgproc.boundingRect;
-import static org.opencv.imgproc.Imgproc.contourArea;
 import static org.opencv.imgproc.Imgproc.cvtColor;
 import static org.opencv.imgproc.Imgproc.dilate;
 import static org.opencv.imgproc.Imgproc.erode;
 import static org.opencv.imgproc.Imgproc.findContours;
-import static org.opencv.imgproc.Imgproc.line;
 import static org.opencv.imgproc.Imgproc.putText;
 import static org.opencv.imgproc.Imgproc.rectangle;
 
@@ -67,7 +52,6 @@ public class PSFinderPipe extends OpenCvPipeline {
     private Mat modified = new Mat();
     private Mat output = new Mat();
     private Mat hierarchy = new Mat();
-    private List<MatOfPoint> largest_contours;
     private List<MatOfPoint> contours;
 
     // Thresholding values
@@ -122,44 +106,31 @@ public class PSFinderPipe extends OpenCvPipeline {
         erode(modified, modified, new Mat(erode_const, erode_const, CV_8U));
         dilate(modified, modified, new Mat(dilate_const, dilate_const, CV_8U));
 
-
         // Find contours of goal
         contours = new ArrayList<>();
         findContours(modified, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE);
 
         // Remove unnecessary contours (screen size and rings)
-        ArrayList<Integer> indexes2Remove = new ArrayList<>();
+        List<Rect> rects = new ArrayList<>();
         for (int i=0; i < contours.size(); i++){
             Rect rect = boundingRect(contours.get(i));
-            if (rect.width > rect.height) indexes2Remove.add(i);
+            if (rect.height > rect.width) rects.add(rect);
         }
-        for (int i =0; i < indexes2Remove.size(); i++){
-            int index1 = indexes2Remove.get(i);
-            if (contours.size() > 0) contours.remove(index1);
-            else return output;
-
-            // adjust other indexes that move down
-            for (int j=0; j < indexes2Remove.size(); j++){
-                int index2 = indexes2Remove.get(j);
-                if (index1 < index2) indexes2Remove.set(j, index2 - 1);
-            }
-        }
-        if (contours.size() == 0) return output;
+        if (rects.size() == 0) return output;
 
         // Retrieve powershot contours
-        largest_contours = findNLargestContours(3, contours);
-
-        // count power shots detected
-        n_ps_found = largest_contours.size();
+        rects = sortRectsByMaxOption(3, VisionUtils.RECT_OPTION.AREA, rects);
 
         // Sort the contours from left to right
-        largest_contours = findNLeftMostContours(3, largest_contours);
+        rects = sortRectsByMinOption(3, VisionUtils.RECT_OPTION.X, rects);
+
+        // count power shots detected
+        n_ps_found = rects.size();
 
         int c = 0;
-        for (MatOfPoint cnt : largest_contours){
+        for (Rect rect : rects){
 
             // Get and Draw PowerShot Rectangle
-            Rect rect = boundingRect(cnt);
             rectangle(output, rect, color, thickness);
 
             // Find center
@@ -198,6 +169,10 @@ public class PSFinderPipe extends OpenCvPipeline {
 
 
 
+    }
+
+    public double getNumPowerShots(){
+        return n_ps_found;
     }
 
     private Rect[] sortRectsByX(Rect[] rects){

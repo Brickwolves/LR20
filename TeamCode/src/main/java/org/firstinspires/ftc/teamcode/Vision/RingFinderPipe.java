@@ -1,23 +1,32 @@
 package org.firstinspires.ftc.teamcode.Vision;
 
 import org.opencv.core.Core;
-import org.openftc.easyopencv.OpenCvPipeline;
-import org.opencv.core.Scalar;
-import org.opencv.core.Size;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
+import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
-import static java.lang.StrictMath.abs;
-import static java.lang.StrictMath.round;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_RingFinder.*;
+import org.openftc.easyopencv.OpenCvPipeline;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_RingFinder.MAX_Cb;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_RingFinder.MAX_Cr;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_RingFinder.MAX_Y;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_RingFinder.MIN_Cb;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_RingFinder.MIN_Cr;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_RingFinder.MIN_Y;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_RingFinder.blur;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_RingFinder.dilate_const;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_RingFinder.erode_const;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_RingFinder.horizonLineRatio;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.IMG_HEIGHT;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.IMG_WIDTH;
-import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.RING_HEIGHT;
-import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.findNWidestContours;
-import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.getDistance2Object;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.pixels2Degrees;
+import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.sortRectsByMaxOption;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.webcam;
 import static org.opencv.core.Core.inRange;
 import static org.opencv.core.Core.rotate;
@@ -34,8 +43,6 @@ import static org.opencv.imgproc.Imgproc.findContours;
 import static org.opencv.imgproc.Imgproc.line;
 import static org.opencv.imgproc.Imgproc.putText;
 import static org.opencv.imgproc.Imgproc.rectangle;
-import java.util.ArrayList;
-import java.util.List;
 
 public class RingFinderPipe extends OpenCvPipeline
 {
@@ -50,7 +57,6 @@ public class RingFinderPipe extends OpenCvPipeline
     private Mat output = new Mat();
     private Mat hierarchy = new Mat();
     private List<MatOfPoint> contours;
-    private MatOfPoint widest_rect;
 
     // Thresholding values
     Scalar MIN_YCrCb, MAX_YCrCb;
@@ -96,17 +102,23 @@ public class RingFinderPipe extends OpenCvPipeline
         dilate(modified, modified, new Mat(dilate_const, dilate_const, CV_8U));
 
         // Find contours
-        List<MatOfPoint> contours = new ArrayList<>();
+        contours = new ArrayList<>();
         findContours(modified, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE);
+
+        // Retrive all rects
+        List<Rect> rects = new ArrayList<>();
+        for (int i=0; i < contours.size(); i++){
+            Rect rect = boundingRect(contours.get(i));
+            rects.add(rect);
+        }
 
         // Check if we have detected any orange objects and assume ring_count is 0
         ring_count = 0;
-        if (contours.size() > 0) {
+        if (rects.size() > 0) {
 
             // Retrieve widest (closest) rect
-            List<MatOfPoint> widest_contours = findNWidestContours(3, contours);
-            MatOfPoint widest_contour = widest_contours.get(0);
-            Rect widest_rect = boundingRect(widest_contour);
+            List<Rect> widest_rects = sortRectsByMaxOption(3, VisionUtils.RECT_OPTION.WIDTH, rects);
+            Rect widest_rect = widest_rects.get(0);
 
             // Calculate error
             int center_x = widest_rect.x + (widest_rect.width / 2);
@@ -118,14 +130,11 @@ public class RingFinderPipe extends OpenCvPipeline
             // Update ring count
             ring_count = (widest_rect.height < (0.5 * widest_rect.width)) ? 1 : 4;
 
-            // Get distance to ring
-            double distance2Ring = getDistance2Object(widest_rect.height, RING_HEIGHT);
-
             // Box 3 closest rings
-            for (MatOfPoint cnt : widest_contours){
-                Rect rect = boundingRect(cnt);
+            for (Rect rect : widest_rects){
                 rectangle(output, rect, color, thickness);
             }
+
 
 
             /*
@@ -170,8 +179,6 @@ public class RingFinderPipe extends OpenCvPipeline
                 cnt.release();
             }
         }
-
-        if (widest_rect != null) widest_rect.release();
     }
 
     public int getRingCount(){

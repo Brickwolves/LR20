@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.Vision;
 
-import org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
@@ -30,8 +29,9 @@ import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.goalW
 import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.multTelemetry;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.IMG_HEIGHT;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.IMG_WIDTH;
-import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.findNLargestContours;
+import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.RECT_OPTION.AREA;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.pixels2Degrees;
+import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.sortRectsByMaxOption;
 import static org.opencv.core.Core.inRange;
 import static org.opencv.core.CvType.CV_8U;
 import static org.opencv.imgproc.Imgproc.CHAIN_APPROX_SIMPLE;
@@ -59,7 +59,6 @@ public class GoalFinderPipe extends OpenCvPipeline {
     private Mat modified = new Mat();
     private Mat output = new Mat();
     private Mat hierarchy = new Mat();
-    private List<MatOfPoint> new_contours;
     private List<MatOfPoint> contours;
 
     // Thresholding values
@@ -112,11 +111,19 @@ public class GoalFinderPipe extends OpenCvPipeline {
         }
         goalFound = true;
 
+        // Retrive all rects
+        List<Rect> rects = new ArrayList<>();
+        for (int i=0; i < contours.size(); i++){
+            Rect rect = boundingRect(contours.get(i));
+            rects.add(rect);
+        }
+        if (rects.size() == 0) return output;
+
         // Retrieve goal contours
-        new_contours = findNLargestContours(2, contours);
+        List<Rect> largest_rects = sortRectsByMaxOption(2, AREA, rects);
 
         // Get goalRectangle
-        goalRect = calcGoalRect(new_contours);
+        goalRect = calcGoalRect(largest_rects);
         rectangle(output, goalRect, color, thickness);
 
 
@@ -170,20 +177,20 @@ public class GoalFinderPipe extends OpenCvPipeline {
         return final_rpm;
     }
 
-    private Rect calcGoalRect(List<MatOfPoint> contours) {
+    private Rect calcGoalRect(List<Rect> rects) {
 
         // Return first contour if there is only one
-        Rect goalRect = boundingRect(contours.get(0));
+        Rect goalRect = rects.get(0);
 
         // Extrapolate overarching rectangle if there are two
-        if (contours.size() == 2) {
+        if (rects.size() == 2) {
 
             // Init coords of both rectangles
             Rect left = new Rect(0, 0, 0, 0);
             Rect right = new Rect(0, 0, 0, 0);
 
             // Get bounding rects of second rectangle
-            Rect secondRect = boundingRect(contours.get(1));
+            Rect secondRect = rects.get(1);
 
             // Check second rect is within goal width
             int diff = abs(goalRect.x - secondRect.x);

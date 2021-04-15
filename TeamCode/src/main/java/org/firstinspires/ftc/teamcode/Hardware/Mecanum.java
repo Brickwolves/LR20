@@ -183,10 +183,33 @@ public class Mecanum implements Robot {
     * @return
     */
    @RequiresApi(api = Build.VERSION_CODES.N)
-   public static double findClosestAngle(double targetAngle, double currentAngle){
+   public static double findClosestAngle(double targetAngle, double currentAngle) {
       double simpleTargetDelta = floorMod(Math.round(((360 - targetAngle) + currentAngle) * 1e6), Math.round(360.000 * 1e6)) / 1e6;
       double alternateTargetDelta = -1 * (360 - simpleTargetDelta);
       return StrictMath.abs(simpleTargetDelta) <= StrictMath.abs(alternateTargetDelta) ? currentAngle - simpleTargetDelta : currentAngle - alternateTargetDelta;
+   }
+
+   /**
+    * @param currentAngle
+    * @return
+    */
+   @RequiresApi(api = Build.VERSION_CODES.N)
+   public static double findClosestAngleNearGoal(double currentAngle){
+
+      double MOE = 20;
+      double a1 = 180 - MOE;
+      double a2 = 180 + MOE;
+
+      double simpleTargetDelta1 = floorMod(Math.round(((360 - a1) + currentAngle) * 1e6), Math.round(360.000 * 1e6)) / 1e6;
+      double alternateTargetDelta1 = -1 * (360 - simpleTargetDelta1);
+      double min1 = min(abs(simpleTargetDelta1), abs(alternateTargetDelta1));
+
+      double simpleTargetDelta2 = floorMod(Math.round(((360 - a2) + currentAngle) * 1e6), Math.round(360.000 * 1e6)) / 1e6;
+      double alternateTargetDelta2 = -1 * (360 - simpleTargetDelta2);
+      double min2 = min(abs(simpleTargetDelta2), abs(alternateTargetDelta2));
+
+      double final_angle = (min1 > min2) ? a2 : a1;
+      return findClosestAngle(final_angle, currentAngle);
    }
 
    public static Point shift(double x, double y, double shiftAngle){
