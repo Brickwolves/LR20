@@ -260,7 +260,6 @@ public class Zeta extends LinearOpMode {
                 if (aimTarget == GOAL){
                     VisionUtils.webcam.setPipeline(goalFinder);
                     if (goalFinder.isGoalFound()){
-
                         rpm = goalFinder.getRPM();
                         degree_error = goalFinder.getDegreeError();
                         locked_direction = findClosestAngle(robot.imu.getAngle() + degree_error, robot.imu.getAngle());
@@ -274,7 +273,7 @@ public class Zeta extends LinearOpMode {
 
                 double error_to_goal = (abs(robot.imu.getModAngle()) - 180);
                 if (error_to_goal > 20){
-                    locked_direction = findClosestAngleNearGoal(robot.imu.getAngle());
+                    locked_direction = findClosestAngle(180, robot.imu.getAngle());
                 }
                 multTelemetry.addData("Error to 180", error_to_goal);
 
