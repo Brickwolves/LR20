@@ -51,6 +51,7 @@ public class RingFinderPipe extends OpenCvPipeline
     // Constants
     private int ring_count = 0;
     private double degrees_error = 0;
+    private Rect ringRect = new Rect(0, 0, 0, 0);
 
     // Init mats here so we don't repeat
     private Mat modified = new Mat();
@@ -119,6 +120,7 @@ public class RingFinderPipe extends OpenCvPipeline
             // Retrieve widest (closest) rect
             List<Rect> widest_rects = sortRectsByMaxOption(3, VisionUtils.RECT_OPTION.WIDTH, rects);
             Rect widest_rect = widest_rects.get(0);
+            ringRect = widest_rect;
 
             // Calculate error
             int center_x = widest_rect.x + (widest_rect.width / 2);
@@ -169,6 +171,11 @@ public class RingFinderPipe extends OpenCvPipeline
 
         // Return altered image
         return output;
+    }
+
+    public double getDistance2Ring(){
+        double pixels_subtended = ringRect.y - 120;
+        return 0;
     }
 
     public void releaseAllCaptures(){

@@ -15,6 +15,13 @@ public class VisionUtils {
     public static final double FOCAL_LENGTH = 1;
     public static final double RING_HEIGHT = 20;
     public static final double SENSOR_HEIGHT = 1;
+    public static double PS_LEFT_DIST = 41.5;
+    public static double PS_MIDDLE_DIST = 64;
+    public static double PS_RIGHT_DIST = 80;
+
+    public enum PowerShot {
+        PS_LEFT, PS_MIDDLE, PS_RIGHT
+    }
 
     public static double getDistance2Object(double object_pixel_height, double object_height) {
         if (object_pixel_height == 0) return 0;

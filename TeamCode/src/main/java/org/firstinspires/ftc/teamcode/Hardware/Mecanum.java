@@ -10,6 +10,7 @@ import org.firstinspires.ftc.teamcode.Navigation.Odometry;
 import org.firstinspires.ftc.teamcode.Navigation.Orientation;
 import org.firstinspires.ftc.teamcode.Navigation.Point;
 import org.firstinspires.ftc.teamcode.Utilities.MathUtils;
+import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
 import org.firstinspires.ftc.teamcode.Utilities.PID.PID;
 import org.firstinspires.ftc.teamcode.Utilities.SyncTask;
 import static com.qualcomm.robotcore.util.Range.clip;
@@ -124,32 +125,31 @@ public class Mecanum implements Robot {
       bl.setPower((drive - strafe + turn) * velocity);
    }
 
+
+
+
    /**
     * @param position
     * @param distance
     * @param acceleration
     * @return
     */
-   public static double powerRamp(double position, double distance, double acceleration){
-      /**
-       * The piece wise function has domain restriction [0, inf] and range restriction [0, 1]
-       * Simply returns a proportional constant
+   public static double powerRamp(double position, double distance, double acceleration, double maxVelocity){
+      /*
+       *  The piece wise function has domain restriction [0, inf] and range restriction [0, 1]
+       *  Simply returns a proportional constant
        */
 
 
-      position = abs(position);
-      distance = abs(distance);
-      acceleration = abs(acceleration);
-
-      position += 2;
-      double normFactor = 1 / sqrt(0.1 * distance);
+      // Constant to map power to [0, 1]
+      double normFactor = maxVelocity / Math.sqrt(acceleration * distance);
 
       // Modeling a piece wise of power as a function of distance
-      double p1 = normFactor * sqrt(acceleration * position);
-      double p2 = 1;
-      double p3 = normFactor * (sqrt(acceleration * abs(distance - position)));
-      double power = min(min(p1, p2), p3);
-      power = clip(power, 0.1, 1);
+      double p1       = normFactor * Math.sqrt(acceleration * position);
+      double p2       = maxVelocity;
+      double p3       = normFactor * (Math.sqrt(acceleration * (distance - position)));
+      double power    = Math.min(Math.min(p1, p2), p3) + 0.1;
+      power           = clip(power, 0.1, 1);
 
       return power;
    }
@@ -212,6 +212,7 @@ public class Mecanum implements Robot {
       return findClosestAngle(final_angle, currentAngle);
    }
 
+
    public static Point shift(double x, double y, double shiftAngle){
       double shiftedX = (x * Math.sin(toRadians(shiftAngle))) + (y * cos(toRadians(shiftAngle)));
       double shiftedY = (x * Math.cos(toRadians(shiftAngle))) - (y * sin(toRadians(shiftAngle)));
@@ -238,7 +239,7 @@ public class Mecanum implements Robot {
    }
 
    public double getYComp(){
-      return (fr.getCurrentPosition() + fl.getCurrentPosition() + br.getCurrentPosition() + bl.getCurrentPosition()) / 4.0;
+      return (fr.getCurrentPosition() + fl.getCurrentPosition() + br.getCurrentPosition() + bl.getCurrentPosition()) / -4.0;
    }
 
    public double eurekaSub(double x){
@@ -251,11 +252,6 @@ public class Mecanum implements Robot {
       return x + toRadians(c2) * sin(4 * x - 0.2);
    }
 
-
-
-
-
-
    public void linearStrafe(Point dest, double acceleration, SyncTask task){
 
       // Initialize starter variables
@@ -263,7 +259,6 @@ public class Mecanum implements Robot {
       //double ticks = convertInches2Ticks(inches);
 
       // Convert to NORTH=0, to NORTH=90 like  unit circle, and also to radians
-      dest.y *= -1;
       Orientation startO = odom.getOrientation();
       Orientation curO = new Orientation(startO.x, startO.y, startO.a);
       double distX = dest.x - startO.x;
@@ -278,23 +273,23 @@ public class Mecanum implements Robot {
       double power;
       double maxPower = 1;
       double px0 = cos(targetRadians);                  // Fill out power to a max of 1
-      double py0 = sin(targetRadians);                  // Fill out power to a max of 1
+      double py0 = sin(targetRadians) * -1;                  // Fill out power to a max of 1
       double normalizeToPower = maxPower / max(abs(px0), abs(py0));
       px0 *= normalizeToPower;
       py0 *= normalizeToPower;
       double pr0 = 0;
 
       double curC = 0;
-      while (curC < distC && isActive()){
+      while (curC < distC && OpModeUtils.isActive()){
 
          // Execute task synchronously
          if (task != null) task.execute();
 
          // Power ramping
-         power = powerRamp(curC, distC, acceleration);
+         power = powerRamp(curC, distC, acceleration, maxPower);
 
          // PID CONTROLLER
-         pr0 = clip(rotationPID.update(startO.a - imu.getAngle()) * -1, -1, 1);
+         pr0 = clip(rotationPID.update(90 - imu.getAngle()) * -1, -1, 1);
 
          // SHIFT POWER
          Point shiftedPowers = shift(px0, py0, curO.a % 360);
@@ -324,14 +319,12 @@ public class Mecanum implements Robot {
     * @param angle
     */
    public void linearStrafe(double angle, double distance, double acceleration, SyncTask task) {
+
       double r = angle * PI / 180.0;
-      Point dest = new Point(distance * cos(r), distance * sin(r) * -1);
+      Orientation curO = odom.getOrientation();
+      Point dest = new Point(distance * cos(r) + curO.x, ((distance * sin(r)) + curO.y));
       linearStrafe(dest, acceleration, task);
    }
-
-
-
-
 
 
 
@@ -361,7 +354,7 @@ public class Mecanum implements Robot {
 
          //              Power Ramping            //
          powerRampPosition = MathUtils.map(current_angle, startAngle, actual_target_angle, 0, startDeltaAngle);
-         power = powerRamp(powerRampPosition, startDeltaAngle, 0.1);
+         power = powerRamp(powerRampPosition, startDeltaAngle, 0.1, 1);
 
 
          //turn = (turn > 0) ? Range.clip(turn, 0.1, 1) : Range.clip(turn, -1, -0.1);
@@ -420,7 +413,7 @@ public class Mecanum implements Robot {
 
          //              Power Ramping            //
          powerRampPosition = MathUtils.map(current_angle, startAngle, actual_target_angle, 0, startDeltaAngle);
-         power = powerRamp(powerRampPosition, startDeltaAngle, acceleration);
+         power = powerRamp(powerRampPosition, startDeltaAngle, acceleration, 1);
 
 
          //        Set Power                 //

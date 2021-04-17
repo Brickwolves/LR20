@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Vision;
 
+import org.firstinspires.ftc.teamcode.Hardware.Mecanum;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
@@ -12,9 +13,13 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.Math.atan2;
 import static java.lang.Math.tan;
+import static java.lang.StrictMath.PI;
 import static java.lang.StrictMath.abs;
+import static java.lang.StrictMath.cos;
 import static java.lang.StrictMath.pow;
+import static java.lang.StrictMath.sin;
 import static java.lang.StrictMath.sqrt;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.MAX_H;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.MAX_S;
@@ -29,6 +34,9 @@ import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.goalW
 import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.multTelemetry;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.IMG_HEIGHT;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.IMG_WIDTH;
+import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.PS_LEFT_DIST;
+import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.PS_MIDDLE_DIST;
+import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.PS_RIGHT_DIST;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.RECT_OPTION.AREA;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.pixels2Degrees;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.sortRectsByMaxOption;
@@ -51,9 +59,10 @@ public class GoalFinderPipe extends OpenCvPipeline {
     private boolean viewportPaused;
 
 
-    private double degree_error = 0;
+    private double goalDegreeError = 0;
     private boolean goalFound = false;
-    private Rect goalRect;
+    private Rect goalRect = new Rect(0, 0, 0, 0);
+    private double goalDistance;
 
     // Init mats here so we don't repeat
     private Mat modified = new Mat();
@@ -126,18 +135,12 @@ public class GoalFinderPipe extends OpenCvPipeline {
         goalRect = calcGoalRect(largest_rects);
         rectangle(output, goalRect, color, thickness);
 
+        goalDistance = getDistance2Goal();
 
         // Calculate RPM
-        double opp = 240 - goalRect.y + 10;
-        double thetaRads = opp / 240 * 0.75;
-        double goalDistance = (90 / tan(thetaRads) + 20) / 100;
-
         double numerator = 9.8 * pow(goalDistance, 3);
         double denominator = (0.79 * goalDistance) - 1.185;
         final_rpm = 250 * sqrt(numerator / denominator);
-        multTelemetry.addData("Goal Distance", goalDistance);
-        multTelemetry.addData("RPM", final_rpm);
-
 
 
         // Calculate error
@@ -145,7 +148,7 @@ public class GoalFinderPipe extends OpenCvPipeline {
         int center_y = goalRect.y + (goalRect.height / 2);
         Point center = new Point(center_x, center_y);
         double pixel_error = (IMG_WIDTH / 2) - center_x;
-        degree_error = pixels2Degrees(pixel_error) + 3;
+        goalDegreeError = pixels2Degrees(pixel_error) + 3;
         line(output, center, new Point(center_x + pixel_error, center_y), new Scalar(0, 0, 255), thickness);
 
 
@@ -154,7 +157,7 @@ public class GoalFinderPipe extends OpenCvPipeline {
         //putText(output, coords, center, font, 0.5, color);
 
         Point text_center = new Point(5, IMG_HEIGHT - 50);
-        putText(output, "Degree Error: " + degree_error, text_center, font, 0.4, new Scalar(255, 255, 0));
+        putText(output, "Degree Error: " + goalDegreeError, text_center, font, 0.4, new Scalar(255, 255, 0));
         putText(output, "Pixel Error: " + pixel_error, new Point(5, IMG_HEIGHT - 40), font, 0.4, new Scalar(255, 255, 0));
 
 
@@ -221,8 +224,15 @@ public class GoalFinderPipe extends OpenCvPipeline {
         return goalRect;
     }
 
-    public double getDegreeError(){
-        return degree_error;
+    public double getGoalDegreeError(){
+        return goalDegreeError;
+    }
+
+    public double getDistance2Goal(){
+        if (goalRect.y == 0) return 0;
+        double opp = 240 - goalRect.y + 10;
+        double thetaRads = opp / 240 * 0.75;
+        return (90 / tan(thetaRads) + 20) / 100;
     }
 
     public void releaseAllCaptures(){

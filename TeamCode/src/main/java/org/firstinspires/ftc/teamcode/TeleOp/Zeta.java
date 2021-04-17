@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.Autonomous.DetectorTests.GoalFinder;
 import org.firstinspires.ftc.teamcode.Hardware.Arm;
 import org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls;
 import org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls;
@@ -23,9 +24,11 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import static java.lang.Math.abs;
-import static java.lang.Math.tan;
-import static java.lang.StrictMath.pow;
+import static java.lang.Math.atan2;
+import static java.lang.StrictMath.PI;
+import static java.lang.StrictMath.cos;
 import static java.lang.StrictMath.round;
+import static java.lang.StrictMath.sin;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Shooter.ps_rpm;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Shooter.goal_rpm;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.DOWN;
@@ -50,10 +53,12 @@ import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.Value.SHIFTED_X;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.Value.X;
 import static org.firstinspires.ftc.teamcode.Hardware.Mecanum.findClosestAngle;
-import static org.firstinspires.ftc.teamcode.Hardware.Mecanum.findClosestAngleNearGoal;
 import static org.firstinspires.ftc.teamcode.TeleOp.Zeta.Target.GOAL;
 import static org.firstinspires.ftc.teamcode.TeleOp.Zeta.Target.POWERSHOTS;
 import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.multTelemetry;
+import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.PS_LEFT_DIST;
+import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.PS_MIDDLE_DIST;
+import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.PS_RIGHT_DIST;
 
 
 @TeleOp(name = "Zeta TeleOp", group="Linear TeleOp")
@@ -66,9 +71,8 @@ public class Zeta extends LinearOpMode {
 
     // Camera stuff
     private GoalFinderPipe goalFinder = new GoalFinderPipe();
-    private PSFinderPipe psFinder = new PSFinderPipe();
     private Target aimTarget = GOAL;
-    private PSFinderPipe.PS powerShot = PSFinderPipe.PS.RIGHT;
+    private VisionUtils.PowerShot powerShot = VisionUtils.PowerShot.PS_RIGHT;
     public enum Target {
         GOAL, POWERSHOTS
     }
@@ -147,10 +151,33 @@ public class Zeta extends LinearOpMode {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         VisionUtils.webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam"), cameraMonitorViewId);
 
-        VisionUtils.webcam.setPipeline(psFinder);
+        VisionUtils.webcam.setPipeline(goalFinder);
         VisionUtils.webcam.openCameraDeviceAsync(() -> VisionUtils.webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT));
     }
 
+
+    public double getPSDegreeError(VisionUtils.PowerShot powerShot){
+        double dY = goalFinder.getDistance2Goal() * 100 * cos((robot.imu.getModAngle() - goalFinder.getGoalDegreeError() + 90) * (PI / 180));
+        double dX = goalFinder.getDistance2Goal() * 100 * sin((robot.imu.getModAngle() - goalFinder.getGoalDegreeError() + 90) * (PI / 180));
+        double dD;
+        switch (powerShot) {
+            case PS_LEFT:
+                dD = dX - PS_LEFT_DIST;
+                break;
+            case PS_MIDDLE:
+                dD = dX - PS_MIDDLE_DIST;
+                break;
+            case PS_RIGHT:
+                dD = dX - PS_RIGHT_DIST;
+                break;
+            default:
+                dD = 0;
+        }
+        multTelemetry.addData("dX", dX);
+        multTelemetry.addData("dY", dY);
+        multTelemetry.addData("dD", dD);
+        return ((180 / PI) * atan2(dD, dY) - 90);
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -235,48 +262,50 @@ public class Zeta extends LinearOpMode {
             if (BC2.get(DPAD_DN, TOGGLE)) robot.intake.armUp();
             else robot.intake.armDown();
 
+
             // Square toggles aiming at goal or powershots
-            double rpm;
-            if (BC2.get(SQUARE, TOGGLE)){
-                aimTarget = POWERSHOTS;
-                rpm = ps_rpm;
-            }
-            else {
-                aimTarget = GOAL;
-                rpm = goal_rpm;
-            }
+            if (BC2.get(SQUARE, TOGGLE))    aimTarget = POWERSHOTS;
+            else                            aimTarget = GOAL;
+
+            // Get degree error and correct
+            double rpm = goalFinder.getRPM();
+            double errorToGoal = (abs(robot.imu.getModAngle()) - 180);
+            double goalDegreeError;
+            double powerShotDegreeError;
+            goalDegreeError = goalFinder.getGoalDegreeError();
+            powerShotDegreeError = getPSDegreeError(powerShot);
+            multTelemetry.addData("Goal Error", goalDegreeError);
+            multTelemetry.addData("PowerShot Error", powerShotDegreeError);
+            multTelemetry.addData("180 Error", errorToGoal);
+            multTelemetry.addData("RPM", rpm);
+
+
+            // Slow down the robot
+            velocity = 0.5;
 
             // SHOOTER
             robot.shooter.feederState(BC2.get(RB2, DOWN));
             if (BC2.get(CIRCLE, TOGGLE)) {
-
                 robot.intake.armDown();
 
-                // Slow down the robot
-                velocity = 0.5;
-
-                // Get degree error and correct
-                double degree_error = 0;
-                if (aimTarget == GOAL){
-                    VisionUtils.webcam.setPipeline(goalFinder);
-                    if (goalFinder.isGoalFound()){
+                // Check if Goal is found, if not, set RPM to default, and orient nearby goal
+                if (errorToGoal > 30) {
+                    locked_direction = findClosestAngle(180, robot.imu.getAngle());
+                    rpm = 3400;
+                }
+                else {
+                    // Choose correct target
+                    if (aimTarget == GOAL){
+                        locked_direction = findClosestAngle(robot.imu.getAngle() + goalDegreeError, robot.imu.getAngle());
                         rpm = goalFinder.getRPM();
-                        degree_error = goalFinder.getDegreeError();
-                        locked_direction = findClosestAngle(robot.imu.getAngle() + degree_error, robot.imu.getAngle());
+                    }
+                    else {
+                        locked_direction = findClosestAngle(powerShotDegreeError, robot.imu.getAngle());
+                        rpm = goalFinder.getRPM() - 300;
                     }
                 }
-                else if (aimTarget == POWERSHOTS){
-                    VisionUtils.webcam.setPipeline(psFinder);
-                    degree_error = psFinder.getPSError(powerShot);
-                    locked_direction = findClosestAngle(robot.imu.getAngle() + degree_error, robot.imu.getAngle());
-                }
 
-                double error_to_goal = (abs(robot.imu.getModAngle()) - 180);
-                if (error_to_goal > 20){
-                    locked_direction = findClosestAngle(180, robot.imu.getAngle());
-                }
-                multTelemetry.addData("Error to 180", error_to_goal);
-
+                // Set the RPM
                 robot.shooter.setRPM(rpm);
             }
             else robot.shooter.setPower(0);
@@ -315,27 +344,28 @@ public class Zeta extends LinearOpMode {
 
             //            POWER SHOT INCREMENT          //
             if (BC1.get(RB1, TAP)){
-                if (powerShot == PSFinderPipe.PS.LEFT){
-                    powerShot = PSFinderPipe.PS.MIDDLE;
+                if (powerShot == VisionUtils.PowerShot.PS_LEFT){
+                    powerShot = VisionUtils.PowerShot.PS_MIDDLE;
                 }
-                else if (powerShot == PSFinderPipe.PS.MIDDLE){
-                    powerShot = PSFinderPipe.PS.RIGHT;
+                else if (powerShot == VisionUtils.PowerShot.PS_MIDDLE){
+                    powerShot = VisionUtils.PowerShot.PS_RIGHT;
                 }
-                else if (powerShot == PSFinderPipe.PS.RIGHT){
-                    powerShot = PSFinderPipe.PS.LEFT;
+                else if (powerShot == VisionUtils.PowerShot.PS_RIGHT){
+                    powerShot = VisionUtils.PowerShot.PS_LEFT;
                 }
             }
             else if (BC1.get(LB1, TAP)) {
-                if (powerShot == PSFinderPipe.PS.LEFT){
-                    powerShot = PSFinderPipe.PS.RIGHT;
+                if (powerShot == VisionUtils.PowerShot.PS_LEFT){
+                    powerShot = VisionUtils.PowerShot.PS_RIGHT;
                 }
-                else if (powerShot == PSFinderPipe.PS.MIDDLE){
-                    powerShot = PSFinderPipe.PS.LEFT;
+                else if (powerShot == VisionUtils.PowerShot.PS_MIDDLE){
+                    powerShot = VisionUtils.PowerShot.PS_LEFT;
                 }
-                else if (powerShot == PSFinderPipe.PS.RIGHT){
-                    powerShot =PSFinderPipe.PS.MIDDLE;
+                else if (powerShot == VisionUtils.PowerShot.PS_RIGHT){
+                    powerShot = VisionUtils.PowerShot.PS_MIDDLE;
                 }
             }
+            if (BC1.get(RB1, TAP) || BC1.get(LB1, TAP)) locked_direction = findClosestAngle(powerShotDegreeError, robot.imu.getAngle());
 
 
 
@@ -361,7 +391,9 @@ public class Zeta extends LinearOpMode {
 
                                                     */
 
-            if (abs(locked_direction) % 90 == 0) turn *= 0.5;
+            // Rounded angle
+            double rounded_locked = round(abs(locked_direction) % 90);
+            if (rounded_locked == 0) turn *= 0.5;
             robot.setDrivePower(drive, strafe, turn, velocity);
 
 
@@ -377,6 +409,7 @@ public class Zeta extends LinearOpMode {
             multTelemetry.addData("Aim Target", aimTarget);
             multTelemetry.addData("Angle", robot.imu.getAngle());
             multTelemetry.addData("Locked Angle", locked_direction);
+            multTelemetry.addData("Rounded Locked Angle", rounded_locked);
 
 
             multTelemetry.addLine("--HARDWARE-------------------------------------");

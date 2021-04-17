@@ -51,7 +51,7 @@ public class GoalFinder extends LinearOpMode
         OpModeUtils.multTelemetry.update();
         waitForStart();
 
-        double degree_error = goalFinder.getDegreeError();
+        double degree_error = goalFinder.getGoalDegreeError();
         double target_angle = robot.imu.getAngle() + degree_error;
 
         OpModeUtils.multTelemetry.addData("Status", "Turning to " + target_angle);
@@ -61,11 +61,11 @@ public class GoalFinder extends LinearOpMode
 
         while (opModeIsActive()){
 
-            degree_error = goalFinder.getDegreeError();
+            degree_error = goalFinder.getGoalDegreeError();
             double turn = robot.rotationPID.update(degree_error) * -1;
             robot.setDrivePower(0, 0, turn, 1);
 
-            OpModeUtils.multTelemetry.addData("Goal Error", goalFinder.getDegreeError());
+            OpModeUtils.multTelemetry.addData("Goal Error", goalFinder.getGoalDegreeError());
             OpModeUtils.multTelemetry.addData("FPS", String.format("%.2f", VisionUtils.webcam.getFps()));
             OpModeUtils.multTelemetry.update();
         }
