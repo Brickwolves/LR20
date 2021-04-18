@@ -156,28 +156,6 @@ public class Zeta extends LinearOpMode {
     }
 
 
-    public double getPSDegreeError(VisionUtils.PowerShot powerShot){
-        double dY = goalFinder.getDistance2Goal() * 100 * cos((robot.imu.getModAngle() - goalFinder.getGoalDegreeError() + 90) * (PI / 180));
-        double dX = goalFinder.getDistance2Goal() * 100 * sin((robot.imu.getModAngle() - goalFinder.getGoalDegreeError() + 90) * (PI / 180));
-        double dD;
-        switch (powerShot) {
-            case PS_LEFT:
-                dD = dX - PS_LEFT_DIST;
-                break;
-            case PS_MIDDLE:
-                dD = dX - PS_MIDDLE_DIST;
-                break;
-            case PS_RIGHT:
-                dD = dX - PS_RIGHT_DIST;
-                break;
-            default:
-                dD = 0;
-        }
-        multTelemetry.addData("dX", dX);
-        multTelemetry.addData("dY", dY);
-        multTelemetry.addData("dD", dD);
-        return ((180 / PI) * atan2(dD, dY) - 90);
-    }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -271,11 +249,11 @@ public class Zeta extends LinearOpMode {
             double rpm = goalFinder.getRPM();
             double errorToGoal = (abs(robot.imu.getModAngle()) - 180);
             double goalDegreeError;
-            double powerShotDegreeError;
+            double powerShotFieldAngle;
             goalDegreeError = goalFinder.getGoalDegreeError();
-            powerShotDegreeError = getPSDegreeError(powerShot);
+            powerShotFieldAngle = goalFinder.getPSDegreeError(powerShot, robot.imu.getAngle());
             multTelemetry.addData("Goal Error", goalDegreeError);
-            multTelemetry.addData("PowerShot Error", powerShotDegreeError);
+            multTelemetry.addData("PowerShot Field Angle", powerShotFieldAngle);
             multTelemetry.addData("180 Error", errorToGoal);
             multTelemetry.addData("RPM", rpm);
 
@@ -300,7 +278,7 @@ public class Zeta extends LinearOpMode {
                         rpm = goalFinder.getRPM();
                     }
                     else {
-                        locked_direction = findClosestAngle(powerShotDegreeError, robot.imu.getAngle());
+                        locked_direction = findClosestAngle(powerShotFieldAngle, robot.imu.getAngle());
                         rpm = goalFinder.getRPM() - 300;
                     }
                 }
@@ -309,6 +287,7 @@ public class Zeta extends LinearOpMode {
                 robot.shooter.setRPM(rpm);
             }
             else robot.shooter.setPower(0);
+
 
 
 
@@ -365,7 +344,8 @@ public class Zeta extends LinearOpMode {
                     powerShot = VisionUtils.PowerShot.PS_MIDDLE;
                 }
             }
-            if (BC1.get(RB1, TAP) || BC1.get(LB1, TAP)) locked_direction = findClosestAngle(powerShotDegreeError, robot.imu.getAngle());
+            powerShotFieldAngle = goalFinder.getPSDegreeError(powerShot, robot.imu.getAngle());
+            if (BC1.get(RB1, TAP) || BC1.get(LB1, TAP)) locked_direction = findClosestAngle(powerShotFieldAngle, robot.imu.getAngle());
 
 
 

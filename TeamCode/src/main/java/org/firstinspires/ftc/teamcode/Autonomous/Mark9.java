@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Autonomous.DetectorTests;
+package org.firstinspires.ftc.teamcode.Autonomous;
 
 import android.os.Build;
 
@@ -11,19 +11,25 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls;
 import org.firstinspires.ftc.teamcode.Hardware.Mecanum;
 import org.firstinspires.ftc.teamcode.Hardware.Sensors.IMU;
+import org.firstinspires.ftc.teamcode.Navigation.Orientation;
+import org.firstinspires.ftc.teamcode.Navigation.Point;
 import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
 import org.firstinspires.ftc.teamcode.Vision.RingFinderPipe;
 import org.firstinspires.ftc.teamcode.Vision.VisionUtils;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement.a;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement.x;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement.y;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.DOWN;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.CROSS;
 import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.multTelemetry;
 
-@Autonomous(name="RingFinder", group="Autonomous Linear Opmode")
-public class RingFinder extends LinearOpMode
+@Autonomous(name="Mark9", group="Autonomous Linear Opmode")
+public class Mark9 extends LinearOpMode
 {
     private RingFinderPipe ringFinder = new RingFinderPipe();
-    public static IMU imu;
     private Mecanum robot;
     private ButtonControls BC;
 
@@ -42,6 +48,20 @@ public class RingFinder extends LinearOpMode
         VisionUtils.webcam.openCameraDeviceAsync(() -> VisionUtils.webcam.startStreaming((int) VisionUtils.IMG_WIDTH, (int) VisionUtils.IMG_HEIGHT, OpenCvCameraRotation.UPRIGHT));
     }
 
+    public void BREAKPOINT(){
+        ButtonControls.update();
+        Orientation curO = robot.odom.getOrientation();
+        while (!BC.get(CROSS, DOWN)){
+
+            ButtonControls.update();
+
+            multTelemetry.addData("X", curO.x);
+            multTelemetry.addData("Y", curO.y);
+            multTelemetry.addData("A", curO.a);
+            multTelemetry.update();
+        }
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void runOpMode()
@@ -53,31 +73,14 @@ public class RingFinder extends LinearOpMode
         multTelemetry.update();
         waitForStart();
 
-        double degree_error = ringFinder.getRingAngle();
-        double target_angle = robot.imu.getAngle() + degree_error;
-        double ringFieldAngle = target_angle - 180;
-        double ringDistance = ringFinder.getDistance2Ring();
+        if (opModeIsActive()){
 
-        multTelemetry.addData("Status", "Turning to " + target_angle);
-        multTelemetry.update();
+            BREAKPOINT();
 
-        robot.linearTurn(ringFieldAngle, 0.05);
+            robot.linearStrafe(new Point(x, y), a, null);
 
-        while (opModeIsActive()){
+            BREAKPOINT();
 
-            multTelemetry.addData("Initial DegError", degree_error);
-            multTelemetry.addData("Target Angle", target_angle);
-            multTelemetry.addData("ringFieldAngle", ringFieldAngle);
-            multTelemetry.addData("ringDistance", ringDistance);
-
-
-            /*
-            multTelemetry.addData("Ring Distance", ringFinder.getDistance2Ring());
-            multTelemetry.addData("Ring Count", ringFinder.getRingCount());
-             */
-
-            multTelemetry.addData("FPS", String.format("%.2f", VisionUtils.webcam.getFps()));
-            multTelemetry.update();
         }
-    }
+   }
 }

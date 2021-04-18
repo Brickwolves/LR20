@@ -15,6 +15,8 @@ import java.util.List;
 
 import static java.lang.Math.atan2;
 import static java.lang.Math.tan;
+import static java.lang.Math.toDegrees;
+import static java.lang.Math.toRadians;
 import static java.lang.StrictMath.PI;
 import static java.lang.StrictMath.abs;
 import static java.lang.StrictMath.cos;
@@ -172,6 +174,46 @@ public class GoalFinderPipe extends OpenCvPipeline {
 
     }
 
+    public double getPSDegreeError(VisionUtils.PowerShot powerShot, double curAngle){
+        if (!isGoalFound()) return 0;
+        double g = goalDistance;
+        double alpha = (curAngle % 360);
+        double angle2Turn2Goal = (alpha + goalDegreeError);
+        double theta = toRadians(angle2Turn2Goal - 180);
+        double x = g * cos(theta);
+        double y = g * sin(theta);
+        double d;
+        switch (powerShot) {
+            case PS_LEFT:
+                d = PS_LEFT_DIST - y;
+                break;
+            case PS_MIDDLE:
+                d = PS_MIDDLE_DIST - y;
+                break;
+            case PS_RIGHT:
+                d = PS_RIGHT_DIST - y;
+                break;
+            default:
+                d = 0;
+        }
+        // Note: gamma < 0 always
+        double gamma = toDegrees(atan2(d, x));
+        double powerShotFieldAngle = 180 - gamma;
+
+
+        multTelemetry.addData("Angle2Turn2Goal", angle2Turn2Goal);
+        multTelemetry.addData("theta", toDegrees(theta));
+        multTelemetry.addData("g", g);
+        multTelemetry.addData("x", x);
+        multTelemetry.addData("y", y);
+        multTelemetry.addData("d", d);
+        multTelemetry.addData("gamma", gamma);
+        multTelemetry.addData("PSFieldAngle", powerShotFieldAngle);
+        multTelemetry.addData("PSError", curAngle - powerShotFieldAngle);
+
+        return powerShotFieldAngle;
+    }
+
     public Rect getGoalRect(){
         return  goalRect;
     }
@@ -225,14 +267,20 @@ public class GoalFinderPipe extends OpenCvPipeline {
     }
 
     public double getGoalDegreeError(){
-        return goalDegreeError;
+        if (isGoalFound()){
+            return goalDegreeError;
+        }
+        return 0;
     }
 
     public double getDistance2Goal(){
-        if (goalRect.y == 0) return 0;
-        double opp = 240 - goalRect.y + 10;
-        double thetaRads = opp / 240 * 0.75;
-        return (90 / tan(thetaRads) + 20) / 100;
+        if (isGoalFound()){
+            if (goalRect.y == 0) return 0;
+            double opp = 240 - goalRect.y + 10;
+            double thetaRads = opp / 240 * 0.75;
+            return (90 / tan(thetaRads) + 20) / 100;
+        }
+        return 0;
     }
 
     public void releaseAllCaptures(){

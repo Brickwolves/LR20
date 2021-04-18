@@ -15,9 +15,11 @@ public class VisionUtils {
     public static final double FOCAL_LENGTH = 1;
     public static final double RING_HEIGHT = 20;
     public static final double SENSOR_HEIGHT = 1;
-    public static double PS_LEFT_DIST = 41.5;
-    public static double PS_MIDDLE_DIST = 64;
-    public static double PS_RIGHT_DIST = 80;
+    public static double PS_LEFT_DIST = 0.415;
+    public static double PS_MIDDLE_DIST = 0.64;
+    public static double PS_RIGHT_DIST = 0.80;
+    public static final double CAMERA_HEIGHT = 0.19;
+    // Note: All measurements in meters
 
     public enum PowerShot {
         PS_LEFT, PS_MIDDLE, PS_RIGHT
