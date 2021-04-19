@@ -2,10 +2,11 @@ package org.firstinspires.ftc.teamcode.Hardware;
 
 import android.os.Build;
 import androidx.annotation.RequiresApi;
-import com.qualcomm.robotcore.hardware.*;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import org.firstinspires.ftc.teamcode.Hardware.Sensors.IMU;
 import org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement;
+import org.firstinspires.ftc.teamcode.Hardware.Sensors.IMU;
 import org.firstinspires.ftc.teamcode.Navigation.Odometry;
 import org.firstinspires.ftc.teamcode.Navigation.Orientation;
 import org.firstinspires.ftc.teamcode.Navigation.Point;
@@ -26,13 +27,9 @@ import static java.lang.StrictMath.sin;
 import static java.lang.StrictMath.sqrt;
 import static java.lang.StrictMath.toDegrees;
 import static java.lang.StrictMath.toRadians;
-import static org.firstinspires.ftc.teamcode.Hardware.Mecanum.PSState.*;
-import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.centimeters2Ticks;
 import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.hardwareMap;
 import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.isActive;
 import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.multTelemetry;
-import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.convertInches2Ticks;
-import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.map;
 import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.ticks2Centimeters;
 
 
@@ -49,15 +46,6 @@ public class Mecanum implements Robot {
 
    public PID rotationPID = new PID(Dash_Movement.p, Dash_Movement.i, Dash_Movement.d, 0, 100, true);
    public ElapsedTime time = new ElapsedTime();
-
-   public enum Units {
-      TICKS, INCHES, FEET
-   }
-
-   public enum PSState {
-      LEFT, CENTER, RIGHT, TURNING_CENTER, TURNING_LEFT, END
-   }
-   public PSState current_ps_state = RIGHT;
 
    public Mecanum(){
       initRobot();
@@ -104,9 +92,6 @@ public class Mecanum implements Robot {
       br.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
    }
 
-   /**
-    * @param power
-    */
    @Override
    public void setAllPower(double power){
       fl.setPower(power);
@@ -115,11 +100,6 @@ public class Mecanum implements Robot {
       br.setPower(power);
    }
 
-   /**
-    * @param drive
-    * @param strafe
-    * @param turn
-    */
    public void setDrivePower(double drive, double strafe, double turn, double velocity) {
       fr.setPower((drive - strafe - turn) * velocity);
       fl.setPower((drive + strafe + turn) * velocity);
@@ -127,27 +107,19 @@ public class Mecanum implements Robot {
       bl.setPower((drive - strafe + turn) * velocity);
    }
 
-
-
-
-   /**
-    * @param position
-    * @param distance
-    * @param acceleration
-    * @return
-    */
    public static double powerRamp(double position, double distance, double acceleration){
       /*
        *  The piece wise function has domain restriction [0, inf] and range restriction [0, 1]
        *  Simply returns a proportional constant
        */
 
-      double maxPower = (distance > 1000) ? 1 : (1.0/1000.0) * distance;
+      double a = 1;
+      double relativePosition = (position / distance) * 10; // Mapped on [0, 10]
 
       // Modeling a piece wise of power as a function of distance
-      double p1       = sqrt(acceleration * position);
-      double p2       = maxPower;
-      double p3       = (sqrt(acceleration * (distance - position)));
+      double p1       = sqrt(acceleration * relativePosition);
+      double p2       = 1;
+      double p3       = (sqrt(acceleration * (10 - relativePosition)));
       double power    = min(min(p1, p2), p3) + 0.1;
       power           = clip(power, 0.1, 1);
 
@@ -432,84 +404,5 @@ public class Mecanum implements Robot {
          multTelemetry.update();
       }
       setAllPower(0);
-   }
-
-
-
-
-
-
-   @RequiresApi(api = Build.VERSION_CODES.N)
-   public void turnPowerShot(double MOE, SyncTask syncTask) {
-
-      double current_angle = imu.getAngle();
-      double turn_direction = 0;
-      double power = 0;
-      double actual_target_angle, error, pid_return;
-
-
-      //          STATE MACHINE           //
-      switch (current_ps_state){
-
-         case RIGHT:
-            if (shooter.getFeederCount() < 1) shooter.feederState(true);
-            else current_ps_state = TURNING_CENTER;
-            multTelemetry.addData("Status", "Shooting RIGHT");
-            break;
-
-
-         case TURNING_CENTER:
-            actual_target_angle = findClosestAngle(88, current_angle);
-            error = actual_target_angle - current_angle;
-            turn_direction = (rotationPID.update(error) * -1 > 0) ? 1 : -1;
-            power = 0.2;
-
-            //    DRIVE IF WE HAVEN'T REACHED TARGET     //
-            if (Math.abs(error) > MOE) power = 0.2;
-            else {
-               current_ps_state = CENTER;
-               shooter.setFeederCount(0);
-            }
-
-            multTelemetry.addData("Finished Turning CENTER", (Math.abs(error) <= MOE));
-            break;
-
-
-         case CENTER:
-            power = 0;
-            if (shooter.getFeederCount() < 1) shooter.feederState(true);
-            else current_ps_state = TURNING_LEFT;
-            multTelemetry.addData("Status", "Shooting CENTER");
-            break;
-
-
-         case TURNING_LEFT:
-
-            actual_target_angle = findClosestAngle(92, current_angle);
-            error = actual_target_angle - current_angle;
-            pid_return = rotationPID.update(error) * -1;
-            turn_direction = (pid_return > 0) ? 1 : -1;
-            power = 0.2;
-
-            //    DRIVE IF WE HAVEN'T REACHED TARGET     //
-            if (Math.abs(error) > MOE) power = 0.2;
-            else {
-               shooter.setFeederCount(0);
-               current_ps_state = CENTER;
-            }
-
-            multTelemetry.addData("Finished Turning LEFT", (Math.abs(error) <= MOE));
-            break;
-
-         case LEFT:
-            power = 0;
-            if (shooter.getFeederCount() < 1) shooter.feederState(true);
-            else current_ps_state = END;
-
-            multTelemetry.addData("Status", "Shooting LEFT");
-            break;
-      }
-
-      setDrivePower(0, 0, turn_direction, power);
    }
 }

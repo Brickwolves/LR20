@@ -58,6 +58,11 @@ public class OpModeUtils {
         System.out.println(str);
     }
 
+    public enum Units {
+        TICKS, INCHES, FEET, CENTIMETERS
+    }
+
+
     public static double lessThan1000TicksToCentimeters(double ticks){
         return (0.0748 * pow(ticks, 2)) + (.677 * ticks) + 87.3;
     }

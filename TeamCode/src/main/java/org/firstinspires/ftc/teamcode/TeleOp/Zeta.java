@@ -10,27 +10,19 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.Autonomous.DetectorTests.GoalFinder;
 import org.firstinspires.ftc.teamcode.Hardware.Arm;
 import org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls;
 import org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls;
 import org.firstinspires.ftc.teamcode.Hardware.Mecanum;
 import org.firstinspires.ftc.teamcode.Utilities.PID.RingBuffer;
 import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
-import org.firstinspires.ftc.teamcode.Vision.GoalFinderPipe;
-import org.firstinspires.ftc.teamcode.Vision.PSFinderPipe;
+import org.firstinspires.ftc.teamcode.Vision.AimBotPipe;
 import org.firstinspires.ftc.teamcode.Vision.VisionUtils;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import static java.lang.Math.abs;
-import static java.lang.Math.atan2;
-import static java.lang.StrictMath.PI;
-import static java.lang.StrictMath.cos;
 import static java.lang.StrictMath.round;
-import static java.lang.StrictMath.sin;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Shooter.ps_rpm;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Shooter.goal_rpm;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.DOWN;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.TAP;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.TOGGLE;
@@ -56,9 +48,9 @@ import static org.firstinspires.ftc.teamcode.Hardware.Mecanum.findClosestAngle;
 import static org.firstinspires.ftc.teamcode.TeleOp.Zeta.Target.GOAL;
 import static org.firstinspires.ftc.teamcode.TeleOp.Zeta.Target.POWERSHOTS;
 import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.multTelemetry;
-import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.PS_LEFT_DIST;
-import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.PS_MIDDLE_DIST;
-import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.PS_RIGHT_DIST;
+import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.PowerShot.PS_LEFT;
+import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.PowerShot.PS_MIDDLE;
+import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.PowerShot.PS_RIGHT;
 
 
 @TeleOp(name = "Zeta TeleOp", group="Linear TeleOp")
@@ -70,9 +62,9 @@ public class Zeta extends LinearOpMode {
     private JoystickControls JC1;
 
     // Camera stuff
-    private GoalFinderPipe goalFinder = new GoalFinderPipe();
+    private AimBotPipe goalFinder = new AimBotPipe();
     private Target aimTarget = GOAL;
-    private VisionUtils.PowerShot powerShot = VisionUtils.PowerShot.PS_RIGHT;
+    private VisionUtils.PowerShot powerShot = PS_RIGHT;
     public enum Target {
         GOAL, POWERSHOTS
     }
@@ -240,31 +232,28 @@ public class Zeta extends LinearOpMode {
             if (BC2.get(DPAD_DN, TOGGLE)) robot.intake.armUp();
             else robot.intake.armDown();
 
-
             // Square toggles aiming at goal or powershots
             if (BC2.get(SQUARE, TOGGLE))    aimTarget = POWERSHOTS;
             else                            aimTarget = GOAL;
 
             // Get degree error and correct
-            double rpm = goalFinder.getRPM();
+            double rpm = goalFinder.calcRPM();
             double errorToGoal = (abs(robot.imu.getModAngle()) - 180);
-            double goalDegreeError;
-            double powerShotFieldAngle;
-            goalDegreeError = goalFinder.getGoalDegreeError();
-            powerShotFieldAngle = goalFinder.getPSDegreeError(powerShot, robot.imu.getAngle());
+            double goalDegreeError = goalFinder.getGoalDegreeError();
+            double powerShotFieldAngle = goalFinder.getPSDegreeError(powerShot, robot.imu.getAngle());
             multTelemetry.addData("Goal Error", goalDegreeError);
             multTelemetry.addData("PowerShot Field Angle", powerShotFieldAngle);
             multTelemetry.addData("180 Error", errorToGoal);
             multTelemetry.addData("RPM", rpm);
 
 
-            // Slow down the robot
-            velocity = 0.5;
-
             // SHOOTER
             robot.shooter.feederState(BC2.get(RB2, DOWN));
             if (BC2.get(CIRCLE, TOGGLE)) {
                 robot.intake.armDown();
+
+                // Slow down the robot
+                velocity = 0.5;
 
                 // Check if Goal is found, if not, set RPM to default, and orient nearby goal
                 if (errorToGoal > 30) {
@@ -275,15 +264,15 @@ public class Zeta extends LinearOpMode {
                     // Choose correct target
                     if (aimTarget == GOAL){
                         locked_direction = findClosestAngle(robot.imu.getAngle() + goalDegreeError, robot.imu.getAngle());
-                        rpm = goalFinder.getRPM();
+                        rpm = goalFinder.calcRPM();
                     }
                     else {
                         locked_direction = findClosestAngle(powerShotFieldAngle, robot.imu.getAngle());
-                        rpm = goalFinder.getRPM() - 300;
+                        rpm = 3200;
                     }
                 }
 
-                // Set the RPM
+                // Set the RPM  for some reason the RPM doesn't get set I think it's due to the goalFinder.getRPM() returning 0 or some other value
                 robot.shooter.setRPM(rpm);
             }
             else robot.shooter.setPower(0);
@@ -300,11 +289,13 @@ public class Zeta extends LinearOpMode {
 
             //           ABSOLUTE CONTROL MODE          //
             JC1.setShifted(RIGHT, (robot.imu.getAngle() - 90) % 360);
+            /*
             if (BC1.get(SQUARE, TAP) && !square_pressed) {
                 robot.imu.setOffsetAngle(-((robot.imu.getAngle() + 180) % 360));
                 robot.imu.resetDeltaAngle();
                 square_pressed = true;
             }
+             */
 
             //              DRIVER VALUES               //
             double drive = JC1.get(RIGHT, INVERT_SHIFTED_Y);
@@ -323,25 +314,25 @@ public class Zeta extends LinearOpMode {
 
             //            POWER SHOT INCREMENT          //
             if (BC1.get(RB1, TAP)){
-                if (powerShot == VisionUtils.PowerShot.PS_LEFT){
-                    powerShot = VisionUtils.PowerShot.PS_MIDDLE;
+                if (powerShot == PS_LEFT){
+                    powerShot = PS_MIDDLE;
                 }
-                else if (powerShot == VisionUtils.PowerShot.PS_MIDDLE){
-                    powerShot = VisionUtils.PowerShot.PS_RIGHT;
+                else if (powerShot == PS_MIDDLE){
+                    powerShot = PS_RIGHT;
                 }
-                else if (powerShot == VisionUtils.PowerShot.PS_RIGHT){
-                    powerShot = VisionUtils.PowerShot.PS_LEFT;
+                else if (powerShot == PS_RIGHT){
+                    powerShot = PS_LEFT;
                 }
             }
             else if (BC1.get(LB1, TAP)) {
-                if (powerShot == VisionUtils.PowerShot.PS_LEFT){
-                    powerShot = VisionUtils.PowerShot.PS_RIGHT;
+                if (powerShot == PS_LEFT){
+                    powerShot = PS_RIGHT;
                 }
-                else if (powerShot == VisionUtils.PowerShot.PS_MIDDLE){
-                    powerShot = VisionUtils.PowerShot.PS_LEFT;
+                else if (powerShot == PS_MIDDLE){
+                    powerShot = PS_LEFT;
                 }
-                else if (powerShot == VisionUtils.PowerShot.PS_RIGHT){
-                    powerShot = VisionUtils.PowerShot.PS_MIDDLE;
+                else if (powerShot == PS_RIGHT){
+                    powerShot = PS_MIDDLE;
                 }
             }
             powerShotFieldAngle = goalFinder.getPSDegreeError(powerShot, robot.imu.getAngle());
@@ -372,8 +363,8 @@ public class Zeta extends LinearOpMode {
                                                     */
 
             // Rounded angle
-            double rounded_locked = round(abs(locked_direction) % 90);
-            if (rounded_locked == 0) turn *= 0.5;
+            double rounded_locked = round(abs(locked_direction));
+            if ((rounded_locked % 90) == 0) turn *= 0.5;
             robot.setDrivePower(drive, strafe, turn, velocity);
 
 

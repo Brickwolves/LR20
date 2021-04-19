@@ -11,31 +11,26 @@ public class VisionUtils {
     public static OpenCvCamera webcam;
     public static double IMG_WIDTH = 320;
     public static double IMG_HEIGHT = 240;
-    public static final double FOV = 72;
-    public static final double FOCAL_LENGTH = 1;
-    public static final double RING_HEIGHT = 20;
-    public static final double SENSOR_HEIGHT = 1;
+    public static final double X_FOV = 72;
+    public static final double Y_FOV = 43;
     public static double PS_LEFT_DIST = 0.415;
     public static double PS_MIDDLE_DIST = 0.64;
     public static double PS_RIGHT_DIST = 0.80;
-    public static final double CAMERA_HEIGHT = 0.19;
+    public static final double BACK_WEBCAM_HEIGHT = 0.19;
     // Note: All measurements in meters
 
-    public enum PowerShot {
+    public static enum PowerShot {
         PS_LEFT, PS_MIDDLE, PS_RIGHT
     }
-
-    public static double getDistance2Object(double object_pixel_height, double object_height) {
-        if (object_pixel_height == 0) return 0;
-        return (FOCAL_LENGTH * object_height * IMG_HEIGHT) / (object_pixel_height * SENSOR_HEIGHT);
-    }
-
-    public static double pixels2Degrees(double pixels) {
-        return pixels * (FOV / IMG_WIDTH);
-    }
-
     public static enum RECT_OPTION {
         AREA, WIDTH, HEIGHT, X, Y
+    }
+    public static enum AXES {
+        X, Y
+    }
+
+    public static double pixels2Degrees(double pixels, AXES axe) {
+        return (axe == AXES.X) ? pixels * (X_FOV / IMG_WIDTH) : pixels * (Y_FOV / IMG_HEIGHT);
     }
 
     public static int getMaxIndex(List<Rect> rects, RECT_OPTION option){

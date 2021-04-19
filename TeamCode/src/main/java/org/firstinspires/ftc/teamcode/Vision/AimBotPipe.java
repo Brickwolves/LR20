@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.Vision;
 
-import org.firstinspires.ftc.teamcode.Hardware.Mecanum;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
@@ -9,15 +8,12 @@ import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import static java.lang.Math.atan2;
 import static java.lang.Math.tan;
 import static java.lang.Math.toDegrees;
 import static java.lang.Math.toRadians;
-import static java.lang.StrictMath.PI;
 import static java.lang.StrictMath.abs;
 import static java.lang.StrictMath.cos;
 import static java.lang.StrictMath.pow;
@@ -57,7 +53,7 @@ import static org.opencv.imgproc.Imgproc.line;
 import static org.opencv.imgproc.Imgproc.putText;
 import static org.opencv.imgproc.Imgproc.rectangle;
 
-public class GoalFinderPipe extends OpenCvPipeline {
+public class AimBotPipe extends OpenCvPipeline {
     private boolean viewportPaused;
 
 
@@ -79,17 +75,9 @@ public class GoalFinderPipe extends OpenCvPipeline {
     private Scalar color = new Scalar(255, 0, 255);
     private int thickness = 2;
     private int font = FONT_HERSHEY_COMPLEX;
-    private double final_rpm = 0;
-
-    public boolean isGoalFound(){
-        return goalFound;
-    }
 
     @Override
     public Mat processFrame(Mat input) {
-
-        // Rotate due to camera
-        //rotate(input, input, Core.ROTATE_90_CLOCKWISE);
 
         // Get height and width
         IMG_HEIGHT = input.rows();
@@ -122,7 +110,7 @@ public class GoalFinderPipe extends OpenCvPipeline {
         }
         goalFound = true;
 
-        // Retrive all rects
+        // Retrieve all rects
         List<Rect> rects = new ArrayList<>();
         for (int i=0; i < contours.size(); i++){
             Rect rect = boundingRect(contours.get(i));
@@ -130,19 +118,9 @@ public class GoalFinderPipe extends OpenCvPipeline {
         }
         if (rects.size() == 0) return output;
 
-        // Retrieve goal contours
+        // Retrieve goal contours and make into one large rectangle
         List<Rect> largest_rects = sortRectsByMaxOption(2, AREA, rects);
-
-        // Get goalRectangle
-        goalRect = calcGoalRect(largest_rects);
-        rectangle(output, goalRect, color, thickness);
-
-        goalDistance = getDistance2Goal();
-
-        // Calculate RPM
-        double numerator = 9.8 * pow(goalDistance, 3);
-        double denominator = (0.79 * goalDistance) - 1.185;
-        final_rpm = 250 * sqrt(numerator / denominator);
+        goalRect = mergeRects(largest_rects);
 
 
         // Calculate error
@@ -150,14 +128,12 @@ public class GoalFinderPipe extends OpenCvPipeline {
         int center_y = goalRect.y + (goalRect.height / 2);
         Point center = new Point(center_x, center_y);
         double pixel_error = (IMG_WIDTH / 2) - center_x;
-        goalDegreeError = pixels2Degrees(pixel_error) + 3;
+        goalDegreeError = pixels2Degrees(pixel_error, VisionUtils.AXES.X) + 3;
+        goalDistance = getDistance2Goal();
+
+        // Logging Shapes and Degree & Pixel Data
+        rectangle(output, goalRect, color, thickness);
         line(output, center, new Point(center_x + pixel_error, center_y), new Scalar(0, 0, 255), thickness);
-
-
-        // Log center
-        //String coords = "(" + center_x + ", " + center_y + ")";
-        //putText(output, coords, center, font, 0.5, color);
-
         Point text_center = new Point(5, IMG_HEIGHT - 50);
         putText(output, "Degree Error: " + goalDegreeError, text_center, font, 0.4, new Scalar(255, 255, 0));
         putText(output, "Pixel Error: " + pixel_error, new Point(5, IMG_HEIGHT - 40), font, 0.4, new Scalar(255, 255, 0));
@@ -173,6 +149,7 @@ public class GoalFinderPipe extends OpenCvPipeline {
         return output;
 
     }
+
 
     public double getPSDegreeError(VisionUtils.PowerShot powerShot, double curAngle){
         if (!isGoalFound()) return 0;
@@ -214,15 +191,32 @@ public class GoalFinderPipe extends OpenCvPipeline {
         return powerShotFieldAngle;
     }
 
+    public double calcRPM(){
+        double numerator = 9.8 * pow(goalDistance, 3);
+        double denominator = (0.79 * goalDistance) - 1.185;
+        return (denominator == 0) ? 0 : 250 * sqrt(numerator / denominator);
+    }
+
+    public boolean isGoalFound(){
+        return goalFound;
+    }
+
+    public double getGoalDegreeError(){
+        return (isGoalFound()) ? goalDegreeError : 0;
+    }
+
+    public double getDistance2Goal(){
+        if (!isGoalFound() || goalRect.y == 0) return 0;
+        double opp = 240 - goalRect.y + 10;
+        double thetaRads = opp / 240 * 0.75;
+        return (90 / tan(thetaRads) + 20) / 100;
+    }
+
     public Rect getGoalRect(){
         return  goalRect;
     }
 
-    public double getRPM(){
-        return final_rpm;
-    }
-
-    private Rect calcGoalRect(List<Rect> rects) {
+    private Rect mergeRects(List<Rect> rects) {
 
         // Return first contour if there is only one
         Rect goalRect = rects.get(0);
@@ -266,23 +260,6 @@ public class GoalFinderPipe extends OpenCvPipeline {
         return goalRect;
     }
 
-    public double getGoalDegreeError(){
-        if (isGoalFound()){
-            return goalDegreeError;
-        }
-        return 0;
-    }
-
-    public double getDistance2Goal(){
-        if (isGoalFound()){
-            if (goalRect.y == 0) return 0;
-            double opp = 240 - goalRect.y + 10;
-            double thetaRads = opp / 240 * 0.75;
-            return (90 / tan(thetaRads) + 20) / 100;
-        }
-        return 0;
-    }
-
     public void releaseAllCaptures(){
         modified.release();
         hierarchy.release();
@@ -295,8 +272,8 @@ public class GoalFinderPipe extends OpenCvPipeline {
 
     @Override
     public void onViewportTapped() {
-        viewportPaused = !viewportPaused;
-        if (viewportPaused)  VisionUtils.webcam.pauseViewport();
-        else                VisionUtils.webcam.resumeViewport();
+        viewportPaused =        !viewportPaused;
+        if (viewportPaused)     VisionUtils.webcam.pauseViewport();
+        else                    VisionUtils.webcam.resumeViewport();
     }
 }
