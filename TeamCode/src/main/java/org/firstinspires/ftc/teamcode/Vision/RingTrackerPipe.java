@@ -29,6 +29,7 @@ import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.IMG_WIDTH;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.pixels2Degrees;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.sortRectsByMaxOption;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.webcam;
+import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.AXES;
 import static org.opencv.core.Core.inRange;
 import static org.opencv.core.CvType.CV_8U;
 import static org.opencv.imgproc.Imgproc.CHAIN_APPROX_SIMPLE;
@@ -124,7 +125,7 @@ public class RingTrackerPipe extends OpenCvPipeline
             int center_y = widest_rect.y + (widest_rect.height / 2);
             Point center = new Point(center_x, center_y);
             double pixel_error = (IMG_WIDTH / 2) - center_x;
-            degrees_error = pixels2Degrees(pixel_error);
+            degrees_error = pixels2Degrees(pixel_error, AXES.X); //JAMIE HAD TO ADD THIS
 
             // Update ring count
             ring_count = (widest_rect.height < (0.5 * widest_rect.width)) ? 1 : 4;

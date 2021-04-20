@@ -9,11 +9,11 @@ public class Dash_GoalFinder {
     public static int MIN_H = 100;
     public static int MAX_H = 120;
 
-    public static int MIN_S = 165;
+    public static int MIN_S = 145;
     public static int MAX_S = 255;
 
     public static int MIN_V = 90;
-    public static int MAX_V = 200;
+    public static int MAX_V = 230;
 
     public static int blur = 5;
     public static int erode_const = 5;

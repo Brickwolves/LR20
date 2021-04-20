@@ -140,7 +140,7 @@ public class PSFinderPipe extends OpenCvPipeline {
 
             // Calculate error
             double pixel_error = (IMG_WIDTH / 2) - center_x;
-            degree_error = pixels2Degrees(pixel_error) + 5;
+            degree_error = pixels2Degrees(pixel_error, VisionUtils.AXES.X) + 5; //Had to add AXES.X HERE
             ps_errors[c] = degree_error;
 
             // Visually identify power shots
