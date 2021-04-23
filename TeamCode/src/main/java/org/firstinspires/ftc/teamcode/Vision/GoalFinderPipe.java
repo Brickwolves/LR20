@@ -200,17 +200,6 @@ public class GoalFinderPipe extends OpenCvPipeline {
         double gamma = toDegrees(atan2(d, x));
         double powerShotFieldAngle = 180 - gamma;
 
-
-        multTelemetry.addData("Angle2Turn2Goal", angle2Turn2Goal);
-        multTelemetry.addData("theta", toDegrees(theta));
-        multTelemetry.addData("g", g);
-        multTelemetry.addData("x", x);
-        multTelemetry.addData("y", y);
-        multTelemetry.addData("d", d);
-        multTelemetry.addData("gamma", gamma);
-        multTelemetry.addData("PSFieldAngle", powerShotFieldAngle);
-        multTelemetry.addData("PSError", curAngle - powerShotFieldAngle);
-
         return powerShotFieldAngle;
     }
 

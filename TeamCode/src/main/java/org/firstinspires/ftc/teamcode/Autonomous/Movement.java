@@ -24,10 +24,11 @@ import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement.x;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement.y;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.DOWN;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.CROSS;
+import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.centimeters2Ticks;
 import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.multTelemetry;
 
-@Autonomous(name="Mark9", group="Autonomous Linear Opmode")
-public class Mark9 extends LinearOpMode
+@Autonomous(name="Movement", group="Autonomous Linear Opmode")
+public class Movement extends LinearOpMode
 {
     private RingFinderPipe ringFinder = new RingFinderPipe();
     private Mecanum robot;
@@ -73,11 +74,18 @@ public class Mark9 extends LinearOpMode
         multTelemetry.update();
         waitForStart();
 
+
+        Point home = new Point(0,0);
+
         if (opModeIsActive()){
 
             BREAKPOINT();
 
-            robot.linearStrafe(new Point(x, y), a, null);
+            robot.linearStrafe(200, 100, 0.01, null);
+
+            BREAKPOINT();
+
+            robot.linearStrafe(home, 0.01, null);
 
             BREAKPOINT();
 

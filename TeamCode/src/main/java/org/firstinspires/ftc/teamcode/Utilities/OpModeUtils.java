@@ -63,12 +63,12 @@ public class OpModeUtils {
     }
 
 
-    public static double centimeters2Ticks(double centimeters){
-        return (21.6 * centimeters) - 991;
+    public static double centimeters2Ticks(double c){
+        return (0.118 * pow(c, 2)) + (3.66 * c) + 7;
     }
 
     public static double ticks2Centimeters(double ticks){
-        return (0.0463 * ticks) + 46;
+        return 0;
     }
 
     public static double convertInches2Ticks(double ticks){

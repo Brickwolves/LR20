@@ -7,7 +7,7 @@ public class Dash_Movement {
     public static double i = .0;
     public static double d = .003;
 
-    public static double x = -1000;
+    public static double x = 0;
     public static double y = 0;
-    public static double a = 0.05;
+    public static double a = 0.1;
 }

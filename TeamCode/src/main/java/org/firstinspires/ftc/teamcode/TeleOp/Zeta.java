@@ -252,19 +252,14 @@ public class Zeta extends LinearOpMode {
             double powerShotFieldAngle;
             goalDegreeError = goalFinder.getGoalDegreeError();
             powerShotFieldAngle = goalFinder.getPSDegreeError(powerShot, robot.imu.getAngle());
-            multTelemetry.addData("Goal Error", goalDegreeError);
-            multTelemetry.addData("PowerShot Field Angle", powerShotFieldAngle);
-            multTelemetry.addData("180 Error", errorToGoal);
-            multTelemetry.addData("RPM", rpm);
-
-
-            // Slow down the robot
-            velocity = 0.5;
 
             // SHOOTER
             robot.shooter.feederState(BC2.get(RB2, DOWN));
             if (BC2.get(CIRCLE, TOGGLE)) {
                 robot.intake.armDown();
+
+                // Slow down the robot
+                velocity = 0.5;
 
                 // Check if Goal is found, if not, set RPM to default, and orient nearby goal
                 if (errorToGoal > 30) {
@@ -300,11 +295,13 @@ public class Zeta extends LinearOpMode {
 
             //           ABSOLUTE CONTROL MODE          //
             JC1.setShifted(RIGHT, (robot.imu.getAngle() - 90) % 360);
+            /*
             if (BC1.get(SQUARE, TAP) && !square_pressed) {
                 robot.imu.setOffsetAngle(-((robot.imu.getAngle() + 180) % 360));
                 robot.imu.resetDeltaAngle();
                 square_pressed = true;
             }
+             */
 
             //              DRIVER VALUES               //
             double drive = JC1.get(RIGHT, INVERT_SHIFTED_Y);
@@ -322,28 +319,10 @@ public class Zeta extends LinearOpMode {
             else if (BC1.get(DPAD_DN, DOWN)) locked_direction       = findClosestAngle(270, robot.imu.getAngle());
 
             //            POWER SHOT INCREMENT          //
-            if (BC1.get(RB1, TAP)){
-                if (powerShot == VisionUtils.PowerShot.PS_LEFT){
-                    powerShot = VisionUtils.PowerShot.PS_MIDDLE;
-                }
-                else if (powerShot == VisionUtils.PowerShot.PS_MIDDLE){
-                    powerShot = VisionUtils.PowerShot.PS_RIGHT;
-                }
-                else if (powerShot == VisionUtils.PowerShot.PS_RIGHT){
-                    powerShot = VisionUtils.PowerShot.PS_LEFT;
-                }
-            }
-            else if (BC1.get(LB1, TAP)) {
-                if (powerShot == VisionUtils.PowerShot.PS_LEFT){
-                    powerShot = VisionUtils.PowerShot.PS_RIGHT;
-                }
-                else if (powerShot == VisionUtils.PowerShot.PS_MIDDLE){
-                    powerShot = VisionUtils.PowerShot.PS_LEFT;
-                }
-                else if (powerShot == VisionUtils.PowerShot.PS_RIGHT){
-                    powerShot = VisionUtils.PowerShot.PS_MIDDLE;
-                }
-            }
+            if (BC1.get(SQUARE, DOWN)) powerShot = VisionUtils.PowerShot.PS_LEFT;
+            else if (BC1.get(TRIANGLE, DOWN)) powerShot = VisionUtils.PowerShot.PS_MIDDLE;
+            else if (BC1.get(CIRCLE, DOWN)) powerShot = VisionUtils.PowerShot.PS_RIGHT;
+
             powerShotFieldAngle = goalFinder.getPSDegreeError(powerShot, robot.imu.getAngle());
             if (BC1.get(RB1, TAP) || BC1.get(LB1, TAP)) locked_direction = findClosestAngle(powerShotFieldAngle, robot.imu.getAngle());
 
@@ -372,7 +351,7 @@ public class Zeta extends LinearOpMode {
                                                     */
 
             // Rounded angle
-            double rounded_locked = round(abs(locked_direction) % 90);
+            double rounded_locked = round(abs(locked_direction)) % 90;
             if (rounded_locked == 0) turn *= 0.5;
             robot.setDrivePower(drive, strafe, turn, velocity);
 
