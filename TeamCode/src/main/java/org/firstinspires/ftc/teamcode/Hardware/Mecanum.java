@@ -49,6 +49,7 @@ public class Mecanum implements Robot {
    public Claw claw;
    public Intake intake;
    public Shooter shooter;
+   public Wings wings;
 
    public PID rotationPID = new PID(Dash_Movement.p, Dash_Movement.i, Dash_Movement.d, 0, 100, true);
    public ElapsedTime time = new ElapsedTime();
@@ -84,6 +85,7 @@ public class Mecanum implements Robot {
       arm = new Arm("eservo_0");
       intake = new Intake("intake", "cservo_2", "cservo_4");
       shooter = new Shooter("spinny_1", "spinny_2", "cservo_1", "cservo_0");
+      wings = new Wings("cservo_3", "cservo_5");
    }
 
 
@@ -237,12 +239,12 @@ public class Mecanum implements Robot {
       return x + toRadians(c2) * sin(4 * x - 0.2);
    }
 
-   public void linearStrafe(double angle, double cm, double acceleration, SyncTask task) {
+   public void linearStrafe(double angle, double cm, double acceleration, double targetAngle, SyncTask task) {
 
       resetMotors();
 
       double strafeAngle = toRadians(angle);
-      double ticks = centimeters2Ticks(cm);
+      double ticks = cm; //centimeters2Ticks(cm);
 
       Orientation startO = odom.getOrientation();
       Orientation curO = odom.getOrientation();
@@ -267,7 +269,7 @@ public class Mecanum implements Robot {
          power = powerRamp(curC, ticks, acceleration);
 
          // PID CONTROLLER
-         pr0 = clip(rotationPID.update(startO.a - imu.getAngle()) * -1, -1, 1);
+         pr0 = clip(rotationPID.update(targetAngle - imu.getAngle()) * -1, -1, 1);
 
          // SHIFT POWER
          Point shiftedPowers = shift(px0, py0, curO.a % 360);
@@ -294,35 +296,39 @@ public class Mecanum implements Robot {
    }
 
 
-   public void linearStrafe(Point dest, double acceleration, SyncTask task){
+   public void linearStrafe(Orientation destination, double acceleration, SyncTask task){
 
       // Initialize starter variables
       resetMotors();
-      dest.y *= -1;     // NO IDEA WHY
+
+      destination.y *= -1;     // NO IDEA WHY
+
+      /*
       dest.x = (dest.x > 0) ? centimeters2Ticks(dest.x) : -centimeters2Ticks(abs(dest.x));
       dest.y = (dest.y > 0) ? centimeters2Ticks(dest.y): -centimeters2Ticks(abs(dest.y));
 
       dest.x = (dest.x == 7) ? 0 : dest.x;
       dest.y = (dest.y == 7) ? 0 : dest.y;
+       */
 
-      // Convert to NORTH=0, to NORTH=90 like  unit circle, and also to radians
+      // Retrieve current positions
       Orientation startO = odom.getOrientation();
       Orientation curO = new Orientation(startO.x, startO.y, startO.a);
-      double distX = dest.x - startO.x;
-      double distY = dest.y - startO.y;
+
+      // Calculate distances to travel
+      double distX = destination.x - startO.x;
+      double distY = destination.y - startO.y;
       double distC = sqrt(pow(distX, 2) + pow(distY, 2));
 
       // Calculate strafe angle
-      double strafeAngle = correctTargetRadians(atan2(distY, distX));
-      //double strafeAngle = atan2(distY, distX);
+      double strafeAngle = correctTargetRadians(atan2(distY, distX)); //double strafeAngle = atan2(distY, distX);
 
-      // Take whichever is the highest number and find what you need to multiply it by to get 1 (which is the max power)
-      // The yPower and xPower should maintain the same ratio with each other
-      double power;
-      double px0 = cos(strafeAngle);                        // Fill out power to a max of 1
-      double py0 = sin(strafeAngle);                        // Fill out power to a max of 1
-      double pr0 = 0;
+      // Calculate powers to move
+      double px0 = cos(strafeAngle);
+      double py0 = sin(strafeAngle);
+      double pr = 0;
 
+      // Logging
       print("DISTX: " + distX);
       print("DISTY: " + distY);
       print("PX: " + px0);
@@ -336,27 +342,21 @@ public class Mecanum implements Robot {
          // Execute task synchronously
          if (task != null) task.execute();
 
-         // Power ramping
-         power = powerRamp(curC, distC, acceleration);
-
-         // PID CONTROLLER
-         pr0 = clip(rotationPID.update(startO.a - imu.getAngle()) * -1, -1, 1);
-
-         // SHIFT POWER
-         Point shiftedPowers = shift(px0, py0, curO.a % 360);
-
-         // Un-shift X and Y distances traveled
+         // Get current position
          Point relPos = unShift(getXComp(), getYComp(), curO.a % 360);
          curO.x = relPos.x + startO.x;
          curO.y = relPos.y + startO.y;
          curO.a = imu.getAngle();
          curC = sqrt(pow(relPos.x, 2) + pow(relPos.y, 2));
 
-         // SET POWER
-         setDrivePower(shiftedPowers.y, shiftedPowers.x, pr0, power);
+
+         // Set Driver Power
+         double power = powerRamp(curC, distC, acceleration);
+         Point shiftedPowers = shift(px0, py0, curO.a % 360);
+         pr = clip(rotationPID.update(destination.a - imu.getAngle()) * -1, -1, 1);
+         setDrivePower(shiftedPowers.y, shiftedPowers.x, pr, power);
 
          // LOGGING
-         //System.out.println("atan2(y, x): " + toDegrees(atan2(curO.y, curO.x)));
          multTelemetry.addData("Power", power);
          multTelemetry.addData("curC", curC);
          multTelemetry.addData("distC", distC);
@@ -427,7 +427,6 @@ public class Mecanum implements Robot {
    @RequiresApi(api = Build.VERSION_CODES.N)
    public void linearTurn(double target_angle, double MOE, double acceleration, SyncTask task) {
 
-      double startTime = System.currentTimeMillis();
       double turn_direction, pid_return, power, powerRampPosition;
 
 
@@ -471,84 +470,5 @@ public class Mecanum implements Robot {
          multTelemetry.update();
       }
       setAllPower(0);
-   }
-
-
-
-
-
-
-   @RequiresApi(api = Build.VERSION_CODES.N)
-   public void turnPowerShot(double MOE, SyncTask syncTask) {
-
-      double current_angle = imu.getAngle();
-      double turn_direction = 0;
-      double power = 0;
-      double actual_target_angle, error, pid_return;
-
-
-      //          STATE MACHINE           //
-      switch (current_ps_state){
-
-         case RIGHT:
-            if (shooter.getFeederCount() < 1) shooter.feederState(true);
-            else current_ps_state = TURNING_CENTER;
-            multTelemetry.addData("Status", "Shooting RIGHT");
-            break;
-
-
-         case TURNING_CENTER:
-            actual_target_angle = findClosestAngle(88, current_angle);
-            error = actual_target_angle - current_angle;
-            turn_direction = (rotationPID.update(error) * -1 > 0) ? 1 : -1;
-            power = 0.2;
-
-            //    DRIVE IF WE HAVEN'T REACHED TARGET     //
-            if (Math.abs(error) > MOE) power = 0.2;
-            else {
-               current_ps_state = CENTER;
-               shooter.setFeederCount(0);
-            }
-
-            multTelemetry.addData("Finished Turning CENTER", (Math.abs(error) <= MOE));
-            break;
-
-
-         case CENTER:
-            power = 0;
-            if (shooter.getFeederCount() < 1) shooter.feederState(true);
-            else current_ps_state = TURNING_LEFT;
-            multTelemetry.addData("Status", "Shooting CENTER");
-            break;
-
-
-         case TURNING_LEFT:
-
-            actual_target_angle = findClosestAngle(92, current_angle);
-            error = actual_target_angle - current_angle;
-            pid_return = rotationPID.update(error) * -1;
-            turn_direction = (pid_return > 0) ? 1 : -1;
-            power = 0.2;
-
-            //    DRIVE IF WE HAVEN'T REACHED TARGET     //
-            if (Math.abs(error) > MOE) power = 0.2;
-            else {
-               shooter.setFeederCount(0);
-               current_ps_state = CENTER;
-            }
-
-            multTelemetry.addData("Finished Turning LEFT", (Math.abs(error) <= MOE));
-            break;
-
-         case LEFT:
-            power = 0;
-            if (shooter.getFeederCount() < 1) shooter.feederState(true);
-            else current_ps_state = END;
-
-            multTelemetry.addData("Status", "Shooting LEFT");
-            break;
-      }
-
-      setDrivePower(0, 0, turn_direction, power);
    }
 }

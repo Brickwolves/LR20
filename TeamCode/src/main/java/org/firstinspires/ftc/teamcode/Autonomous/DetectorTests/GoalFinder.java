@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls;
 import org.firstinspires.ftc.teamcode.Hardware.Mecanum;
 import org.firstinspires.ftc.teamcode.Hardware.Sensors.IMU;
 import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
-import org.firstinspires.ftc.teamcode.Vision.GoalFinderPipe;
+import org.firstinspires.ftc.teamcode.Vision.AimBotPipe;
 import org.firstinspires.ftc.teamcode.Vision.VisionUtils;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -19,7 +19,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 @Autonomous(name="GoalFinder", group="Autonomous Linear Opmode")
 public class GoalFinder extends LinearOpMode
 {
-    private GoalFinderPipe goalFinder = new GoalFinderPipe();
+    private AimBotPipe goalFinder = new AimBotPipe();
     public static IMU imu;
     private Mecanum robot;
     private ButtonControls BC;

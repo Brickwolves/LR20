@@ -5,18 +5,17 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
 
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Servos.IN_POS;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Servos.OUT_POS;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Servos.UP2_POS;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Servos.UP_POS;
 import static org.firstinspires.ftc.teamcode.Hardware.Arm.STATUS.*;
 
 public class Arm {
 
     private Servo servo;
 
-    private final static double SERVO_ARM_HOME = 0.9;
-    private final static double OUT_POS = 0.0;
-    private final static double UP2_POS = 0.59;
-    private final static double UP_POS = 0.7;
-    private final static double IN_POS = 0.9;
-    private STATUS status = IN;
+    private STATUS status = UP;
 
     public enum STATUS {
         OUT,
@@ -28,7 +27,7 @@ public class Arm {
     public Arm(String id) {
         servo = OpModeUtils.hardwareMap.get(Servo.class, id);
         servo.setDirection(Servo.Direction.FORWARD);
-        servo.setPosition(IN_POS);
+        servo.setPosition(UP_POS);
     }
 
     public void setArmPosition(double position){
@@ -54,10 +53,6 @@ public class Arm {
     public void out() {
         servo.setPosition(OUT_POS);
         status = OUT;
-    }
-
-    public void shutdown(){
-        servo.setPosition(SERVO_ARM_HOME);
     }
 
     public void setPosition(double position){

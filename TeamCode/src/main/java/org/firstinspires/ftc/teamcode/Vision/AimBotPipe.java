@@ -57,7 +57,7 @@ import static org.opencv.imgproc.Imgproc.line;
 import static org.opencv.imgproc.Imgproc.putText;
 import static org.opencv.imgproc.Imgproc.rectangle;
 
-public class GoalFinderPipe extends OpenCvPipeline {
+public class AimBotPipe extends OpenCvPipeline {
     private boolean viewportPaused;
 
 

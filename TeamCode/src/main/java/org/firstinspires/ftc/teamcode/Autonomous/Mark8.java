@@ -5,6 +5,7 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -28,6 +29,7 @@ import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.In
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Shooter.goal_rpm;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_StackDetector.ring_count;
 
+@Disabled
 @Autonomous(name="MarkVIII", group="Autonomous Linear Opmode")
 public class Mark8 extends LinearOpMode {
 

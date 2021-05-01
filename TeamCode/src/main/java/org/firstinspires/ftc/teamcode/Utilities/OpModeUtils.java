@@ -11,6 +11,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import static java.lang.Math.floorMod;
 import static java.lang.Math.pow;
+import static java.lang.Math.sqrt;
 
 public class OpModeUtils {
 
@@ -68,7 +69,14 @@ public class OpModeUtils {
     }
 
     public static double ticks2Centimeters(double ticks){
-        return 0;
+        double rootTerm = 4 * 0.118 * (7 - ticks);
+        if (rootTerm < 0) return 0;
+
+        double numer = sqrt(pow(3.66, 2) - rootTerm);
+        double denom = 2 * 0.118;
+        double answ1 = (-3.66 + numer) / denom;
+        double answ2 = (-3.66 - numer) / denom;
+        return (answ1 > 0) ? answ1 : answ2;
     }
 
     public static double convertInches2Ticks(double ticks){
