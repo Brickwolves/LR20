@@ -24,14 +24,14 @@ import static org.firstinspires.ftc.teamcode.DashConstants.Dash_RingFinder.blur;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_RingFinder.dilate_const;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_RingFinder.erode_const;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_RingFinder.horizonLineRatio;
-import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.CAMERA_HEIGHT;
+import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.BACK_WEBCAM_HEIGHT;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.IMG_HEIGHT;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.IMG_WIDTH;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.pixels2Degrees;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.sortRectsByMaxOption;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.webcam;
+import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.AXES;
 import static org.opencv.core.Core.inRange;
-import static org.opencv.core.Core.rotate;
 import static org.opencv.core.CvType.CV_8U;
 import static org.opencv.imgproc.Imgproc.CHAIN_APPROX_SIMPLE;
 import static org.opencv.imgproc.Imgproc.FONT_HERSHEY_COMPLEX;
@@ -46,7 +46,7 @@ import static org.opencv.imgproc.Imgproc.line;
 import static org.opencv.imgproc.Imgproc.putText;
 import static org.opencv.imgproc.Imgproc.rectangle;
 
-public class RingFinderPipe extends OpenCvPipeline
+public class RingTrackerPipe extends OpenCvPipeline
 {
     private boolean viewportPaused;
 
@@ -126,7 +126,7 @@ public class RingFinderPipe extends OpenCvPipeline
             int center_y = widest_rect.y + (widest_rect.height / 2);
             Point center = new Point(center_x, center_y);
             double pixel_error = (IMG_WIDTH / 2) - center_x;
-            degrees_error = pixels2Degrees(pixel_error);
+            degrees_error = pixels2Degrees(pixel_error, AXES.X); //JAMIE HAD TO ADD THIS
 
             // Update ring count
             ring_count = (widest_rect.height < (0.5 * widest_rect.width)) ? 1 : 4;
@@ -178,7 +178,7 @@ public class RingFinderPipe extends OpenCvPipeline
     public double getDistance2Ring(){
         double pixelsSubtendedByRing = ringRect.y + ringRect.height;
         double radiansSubtendedByRing = pixelsSubtendedByRing * (0.75 / 240);
-        double outputDistance = CAMERA_HEIGHT / tan(radiansSubtendedByRing) * 100;
+        double outputDistance = BACK_WEBCAM_HEIGHT / tan(radiansSubtendedByRing) * 100;
         double correctedDistance =  (1.03855 * outputDistance) + 1.51779;
         return correctedDistance;
     }

@@ -9,23 +9,18 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.Autonomous.DetectorTests.GoalFinder;
 import org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls;
 import org.firstinspires.ftc.teamcode.Hardware.Mecanum;
 import org.firstinspires.ftc.teamcode.Navigation.Orientation;
-import org.firstinspires.ftc.teamcode.Navigation.Point;
 import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
 import org.firstinspires.ftc.teamcode.Vision.AimBotPipe;
-import org.firstinspires.ftc.teamcode.Vision.RingFinderPipe;
+import org.firstinspires.ftc.teamcode.Vision.RingTrackerPipe;
 import org.firstinspires.ftc.teamcode.Vision.VisionUtils;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import static java.lang.Math.abs;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement.ACCELERATION;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement.ANGLE;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement.D_TICKS;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Shooter.goal_rpm;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.DOWN;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.CROSS;
 import static org.firstinspires.ftc.teamcode.Hardware.Mecanum.findClosestAngle;
@@ -34,7 +29,7 @@ import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.multTelemetry
 @Autonomous(name="Mark 9", group="Autonomous Linear Opmode")
 public class Mark9 extends LinearOpMode
 {
-    private RingFinderPipe ringFinder = new RingFinderPipe();
+    private RingTrackerPipe ringFinder = new RingTrackerPipe();
     private AimBotPipe aimBot = new AimBotPipe();
     private Mecanum robot;
     private ButtonControls BC;
@@ -90,7 +85,7 @@ public class Mark9 extends LinearOpMode
     public double getPowerShotAngle(VisionUtils.PowerShot powerShot){
 
         // Get degree error and correct
-        double rpm = aimBot.getRPM();
+        double rpm = aimBot.calcRPM();
         double errorToGoal = (abs(robot.imu.getModAngle()) - 180);
         double goalDegreeError;
         double powerShotFieldAngle;

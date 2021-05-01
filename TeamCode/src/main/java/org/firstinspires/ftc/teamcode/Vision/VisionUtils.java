@@ -17,19 +17,11 @@ public class VisionUtils {
     public static double PS_MIDDLE_DIST = 0.64;
     public static double PS_RIGHT_DIST = 0.80;
     public static final double CAMERA_HEIGHT = 0.19;
+    public static final double BACK_WEBCAM_HEIGHT = 0.19;
     // Note: All measurements in meters
 
     public enum PowerShot {
         PS_LEFT, PS_MIDDLE, PS_RIGHT
-    }
-
-    public static double getDistance2Object(double object_pixel_height, double object_height) {
-        if (object_pixel_height == 0) return 0;
-        return (FOCAL_LENGTH * object_height * IMG_HEIGHT) / (object_pixel_height * SENSOR_HEIGHT);
-    }
-
-    public static double pixels2Degrees(double pixels) {
-        return pixels * (FOV / IMG_WIDTH);
     }
 
     public static enum RECT_OPTION {
