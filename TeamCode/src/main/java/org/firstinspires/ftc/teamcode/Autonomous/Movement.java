@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.Hardware.Mecanum;
 import org.firstinspires.ftc.teamcode.Navigation.Orientation;
 import org.firstinspires.ftc.teamcode.Navigation.Point;
 import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
-import org.firstinspires.ftc.teamcode.Vision.RingFinderPipe;
+import org.firstinspires.ftc.teamcode.Vision.RingTrackerPipe;
 import org.firstinspires.ftc.teamcode.Vision.VisionUtils;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -31,7 +31,7 @@ import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.multTelemetry
 @Autonomous(name="Movement", group="Autonomous Linear Opmode")
 public class Movement extends LinearOpMode
 {
-    private RingFinderPipe ringFinder = new RingFinderPipe();
+    private RingTrackerPipe ringFinder = new RingTrackerPipe();
     private Mecanum robot;
     private ButtonControls BC;
 

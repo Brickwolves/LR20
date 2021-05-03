@@ -74,8 +74,8 @@ public class Intake {
     }
 
     public void armDown(){
-        left_arm_servo.setPosition(INTAKE_ARM_LSERVO_MAX);
-        right_arm_servo.setPosition(INTAKE_ARM_RSERVO_MIN);
+        left_arm_servo.setPosition(INTAKE_ARM_LSERVO_HOME);
+        right_arm_servo.setPosition(INTAKE_ARM_RSERVO_HOME);
 
         if (left_arm_servo.getPosition() == INTAKE_ARM_LSERVO_MAX && right_arm_servo.getPosition() == INTAKE_ARM_RSERVO_MIN){
             status = STATUS.DOWN;

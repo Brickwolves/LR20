@@ -267,7 +267,7 @@ public class Zeta extends LinearOpMode {
             else                            aimTarget = GOAL;
 
             // Get degree error and correct
-            double rpm = aimBot.getRPM();
+            double rpm = aimBot.calcRPM();
             double errorToGoal = (abs(robot.imu.getModAngle()) - 180);
             double goalDegreeError;
             double powerShotFieldAngle;
@@ -291,11 +291,11 @@ public class Zeta extends LinearOpMode {
                     // Choose correct target
                     if (aimTarget == GOAL){
                         locked_direction = findClosestAngle(robot.imu.getAngle() + goalDegreeError, robot.imu.getAngle());
-                        rpm = aimBot.getRPM();
+                        rpm = aimBot.calcRPM();
                     }
                     else {
                         locked_direction = findClosestAngle(powerShotFieldAngle, robot.imu.getAngle());
-                        rpm = aimBot.getRPM() - 300;
+                        rpm = aimBot.calcRPM() - 300;
                     }
                 }
 

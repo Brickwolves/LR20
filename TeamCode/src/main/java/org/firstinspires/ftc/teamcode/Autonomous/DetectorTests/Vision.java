@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
-import org.firstinspires.ftc.teamcode.Vision.RingFinderPipe;
+import org.firstinspires.ftc.teamcode.Vision.RingTrackerPipe;
 import org.firstinspires.ftc.teamcode.Vision.VisionUtils;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -33,7 +33,7 @@ public class Vision extends LinearOpMode
     public void setUpWebcam(){
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         VisionUtils.webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam2"), cameraMonitorViewId);
-        VisionUtils.webcam.setPipeline(new RingFinderPipe());
+        VisionUtils.webcam.setPipeline(new RingTrackerPipe());
         VisionUtils.webcam.openCameraDeviceAsync(() -> VisionUtils.webcam.startStreaming((int) VisionUtils.IMG_WIDTH, (int) VisionUtils.IMG_HEIGHT, OpenCvCameraRotation.UPRIGHT));
     }
 
