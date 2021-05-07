@@ -20,6 +20,10 @@ public class VisionUtils {
     public static final double BACK_WEBCAM_HEIGHT = 0.19;
     // Note: All measurements in meters
 
+    public enum Target {
+        GOAL, POWERSHOTS
+    }
+
     public enum PowerShot {
         PS_LEFT, PS_MIDDLE, PS_RIGHT
     }

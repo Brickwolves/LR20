@@ -20,9 +20,9 @@ public class Dash_Servos {
     public static double SHOOT_SERVO_MIN            = 0.65;
     public static double SHOOT_SERVO_MAX            = 0.86;
 
-    public static double LOCK_SERVO_HOME            = 0.3;
-    public static double LOCK_SERVO_MIN             = 0.3;
-    public static double LOCK_SERVO_MAX             = 0.3;
+    public static double LOCK_SERVO_HOME            = 0.5;
+    public static double LOCK_SERVO_MIN             = 0.25;
+    public static double LOCK_SERVO_MAX             = 0.5;
 
     public static double CLAW_RSERVO_HOME           = 0.7;
     public static double CLAW_RSERVO_MIN            = 0.25;

@@ -8,10 +8,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
-import org.firstinspires.ftc.teamcode.Vision.RingTrackerPipe;
+import org.firstinspires.ftc.teamcode.Vision.SanicPipe;
 import org.firstinspires.ftc.teamcode.Vision.VisionUtils;
-import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -19,7 +17,6 @@ import org.openftc.easyopencv.OpenCvPipeline;
 
 import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.multTelemetry;
 import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.setOpMode;
-import static org.opencv.core.Core.rotate;
 
 @Autonomous(name="Vision", group="Autonomous Linear Opmode")
 public class Vision extends LinearOpMode
@@ -33,7 +30,7 @@ public class Vision extends LinearOpMode
     public void setUpWebcam(){
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         VisionUtils.webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam2"), cameraMonitorViewId);
-        VisionUtils.webcam.setPipeline(new RingTrackerPipe());
+        VisionUtils.webcam.setPipeline(new SanicPipe());
         VisionUtils.webcam.openCameraDeviceAsync(() -> VisionUtils.webcam.startStreaming((int) VisionUtils.IMG_WIDTH, (int) VisionUtils.IMG_HEIGHT, OpenCvCameraRotation.UPRIGHT));
     }
 

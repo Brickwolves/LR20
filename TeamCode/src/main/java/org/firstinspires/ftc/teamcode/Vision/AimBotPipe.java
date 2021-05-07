@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.Vision;
 
-import org.firstinspires.ftc.teamcode.Hardware.Mecanum;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
@@ -58,11 +57,10 @@ import static org.opencv.imgproc.Imgproc.rectangle;
 public class AimBotPipe extends OpenCvPipeline {
     private boolean viewportPaused;
 
-
+    private double goalDistance;
     private double goalDegreeError = 0;
     private boolean goalFound = false;
     private Rect goalRect = new Rect(0, 0, 0, 0);
-    private double goalDistance;
 
     // Init mats here so we don't repeat
     private Mat modified = new Mat();
@@ -106,8 +104,12 @@ public class AimBotPipe extends OpenCvPipeline {
         // Find contours of goal
         contours = new ArrayList<>();
         findContours(modified, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE);
+
+        // Check if no goal is found
         if (contours.size() == 0) {
             goalFound = false;
+            goalDegreeError = 0;
+            goalDistance = 0;
             return output;
         }
         goalFound = true;
@@ -118,20 +120,21 @@ public class AimBotPipe extends OpenCvPipeline {
             Rect rect = boundingRect(contours.get(i));
             rects.add(rect);
         }
-        if (rects.size() == 0) return output;
 
         // Retrieve goal contours and make into one large rectangle
         List<Rect> largest_rects = sortRectsByMaxOption(2, AREA, rects);
         goalRect = mergeRects(largest_rects);
 
 
-        // Calculate error
+        // Calculate Center
         int center_x = goalRect.x + (goalRect.width / 2);
         int center_y = goalRect.y + (goalRect.height / 2);
         Point center = new Point(center_x, center_y);
+
+        // Calculate Error
         double pixel_error = (IMG_WIDTH / 2) - center_x;
         goalDegreeError = pixels2Degrees(pixel_error, VisionUtils.AXES.X) + 3;
-        goalDistance = getDistance2Goal();
+        goalDistance = getGoalDistance();
 
         // Logging Shapes and Degree & Pixel Data
         rectangle(output, goalRect, color, thickness);
@@ -153,7 +156,7 @@ public class AimBotPipe extends OpenCvPipeline {
     }
 
 
-    public double getPSDegreeError(VisionUtils.PowerShot powerShot, double curAngle){
+    public double getPowerShotDegreeError(VisionUtils.PowerShot powerShot, double curAngle){
         if (!isGoalFound()) return 0;
         double g = goalDistance;
         double alpha = (curAngle % 360);
@@ -183,9 +186,12 @@ public class AimBotPipe extends OpenCvPipeline {
     }
 
     public double calcRPM(){
-        double numerator = 9.8 * pow(goalDistance, 3);
-        double denominator = (0.79 * goalDistance) - 1.185;
-        return (denominator == 0) ? 0 : 250 * sqrt(numerator / denominator);
+        if (isGoalFound() && goalDistance > 1.9){
+            double numerator = 9.8 * pow(goalDistance, 3);
+            double denominator = (0.79 * goalDistance) - 1.185;
+            return (denominator == 0) ? 0 : 250 * sqrt(numerator / denominator);
+        }
+        return 3400;
     }
 
     public boolean isGoalFound(){
@@ -196,7 +202,7 @@ public class AimBotPipe extends OpenCvPipeline {
         return (isGoalFound()) ? goalDegreeError : 0;
     }
 
-    public double getDistance2Goal(){
+    public double getGoalDistance(){
         if (!isGoalFound() || goalRect.y == 0) return 0;
         double opp = 240 - goalRect.y + 10;
         double thetaRads = opp / 240 * 0.75;

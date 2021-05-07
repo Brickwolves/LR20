@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.TeleOp;
+package org.firstinspires.ftc.teamcode.Diagnostics;
 
 import android.os.Build;
 
@@ -21,7 +21,6 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import static java.lang.Math.abs;
-import static java.lang.StrictMath.round;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.DOWN;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.TAP;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.TOGGLE;
@@ -36,12 +35,12 @@ import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.Value.INVERT_SHIFTED_Y;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.Value.SHIFTED_X;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.Value.X;
-import static org.firstinspires.ftc.teamcode.TeleOp.Zeta.Target.GOAL;
 import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.multTelemetry;
+import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.Target.GOAL;
 
 
-@TeleOp(name = "ZetaTest TeleOp", group="Linear TeleOp")
-public class ZetaTest extends LinearOpMode {
+@TeleOp(name = "WingTest TeleOp", group="Linear TeleOp")
+public class WingTest extends LinearOpMode {
 
     // Main Stuff
     private Mecanum robot;
@@ -50,15 +49,9 @@ public class ZetaTest extends LinearOpMode {
 
     // Camera stuff
     private AimBotPipe goalFinder = new AimBotPipe();
-    private Zeta.Target aimTarget = GOAL;
+    private VisionUtils.Target aimTarget = GOAL;
     private VisionUtils.PowerShot powerShot = VisionUtils.PowerShot.PS_RIGHT;
-    public enum Target {
-        GOAL, POWERSHOTS
-    }
 
-
-    // Square button
-    private boolean square_pressed = false;
 
     // PID Stuff
     private double  locked_direction;

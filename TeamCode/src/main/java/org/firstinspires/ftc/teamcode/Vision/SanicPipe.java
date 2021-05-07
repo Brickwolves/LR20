@@ -46,7 +46,7 @@ import static org.opencv.imgproc.Imgproc.line;
 import static org.opencv.imgproc.Imgproc.putText;
 import static org.opencv.imgproc.Imgproc.rectangle;
 
-public class RingTrackerPipe extends OpenCvPipeline
+public class SanicPipe extends OpenCvPipeline
 {
     private boolean viewportPaused;
 

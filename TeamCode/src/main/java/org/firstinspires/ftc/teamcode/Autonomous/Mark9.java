@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.Hardware.Mecanum;
 import org.firstinspires.ftc.teamcode.Navigation.Orientation;
 import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
 import org.firstinspires.ftc.teamcode.Vision.AimBotPipe;
-import org.firstinspires.ftc.teamcode.Vision.RingTrackerPipe;
+import org.firstinspires.ftc.teamcode.Vision.SanicPipe;
 import org.firstinspires.ftc.teamcode.Vision.VisionUtils;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -29,7 +29,7 @@ import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.multTelemetry
 @Autonomous(name="Mark 9", group="Autonomous Linear Opmode")
 public class Mark9 extends LinearOpMode
 {
-    private RingTrackerPipe ringFinder = new RingTrackerPipe();
+    private SanicPipe ringFinder = new SanicPipe();
     private AimBotPipe aimBot = new AimBotPipe();
     private Mecanum robot;
     private ButtonControls BC;
@@ -90,7 +90,7 @@ public class Mark9 extends LinearOpMode
         double goalDegreeError;
         double powerShotFieldAngle;
         goalDegreeError = aimBot.getGoalDegreeError();
-        powerShotFieldAngle = aimBot.getPSDegreeError(powerShot, robot.imu.getAngle());
+        powerShotFieldAngle = aimBot.getPowerShotDegreeError(powerShot, robot.imu.getAngle());
         return powerShotFieldAngle;
     }
 

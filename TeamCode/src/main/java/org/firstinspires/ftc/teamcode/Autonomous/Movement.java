@@ -11,9 +11,8 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls;
 import org.firstinspires.ftc.teamcode.Hardware.Mecanum;
 import org.firstinspires.ftc.teamcode.Navigation.Orientation;
-import org.firstinspires.ftc.teamcode.Navigation.Point;
 import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
-import org.firstinspires.ftc.teamcode.Vision.RingTrackerPipe;
+import org.firstinspires.ftc.teamcode.Vision.SanicPipe;
 import org.firstinspires.ftc.teamcode.Vision.VisionUtils;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -22,8 +21,6 @@ import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement.ACCELER
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement.ANGLE;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement.D_TICKS;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement.STRAFE_ANGLE;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement.X_TICKS;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement.Y_TICKS;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.DOWN;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.CROSS;
 import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.multTelemetry;
@@ -31,7 +28,7 @@ import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.multTelemetry
 @Autonomous(name="Movement", group="Autonomous Linear Opmode")
 public class Movement extends LinearOpMode
 {
-    private RingTrackerPipe ringFinder = new RingTrackerPipe();
+    private SanicPipe ringFinder = new SanicPipe();
     private Mecanum robot;
     private ButtonControls BC;
 

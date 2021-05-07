@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls;
 import org.firstinspires.ftc.teamcode.Hardware.Mecanum;
 import org.firstinspires.ftc.teamcode.Hardware.Sensors.IMU;
 import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
-import org.firstinspires.ftc.teamcode.Vision.RingTrackerPipe;
+import org.firstinspires.ftc.teamcode.Vision.SanicPipe;
 import org.firstinspires.ftc.teamcode.Vision.VisionUtils;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -22,7 +22,7 @@ import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.multTelemetry
 @Autonomous(name="RingFinder", group="Autonomous Linear Opmode")
 public class RingFinder extends LinearOpMode
 {
-    private RingTrackerPipe ringFinder = new RingTrackerPipe();
+    private SanicPipe ringFinder = new SanicPipe();
     public static IMU imu;
     private Mecanum robot;
     private ButtonControls BC;
