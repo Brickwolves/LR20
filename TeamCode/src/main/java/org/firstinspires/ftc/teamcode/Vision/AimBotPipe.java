@@ -133,7 +133,7 @@ public class AimBotPipe extends OpenCvPipeline {
 
         // Calculate Error
         double pixel_error = (IMG_WIDTH / 2) - center_x;
-        goalDegreeError = pixels2Degrees(pixel_error, VisionUtils.AXES.X) + 3;
+        goalDegreeError = pixels2Degrees(pixel_error, VisionUtils.AXES.X) + 4;
         goalDistance = getGoalDistance();
 
         // Logging Shapes and Degree & Pixel Data
@@ -151,7 +151,7 @@ public class AimBotPipe extends OpenCvPipeline {
          */
 
         // Return altered image
-        return output;
+        return modified;
 
     }
 
@@ -270,7 +270,7 @@ public class AimBotPipe extends OpenCvPipeline {
     @Override
     public void onViewportTapped() {
         viewportPaused =        !viewportPaused;
-        if (viewportPaused)     VisionUtils.webcam.pauseViewport();
-        else                    VisionUtils.webcam.resumeViewport();
+        if (viewportPaused)     VisionUtils.webcam_front.pauseViewport();
+        else                    VisionUtils.webcam_front.resumeViewport();
     }
 }

@@ -35,6 +35,7 @@ public class Movement extends LinearOpMode
     public void initialize(){
         OpModeUtils.setOpMode(this);
         robot = new Mecanum();
+        robot.imu.setOffsetAngle(0);
         BC = new ButtonControls(gamepad1);
 
         initVision();
@@ -42,9 +43,9 @@ public class Movement extends LinearOpMode
 
     public void initVision(){
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        VisionUtils.webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam2"), cameraMonitorViewId);
-        VisionUtils.webcam.setPipeline(ringFinder);
-        VisionUtils.webcam.openCameraDeviceAsync(() -> VisionUtils.webcam.startStreaming((int) VisionUtils.IMG_WIDTH, (int) VisionUtils.IMG_HEIGHT, OpenCvCameraRotation.UPRIGHT));
+        VisionUtils.webcam_front = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam2"), cameraMonitorViewId);
+        VisionUtils.webcam_front.setPipeline(ringFinder);
+        VisionUtils.webcam_front.openCameraDeviceAsync(() -> VisionUtils.webcam_front.startStreaming((int) VisionUtils.IMG_WIDTH, (int) VisionUtils.IMG_HEIGHT, OpenCvCameraRotation.UPRIGHT));
     }
 
     public void BREAKPOINT(){
@@ -79,12 +80,9 @@ public class Movement extends LinearOpMode
 
             BREAKPOINT();
 
-            robot.linearStrafe(STRAFE_ANGLE, D_TICKS, ACCELERATION, ANGLE, null);
+            robot.linearStrafe(STRAFE_ANGLE, D_TICKS, ACCELERATION, ANGLE, 0, null);
+            robot.intake.armDown();
             //robot.linearStrafe(new Orientation(X_TICKS, Y_TICKS, ANGLE), ACCELERATION, null);
-
-            BREAKPOINT();
-
-            robot.linearStrafe(HOME, ACCELERATION, null);
 
             BREAKPOINT();
 

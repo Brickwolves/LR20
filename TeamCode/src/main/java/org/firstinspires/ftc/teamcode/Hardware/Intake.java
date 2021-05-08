@@ -51,6 +51,8 @@ public class Intake {
         right_arm_servo.setDirection(Servo.Direction.FORWARD);
         right_arm_servo.setPosition(INTAKE_ARM_RSERVO_HOME);
 
+        this.armUp();
+
     }
 
     public void setIntakePower(double power){

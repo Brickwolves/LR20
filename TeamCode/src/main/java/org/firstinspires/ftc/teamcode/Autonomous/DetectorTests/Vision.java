@@ -29,9 +29,9 @@ public class Vision extends LinearOpMode
 
     public void setUpWebcam(){
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        VisionUtils.webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam2"), cameraMonitorViewId);
-        VisionUtils.webcam.setPipeline(new SanicPipe());
-        VisionUtils.webcam.openCameraDeviceAsync(() -> VisionUtils.webcam.startStreaming((int) VisionUtils.IMG_WIDTH, (int) VisionUtils.IMG_HEIGHT, OpenCvCameraRotation.UPRIGHT));
+        VisionUtils.webcam_front = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam2"), cameraMonitorViewId);
+        VisionUtils.webcam_front.setPipeline(new SanicPipe());
+        VisionUtils.webcam_front.openCameraDeviceAsync(() -> VisionUtils.webcam_front.startStreaming((int) VisionUtils.IMG_WIDTH, (int) VisionUtils.IMG_HEIGHT, OpenCvCameraRotation.UPRIGHT));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -52,7 +52,7 @@ public class Vision extends LinearOpMode
         if (opModeIsActive()){
 
             multTelemetry.update();
-            VisionUtils.webcam.stopStreaming();
+            VisionUtils.webcam_front.stopStreaming();
         }
     }
 
@@ -70,8 +70,8 @@ public class Vision extends LinearOpMode
         public void onViewportTapped()
         {
             viewportPaused = !viewportPaused;
-            if (viewportPaused) VisionUtils.webcam.pauseViewport();
-            else VisionUtils.webcam.resumeViewport();
+            if (viewportPaused) VisionUtils.webcam_front.pauseViewport();
+            else VisionUtils.webcam_front.resumeViewport();
         }
     }
 }

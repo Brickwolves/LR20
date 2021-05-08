@@ -37,9 +37,9 @@ public class RingFinder extends LinearOpMode
 
     public void initVision(){
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        VisionUtils.webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam2"), cameraMonitorViewId);
-        VisionUtils.webcam.setPipeline(ringFinder);
-        VisionUtils.webcam.openCameraDeviceAsync(() -> VisionUtils.webcam.startStreaming((int) VisionUtils.IMG_WIDTH, (int) VisionUtils.IMG_HEIGHT, OpenCvCameraRotation.UPRIGHT));
+        VisionUtils.webcam_front = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam2"), cameraMonitorViewId);
+        VisionUtils.webcam_front.setPipeline(ringFinder);
+        VisionUtils.webcam_front.openCameraDeviceAsync(() -> VisionUtils.webcam_front.startStreaming((int) VisionUtils.IMG_WIDTH, (int) VisionUtils.IMG_HEIGHT, OpenCvCameraRotation.UPRIGHT));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -61,7 +61,7 @@ public class RingFinder extends LinearOpMode
         multTelemetry.addData("Status", "Turning to " + target_angle);
         multTelemetry.update();
 
-        robot.linearTurn(ringFieldAngle, 0.05);
+        //robot.linearTurn(ringFieldAngle, 0.05);
 
         while (opModeIsActive()){
 
@@ -76,7 +76,7 @@ public class RingFinder extends LinearOpMode
             multTelemetry.addData("Ring Count", ringFinder.getRingCount());
              */
 
-            multTelemetry.addData("FPS", String.format("%.2f", VisionUtils.webcam.getFps()));
+            multTelemetry.addData("FPS", String.format("%.2f", VisionUtils.webcam_front.getFps()));
             multTelemetry.update();
         }
     }

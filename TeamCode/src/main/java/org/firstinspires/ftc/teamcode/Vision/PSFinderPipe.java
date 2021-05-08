@@ -213,7 +213,7 @@ public class PSFinderPipe extends OpenCvPipeline {
     @Override
     public void onViewportTapped() {
         viewportPaused = !viewportPaused;
-        if (viewportPaused)  VisionUtils.webcam.pauseViewport();
-        else                VisionUtils.webcam.resumeViewport();
+        if (viewportPaused)  VisionUtils.webcam_front.pauseViewport();
+        else                VisionUtils.webcam_front.resumeViewport();
     }
 }

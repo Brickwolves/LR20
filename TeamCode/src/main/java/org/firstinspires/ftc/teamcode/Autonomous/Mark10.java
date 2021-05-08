@@ -25,9 +25,10 @@ import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Bu
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.CROSS;
 import static org.firstinspires.ftc.teamcode.Hardware.Mecanum.findClosestAngle;
 import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.multTelemetry;
+import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.print;
 
-@Autonomous(name="Mark 9", group="Autonomous Linear Opmode")
-public class Mark9 extends LinearOpMode
+@Autonomous(name="Mark 10", group="Autonomous Linear Opmode")
+public class Mark10 extends LinearOpMode
 {
     private SanicPipe ringFinder = new SanicPipe();
     private AimBotPipe aimBot = new AimBotPipe();
@@ -38,16 +39,21 @@ public class Mark9 extends LinearOpMode
     public void initialize(){
         OpModeUtils.setOpMode(this);
         robot = new Mecanum();
+        robot.imu.setOffsetAngle(0);
         BC = new ButtonControls(gamepad1);
 
         initVision();
     }
 
     public void initVision(){
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        VisionUtils.webcam_front = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam"), cameraMonitorViewId);
+        int cameraMonitorViewId1 = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        VisionUtils.webcam_front = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam"), cameraMonitorViewId1);
         VisionUtils.webcam_front.setPipeline(aimBot);
         VisionUtils.webcam_front.openCameraDeviceAsync(() -> VisionUtils.webcam_front.startStreaming((int) VisionUtils.IMG_WIDTH, (int) VisionUtils.IMG_HEIGHT, OpenCvCameraRotation.UPRIGHT));
+
+        VisionUtils.webcam_back = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam2"));
+        VisionUtils.webcam_back.setPipeline(ringFinder);
+        VisionUtils.webcam_back.openCameraDeviceAsync(() -> VisionUtils.webcam_back.startStreaming((int) VisionUtils.IMG_WIDTH, (int) VisionUtils.IMG_HEIGHT, OpenCvCameraRotation.UPRIGHT));
     }
 
     public void BREAKPOINT(){
@@ -78,7 +84,7 @@ public class Mark9 extends LinearOpMode
             multTelemetry.addData("RPM", robot.shooter.getRPM());
             multTelemetry.update();
         }
-        robot.shooter.setPower(0);
+        //robot.shooter.setPower(0);
         robot.shooter.setFeederCount(0);
     }
 
@@ -105,44 +111,38 @@ public class Mark9 extends LinearOpMode
         multTelemetry.update();
         waitForStart();
 
-
-        Orientation HOME = new Orientation(0,0, 180);
-        Orientation POWER_SHOTS = new Orientation(-2300,0, 177);
-
         if (opModeIsActive()){
 
-            BREAKPOINT();
+            robot.linearStrafe(175, 1100, 0.2, 175, 0.1, () -> {
+                robot.shooter.setRPM(3200);
+                robot.wings.mid();
+            });
+            robot.intake.armDown();
 
-            robot.linearStrafe(POWER_SHOTS, ACCELERATION, null);
-
-            BREAKPOINT();
+            sleep(200);
 
             // Turn to 1st
-            double psRightAngle = findClosestAngle(getPowerShotAngle(VisionUtils.PowerShot.PS_RIGHT), robot.imu.getAngle());
+            double psRightAngle = findClosestAngle(getPowerShotAngle(VisionUtils.PowerShot.PS_RIGHT), robot.imu.getAngle()) + 4;
             System.out.println("PSRIGHT: " + psRightAngle);
-            robot.linearTurn(psRightAngle, 1);
+            robot.linearTurn(psRightAngle, 2, () -> robot.shooter.setRPM(3200));
 
-            sleep(1000);
+            sleep(200);
+
+
+            shoot(1, 0.2);
 
             // Turn to 2nd
             double psMiddleAngle = findClosestAngle(getPowerShotAngle(VisionUtils.PowerShot.PS_MIDDLE), robot.imu.getAngle());
-            System.out.println("PSMIDDLE: " + psRightAngle);
-            robot.linearTurn(psMiddleAngle, 1);
-
-            sleep(1000);
+            System.out.println("PSMIDDLE: " + psMiddleAngle);
+            robot.linearTurn(psMiddleAngle, 2, () -> robot.shooter.setRPM(3200));
+            shoot(1, 0.2);
 
             // Turn to 3rd
-            double psLeftAngle = findClosestAngle(getPowerShotAngle(VisionUtils.PowerShot.PS_LEFT), robot.imu.getAngle());
-            System.out.println("PSLEFT: " + psRightAngle);
-            robot.linearTurn(psLeftAngle, 1);
+            double psLeftAngle = findClosestAngle(getPowerShotAngle(VisionUtils.PowerShot.PS_LEFT), robot.imu.getAngle()) - 4;
+            System.out.println("PSLEFT: " + psLeftAngle);
+            robot.linearTurn(psLeftAngle, 2, () -> robot.shooter.setRPM(3200));
+            shoot(1, 0.2);
 
-            BREAKPOINT();
-
-
-            BREAKPOINT();
-
-
-            BREAKPOINT();
         }
-   }
+    }
 }

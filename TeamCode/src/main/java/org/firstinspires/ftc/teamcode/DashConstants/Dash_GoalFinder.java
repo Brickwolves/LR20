@@ -7,9 +7,9 @@ public class Dash_GoalFinder {
 
     // GOAL FINDER
     public static int MIN_H = 100;
-    public static int MAX_H = 120;
+    public static int MAX_H = 110;
 
-    public static int MIN_S = 165;
+    public static int MIN_S = 160;
     public static int MAX_S = 255;
 
     public static int MIN_V = 90;

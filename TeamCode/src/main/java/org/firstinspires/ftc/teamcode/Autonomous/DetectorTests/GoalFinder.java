@@ -35,9 +35,9 @@ public class GoalFinder extends LinearOpMode
 
     public void initVision(){
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        VisionUtils.webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam"), cameraMonitorViewId);
-        VisionUtils.webcam.setPipeline(goalFinder);
-        VisionUtils.webcam.openCameraDeviceAsync(() -> VisionUtils.webcam.startStreaming((int) VisionUtils.IMG_WIDTH, (int) VisionUtils.IMG_HEIGHT, OpenCvCameraRotation.UPRIGHT));
+        VisionUtils.webcam_front = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam"), cameraMonitorViewId);
+        VisionUtils.webcam_front.setPipeline(goalFinder);
+        VisionUtils.webcam_front.openCameraDeviceAsync(() -> VisionUtils.webcam_front.startStreaming((int) VisionUtils.IMG_WIDTH, (int) VisionUtils.IMG_HEIGHT, OpenCvCameraRotation.UPRIGHT));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -66,7 +66,7 @@ public class GoalFinder extends LinearOpMode
             robot.setDrivePower(0, 0, turn, 1);
 
             OpModeUtils.multTelemetry.addData("Goal Error", goalFinder.getGoalDegreeError());
-            OpModeUtils.multTelemetry.addData("FPS", String.format("%.2f", VisionUtils.webcam.getFps()));
+            OpModeUtils.multTelemetry.addData("FPS", String.format("%.2f", VisionUtils.webcam_front.getFps()));
             OpModeUtils.multTelemetry.update();
         }
     }

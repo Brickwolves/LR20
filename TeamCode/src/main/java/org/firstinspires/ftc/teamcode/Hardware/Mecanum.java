@@ -27,6 +27,7 @@ import java.util.Set;
 
 import static com.qualcomm.robotcore.util.Range.clip;
 import static java.lang.Math.floorMod;
+import static java.lang.Math.hypot;
 import static java.lang.Math.toDegrees;
 import static java.lang.StrictMath.abs;
 import static java.lang.StrictMath.atan2;
@@ -300,19 +301,18 @@ public class Mecanum implements Robot {
 
 
    public double robotVelocityComponent(double angle){
-      double relY = getYComp(motorRPMs.get("FR"), motorRPMs.get("FL"), motorRPMs.get("BR"), motorRPMs.get("BL"));
+      double relYVelocity = getYComp(motorRPMs.get("FR"), motorRPMs.get("FL"), motorRPMs.get("BR"), motorRPMs.get("BL"));
+      double relXVelocity = (motorRPMs.get("FR") - motorRPMs.get("FL") - motorRPMs.get("BR") + motorRPMs.get("BL")) / 4;
       //double strafe = getXComp(motorRPMs.get("FR"), motorRPMs.get("FL"), motorRPMs.get("BR"), motorRPMs.get("BL"));
-      double relX = (motorRPMs.get("FR") - motorRPMs.get("FL") - motorRPMs.get("BR") + motorRPMs.get("BL")) / 4;
 
 
       double velocityAngle;
 
-      double speed = Math.sqrt(Math.pow(drive, 2) + Math.pow(strafe, 2));
-
+      double speed = hypot(relXVelocity, relYVelocity);
       if (speed == 0) velocityAngle = 0;
-      else velocityAngle = - toDegrees(atan2(drive, strafe)) + 180;
+      else velocityAngle = - toDegrees(atan2(relYVelocity, relXVelocity)) + 180;
 
-      angle = angle - velocityAngle;
+      angle -= velocityAngle;
 
       return toDegrees(cos(angle)) * speed;
    }
@@ -328,9 +328,11 @@ public class Mecanum implements Robot {
       return x + toRadians(c2) * sin(4 * x - 0.2);
    }
 
-   public void linearStrafe(double angle, double cm, double acceleration, double targetAngle, SyncTask task) {
+   public void linearStrafe(double angle, double cm, double acceleration, double targetAngle, double waitTime, SyncTask task) {
 
       resetMotors();
+
+      ElapsedTime time = new ElapsedTime(); time.reset();
 
       double strafeAngle = toRadians(angle);
       double ticks = cm; //centimeters2Ticks(cm);
@@ -359,6 +361,7 @@ public class Mecanum implements Robot {
 
          // PID CONTROLLER
          pr0 = clip(rotationPID.update(targetAngle - imu.getAngle()) * -1, -1, 1);
+         if (time.seconds() < waitTime) pr0 = 0;
 
          // SHIFT POWER
          Point shiftedPowers = shift(px0, py0, curO.a % 360);
@@ -455,7 +458,61 @@ public class Mecanum implements Robot {
       setAllPower(0);
    }
 
+   @RequiresApi(api = Build.VERSION_CODES.N)
+   public void linearTurn(double target_angle, double MOE, SyncTask task) {
 
+      double turn_direction, pid_return, power, powerRampPosition;
+
+
+      //            Calc Power Ramping and PID Values           //
+      double current_angle = imu.getAngle();
+      double startAngle = current_angle;
+      double actual_target_angle = findClosestAngle(target_angle, current_angle);
+      double startDeltaAngle = Math.abs(actual_target_angle - current_angle);
+      double error = actual_target_angle - current_angle;
+
+
+
+      while ((Math.abs(error) > MOE) && isActive()) {
+
+         // Execute task synchronously
+         if (task != null) task.execute();
+
+         //              PID                     //
+         error = actual_target_angle - current_angle;
+         pid_return = rotationPID.update(error) * -1;
+         turn_direction = (pid_return > 0) ? 1 : -1;
+
+
+         //              Power Ramping            //
+         powerRampPosition = MathUtils.map(current_angle, startAngle, actual_target_angle, 0, startDeltaAngle);
+         power = powerRamp(powerRampPosition, startDeltaAngle, 0.1);
+
+
+         //turn = (turn > 0) ? Range.clip(turn, 0.1, 1) : Range.clip(turn, -1, -0.1);
+
+
+         //        Check timeout             //
+         //double elapsedTime = Math.abs(System.currentTimeMillis() - startTime);
+         //if (elapsedTime > 3000) break;
+
+
+         //        Set Power                 //
+         setDrivePower(0, 0, turn_direction, power);
+         current_angle = imu.getAngle();
+
+
+
+         //          Logging                 //
+         multTelemetry.addData("Error", error);
+         multTelemetry.addData("Turn", turn_direction);
+         multTelemetry.addData("Power", power);
+         multTelemetry.addData("IMU", current_angle);
+         multTelemetry.addData("Finished", (Math.abs(error) <= MOE));
+         multTelemetry.update();
+      }
+      setAllPower(0);
+   }
 
 
    @RequiresApi(api = Build.VERSION_CODES.N)

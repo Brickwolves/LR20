@@ -32,6 +32,6 @@ public class Dash_RingFinder {
     public static int blur = 5;
     public static int erode_const = 5;
     public static int dilate_const = 5;
-    public static double horizonLineRatio = 0;
+    public static double horizonLineRatio = 0.5;
 
 }

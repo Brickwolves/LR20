@@ -3,9 +3,9 @@ import com.acmerobotics.dashboard.config.Config;
 
 @Config
 public class Dash_Movement {
-    public static double p = .06;
+    public static double p = .02;
     public static double i = .0;
-    public static double d = .003;
+    public static double d = .004;
 
     public static double X_TICKS = 0;
     public static double Y_TICKS = 0;

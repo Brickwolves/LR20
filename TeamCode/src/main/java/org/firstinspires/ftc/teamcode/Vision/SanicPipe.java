@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.Vision;
 
-import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
@@ -13,6 +12,7 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.StrictMath.multiplyExact;
 import static java.lang.StrictMath.tan;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_RingFinder.MAX_Cb;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_RingFinder.MAX_Cr;
@@ -24,12 +24,13 @@ import static org.firstinspires.ftc.teamcode.DashConstants.Dash_RingFinder.blur;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_RingFinder.dilate_const;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_RingFinder.erode_const;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_RingFinder.horizonLineRatio;
+import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.multTelemetry;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.BACK_WEBCAM_HEIGHT;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.IMG_HEIGHT;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.IMG_WIDTH;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.pixels2Degrees;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.sortRectsByMaxOption;
-import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.webcam;
+import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.webcam_front;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.AXES;
 import static org.opencv.core.Core.inRange;
 import static org.opencv.core.CvType.CV_8U;
@@ -72,7 +73,7 @@ public class SanicPipe extends OpenCvPipeline
     @Override
     public Mat processFrame(Mat input)
     {
-        webcam.resumeViewport();
+        webcam_front.resumeViewport();
 
         // Get height and width
         IMG_HEIGHT = input.rows();
@@ -204,7 +205,7 @@ public class SanicPipe extends OpenCvPipeline
     @Override
     public void onViewportTapped() {
         viewportPaused = !viewportPaused;
-        if (viewportPaused)     webcam.pauseViewport();
-        else                    webcam.resumeViewport();
+        if (viewportPaused)     webcam_front.pauseViewport();
+        else                    webcam_front.resumeViewport();
     }
 }

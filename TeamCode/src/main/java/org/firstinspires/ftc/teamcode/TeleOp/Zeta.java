@@ -91,6 +91,8 @@ public class Zeta extends LinearOpMode {
         JC1 = new JoystickControls(gamepad1);
         startVision();
 
+        robot.intake.armDown();
+
         multTelemetry.addLine("------USER 1----------------------------");
         multTelemetry.addData("Velocity Ranger", "[LB2]");
         multTelemetry.addData("Quick Turn", "[DPAD]");
@@ -129,10 +131,10 @@ public class Zeta extends LinearOpMode {
         Set up camera, and pipeline
          */
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        VisionUtils.webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam"), cameraMonitorViewId);
+        VisionUtils.webcam_front = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam"), cameraMonitorViewId);
 
-        VisionUtils.webcam.setPipeline(aimBot);
-        VisionUtils.webcam.openCameraDeviceAsync(() -> VisionUtils.webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT));
+        VisionUtils.webcam_front.setPipeline(aimBot);
+        VisionUtils.webcam_front.openCameraDeviceAsync(() -> VisionUtils.webcam_front.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT));
     }
 
 
@@ -199,15 +201,8 @@ public class Zeta extends LinearOpMode {
 
             //                INTAKE CODE
             if (BC2.get(RB1, TOGGLE)) {
-                // CHECK INTAKE STALLING
-                if (abs(robot.intake.getIntakePower()) == 1 && abs(intakeVelocity) < 0.01 && intake_time.seconds() < 1) {
-                    robot.intake.setIntakePower(-1);
-                }
-                else {
-                    intake_time.reset();
-                    if (BC2.get(LB1, TOGGLE)) robot.intake.setIntakePower(-1);
-                    else robot.intake.setIntakePower(1);
-                }
+                if (BC2.get(LB1, TOGGLE)) robot.intake.setIntakePower(-1);
+                else robot.intake.setIntakePower(1);
             }
             else robot.intake.setIntakePower(0);
 
@@ -264,9 +259,6 @@ public class Zeta extends LinearOpMode {
             robot.shooter.feederState(BC2.get(RB2, DOWN));
             if (BC2.get(CIRCLE, TOGGLE)) {
                 robot.intake.armDown();
-
-                // Slow down the robot
-                velocity = 0.5;
 
                 // Check if Goal is found, if not, set RPM to default, and orient nearby goal
                 if (errorToGoal > 30) {
@@ -360,6 +352,7 @@ public class Zeta extends LinearOpMode {
             // Rounded angle
             double rounded_locked = round(abs(locked_direction)) % 90;
             if (rounded_locked == 0) turn *= 0.5;
+            if (BC2.get(CIRCLE, TOGGLE)) turn *= 0.5;
             robot.setDrivePower(drive, strafe, turn, velocity);
 
 
@@ -371,10 +364,15 @@ public class Zeta extends LinearOpMode {
                                                 */
 
             multTelemetry.addLine("--DRIVER-------------------------------------");
-            multTelemetry.addData("RobotVComp", robot.robotVelocityComponent(goalDegreeError + robot.imu.getModAngle() + 180));
+            //multTelemetry.addData("RobotVComp", robot.robotVelocityComponent(goalDegreeError + robot.imu.getModAngle() + 180));
+            multTelemetry.addData("Goal Distance", aimBot.getGoalDistance());
+            multTelemetry.addData("Goal Found", aimBot.isGoalFound());
+            multTelemetry.addData("Goal Error", goalDegreeError);
 
-            multTelemetry.addData("PowerShot", powerShot);
-            multTelemetry.addData("Aim Target", aimTarget);
+
+
+            //multTelemetry.addData("PowerShot", powerShot);
+            //multTelemetry.addData("Aim Target", aimTarget);
             multTelemetry.addData("Angle", robot.imu.getAngle());
             multTelemetry.addData("Locked Angle", locked_direction);
             multTelemetry.addData("Rounded Locked Angle", rounded_locked);
