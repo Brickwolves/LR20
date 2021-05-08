@@ -1,42 +1,45 @@
 package org.firstinspires.ftc.teamcode.Hardware;
 
 import android.os.Build;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import com.qualcomm.robotcore.hardware.*;
+
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import org.firstinspires.ftc.teamcode.Hardware.Sensors.IMU;
+
 import org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement;
+import org.firstinspires.ftc.teamcode.Hardware.Sensors.IMU;
 import org.firstinspires.ftc.teamcode.Navigation.Odometry;
 import org.firstinspires.ftc.teamcode.Navigation.Orientation;
 import org.firstinspires.ftc.teamcode.Navigation.Point;
 import org.firstinspires.ftc.teamcode.Utilities.MathUtils;
-import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
 import org.firstinspires.ftc.teamcode.Utilities.PID.PID;
+import org.firstinspires.ftc.teamcode.Utilities.PID.RingBuffer;
 import org.firstinspires.ftc.teamcode.Utilities.SyncTask;
-import org.opencv.android.Utils;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import static com.qualcomm.robotcore.util.Range.clip;
 import static java.lang.Math.floorMod;
-import static java.lang.StrictMath.PI;
+import static java.lang.Math.toDegrees;
 import static java.lang.StrictMath.abs;
 import static java.lang.StrictMath.atan2;
 import static java.lang.StrictMath.cos;
-import static java.lang.StrictMath.max;
 import static java.lang.StrictMath.min;
 import static java.lang.StrictMath.pow;
 import static java.lang.StrictMath.sin;
 import static java.lang.StrictMath.sqrt;
-import static java.lang.StrictMath.toDegrees;
 import static java.lang.StrictMath.toRadians;
-import static org.firstinspires.ftc.teamcode.Hardware.Mecanum.PSState.*;
-import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.centimeters2Ticks;
 import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.hardwareMap;
 import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.isActive;
 import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.multTelemetry;
-import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.convertInches2Ticks;
-import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.map;
 import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.print;
-import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.ticks2Centimeters;
 
 
 public class Mecanum implements Robot {
@@ -52,16 +55,26 @@ public class Mecanum implements Robot {
    public Wings wings;
 
    public PID rotationPID = new PID(Dash_Movement.p, Dash_Movement.i, Dash_Movement.d, 0, 100, true);
-   public ElapsedTime time = new ElapsedTime();
+
+   public static ElapsedTime time = new ElapsedTime();
+   public static RingBuffer<Double> angleBuffer          = new RingBuffer<>(5, 0.0);
+   public static RingBuffer<Double> frBuffer             = new RingBuffer<>(5,  0.0);
+   public static RingBuffer<Double> flBuffer             = new RingBuffer<>(5,  0.0);
+   public static RingBuffer<Double> brBuffer             = new RingBuffer<>(5,  0.0);
+   public static RingBuffer<Double> blBuffer             = new RingBuffer<>(5,  0.0);
+   public static RingBuffer<Double> xPosBuffer           = new RingBuffer<>(5,  0.0);
+   public static RingBuffer<Double> yPosBuffer           = new RingBuffer<>(5,  0.0);
+
+   public static RingBuffer<Double> intakeBuffer         = new RingBuffer<>(5,  0.0);
+
+   public static RingBuffer<Double> timeBuffer           = new RingBuffer<>(5,  0.0);
+
+   public static Map<String, Double> motorRPMs = new HashMap<String, Double>();
+
 
    public enum Units {
       TICKS, INCHES, FEET
    }
-
-   public enum PSState {
-      LEFT, CENTER, RIGHT, TURNING_CENTER, TURNING_LEFT, END
-   }
-   public PSState current_ps_state = RIGHT;
 
    public Mecanum(){
       initRobot();
@@ -78,6 +91,10 @@ public class Mecanum implements Robot {
       bl = hardwareMap.get(DcMotor.class, "back_left_motor");
       resetMotors();
 
+      motorRPMs.put("FR", 0.0);
+      motorRPMs.put("FL", 0.0);
+      motorRPMs.put("BR", 0.0);
+      motorRPMs.put("BL", 0.0);
 
       imu = new IMU("imu");
       odom = new Odometry(0, 0, imu.getAngle());
@@ -219,15 +236,87 @@ public class Mecanum implements Robot {
       return (r1 + r2) / 2.0;
    }
 
+   public double getRComp(double fr, double fl, double br, double bl){
+      double r1 = 0.5 * (bl - fr);
+      double r2 = 0.5 * (fl - br);
+      return (r1 + r2) / 2.0;
+   }
+
    public double getXComp(){
       double x1 = 0.5 * (fl.getCurrentPosition() + br.getCurrentPosition() - (2 * getYComp()));
       double x2 = -0.5 * (fr.getCurrentPosition() + bl.getCurrentPosition() - (2 * getYComp()));
       return (x1 + x2) / 2.0;
    }
 
+   public double getXComp(double fr, double fl, double br, double bl){
+      double x1 = 0.5 * (fl + br - (2 * getYComp()));
+      double x2 = -0.5 * (fr + bl - (2 * getYComp()));
+      return (x1 + x2) / 2.0;
+   }
+
    public double getYComp(){
       return (fr.getCurrentPosition() + fl.getCurrentPosition() + br.getCurrentPosition() + bl.getCurrentPosition()) / 4.0;
    }
+
+   public double getYComp(double fr, double fl, double br, double bl){
+      return (fr + fl + br + bl) / 4.0;
+   }
+
+   public void update(){
+
+      // Retrieve Deltas
+      double deltaMillis                  = timeBuffer.getValue(time.milliseconds());
+      double deltaMinutes                 = deltaMillis / 60000.0;
+      double deltaAngle                   = angleBuffer.getValue(imu.getAngle());
+
+      double deltaIntakeRotations         = intakeBuffer.getValue((double) intake.getIntakePosition()) / 537.7;
+
+      double deltaFRRotations             = frBuffer.getValue((double) fr.getCurrentPosition()) / 537.7;
+      double deltaFLRotations             = flBuffer.getValue((double) fl.getCurrentPosition()) / 537.7;
+      double deltaBRRotations             = brBuffer.getValue((double) br.getCurrentPosition()) / 537.7;
+      double deltaBLRotations             = blBuffer.getValue((double) bl.getCurrentPosition()) / 537.7;
+
+      double deltaX                       = xPosBuffer.getValue(getXComp());
+      double deltaY                       = yPosBuffer.getValue(getYComp());
+
+      // Retrieve RPMs
+      double frRPM = deltaFRRotations / deltaMinutes;
+      double flRPM = deltaFLRotations / deltaMinutes;
+      double brRPM = deltaBRRotations / deltaMinutes;
+      double blRPM = deltaBLRotations / deltaMinutes;
+
+      // Retrieve Velocities
+      double angularVelocity  = deltaAngle / deltaMinutes;
+      double xVelocity        = deltaX / deltaMinutes;
+      double yVelocity        = deltaY / deltaMinutes;
+
+
+      // Update HashMaps
+      motorRPMs.put("FR", frRPM);
+      motorRPMs.put("FL", flRPM);
+      motorRPMs.put("BR", brRPM);
+      motorRPMs.put("BL", blRPM);
+   }
+
+
+   public double robotVelocityComponent(double angle){
+      double relY = getYComp(motorRPMs.get("FR"), motorRPMs.get("FL"), motorRPMs.get("BR"), motorRPMs.get("BL"));
+      //double strafe = getXComp(motorRPMs.get("FR"), motorRPMs.get("FL"), motorRPMs.get("BR"), motorRPMs.get("BL"));
+      double relX = (motorRPMs.get("FR") - motorRPMs.get("FL") - motorRPMs.get("BR") + motorRPMs.get("BL")) / 4;
+
+
+      double velocityAngle;
+
+      double speed = Math.sqrt(Math.pow(drive, 2) + Math.pow(strafe, 2));
+
+      if (speed == 0) velocityAngle = 0;
+      else velocityAngle = - toDegrees(atan2(drive, strafe)) + 180;
+
+      angle = angle - velocityAngle;
+
+      return toDegrees(cos(angle)) * speed;
+   }
+
 
    public double eurekaSub(double x){
       return x - toRadians(10) * sin(4 * x);

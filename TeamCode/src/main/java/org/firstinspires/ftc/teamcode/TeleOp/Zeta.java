@@ -64,10 +64,6 @@ public class Zeta extends LinearOpMode {
     private VisionUtils.PowerShot powerShot = VisionUtils.PowerShot.PS_RIGHT;
 
 
-
-    // Square button
-    private boolean square_pressed = false;
-
     // PID Stuff
     private double  locked_direction;
     private boolean pid_on = false;
@@ -163,6 +159,8 @@ public class Zeta extends LinearOpMode {
 
                                                           */
 
+             robot.update();
+
             // Calculate Angular Velocity
             current_nanoseconds = elapsedTime.nanoseconds();
             current_angle = robot.imu.getAngle();
@@ -185,7 +183,6 @@ public class Zeta extends LinearOpMode {
 
             ButtonControls.update();
             JoystickControls.update();
-
 
 
             //                  ARM
@@ -220,8 +217,7 @@ public class Zeta extends LinearOpMode {
             else robot.intake.armDown();
 
 
-//                  WINGS LOGIC
-
+            //                  WINGS LOGIC
             boolean nearGoal = false;
             if (abs(180 - abs(robot.imu.getModAngle())) < 30){
                 nearGoal = true;
@@ -375,6 +371,8 @@ public class Zeta extends LinearOpMode {
                                                 */
 
             multTelemetry.addLine("--DRIVER-------------------------------------");
+            multTelemetry.addData("RobotVComp", robot.robotVelocityComponent(goalDegreeError + robot.imu.getModAngle() + 180));
+
             multTelemetry.addData("PowerShot", powerShot);
             multTelemetry.addData("Aim Target", aimTarget);
             multTelemetry.addData("Angle", robot.imu.getAngle());
