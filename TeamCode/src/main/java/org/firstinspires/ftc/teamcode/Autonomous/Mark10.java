@@ -20,12 +20,10 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import static java.lang.Math.abs;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement.ACCELERATION;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.DOWN;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.CROSS;
 import static org.firstinspires.ftc.teamcode.Hardware.Mecanum.findClosestAngle;
 import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.multTelemetry;
-import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.print;
 
 @Autonomous(name="Mark 10", group="Autonomous Linear Opmode")
 public class Mark10 extends LinearOpMode
@@ -91,7 +89,7 @@ public class Mark10 extends LinearOpMode
     public double getPowerShotAngle(VisionUtils.PowerShot powerShot){
 
         // Get degree error and correct
-        double rpm = aimBot.getRPM();
+        double rpm = aimBot.calcRPM();
         double errorToGoal = (abs(robot.imu.getModAngle()) - 180);
         double goalDegreeError;
         double powerShotFieldAngle;

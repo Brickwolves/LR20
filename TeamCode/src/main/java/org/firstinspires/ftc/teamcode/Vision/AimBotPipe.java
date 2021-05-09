@@ -118,7 +118,7 @@ public class AimBotPipe extends OpenCvPipeline {
         Rect goalRect = getGoalRect(new_contours);
         rectangle(output, goalRect, color, thickness);
 
-        goalDistance = getDistance2Goal();
+        goalDistance = getGoalDistance();
 
 
         // Calculate error
@@ -194,7 +194,7 @@ public class AimBotPipe extends OpenCvPipeline {
         return  goalRect;
     }
 
-    public double getRPM(){
+    public double calcRPM(){
         if (isGoalFound() && goalDistance > 1.9){
             double numerator = 9.8 * pow(goalDistance, 3);
             double denominator = (0.79 * goalDistance) - 1.185;
@@ -255,7 +255,7 @@ public class AimBotPipe extends OpenCvPipeline {
         return goalDegreeError;
     }
 
-    public double getDistance2Goal(){
+    public double getGoalDistance(){
         if (isGoalFound()){
             if (goalRect.y == 0) return 0;
             double opp = 240 - goalRect.y + 10;
