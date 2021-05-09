@@ -255,10 +255,11 @@ public class Zeta extends LinearOpMode {
             goalDegreeError = aimBot.getGoalDegreeError();
             powerShotFieldAngle = aimBot.getPowerShotDegreeError(powerShot, robot.imu.getAngle());
 
-            // SHOOTER
+            //              SHOOTER                 //
             robot.shooter.feederState(BC2.get(RB2, DOWN));
             if (BC2.get(CIRCLE, TOGGLE)) {
                 robot.intake.armDown();
+                current_angular_velocity = 0;
 
                 // Check if Goal is found, if not, set RPM to default, and orient nearby goal
                 if (errorToGoal > 30) {
@@ -308,7 +309,7 @@ public class Zeta extends LinearOpMode {
             double turn = JC1.get(LEFT, X);
 
             //              VELOCITY RANGER             //
-            if (BC1.get(LB2, DOWN)) velocity = Range.clip((1 - gamepad1.left_trigger), 0.5, 1);
+            if (BC1.get(LB2, DOWN))      velocity = Range.clip((1 - gamepad1.left_trigger), 0.5, 1);
             else if (BC1.get(RB2, DOWN)) velocity = Range.clip((1 - gamepad1.right_trigger), 0.2, 1);
 
             //              DPAD AUTO TURN              //
@@ -379,7 +380,7 @@ public class Zeta extends LinearOpMode {
 
 
             multTelemetry.addLine("--HARDWARE-------------------------------------");
-            multTelemetry.addData("Intake Forward", (BC2.get(LB1, TOGGLE)) ? "FORWARD" : "REVERSE");
+            multTelemetry.addData("Intake Forward", (!BC2.get(LB1, TOGGLE)) ? "FORWARD" : "REVERSE");
             multTelemetry.addData("Shooter", (BC2.get(CIRCLE, TOGGLE)) ? "ON" : "OFF");
             multTelemetry.addData("RPM", robot.shooter.getRPM());
 

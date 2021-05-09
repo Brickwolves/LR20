@@ -125,7 +125,6 @@ public class AimBotPipe extends OpenCvPipeline {
         List<Rect> largest_rects = sortRectsByMaxOption(2, AREA, rects);
         goalRect = mergeRects(largest_rects);
 
-
         // Calculate Center
         int center_x = goalRect.x + (goalRect.width / 2);
         int center_y = goalRect.y + (goalRect.height / 2);
@@ -151,7 +150,7 @@ public class AimBotPipe extends OpenCvPipeline {
          */
 
         // Return altered image
-        return modified;
+        return output;
 
     }
 

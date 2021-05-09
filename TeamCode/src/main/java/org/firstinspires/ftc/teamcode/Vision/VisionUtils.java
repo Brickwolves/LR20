@@ -1,10 +1,14 @@
 package org.firstinspires.ftc.teamcode.Vision;
 
+import org.opencv.core.MatOfPoint;
 import org.opencv.core.Rect;
 import org.openftc.easyopencv.OpenCvCamera;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.opencv.imgproc.Imgproc.boundingRect;
+import static org.opencv.imgproc.Imgproc.contourArea;
 
 public class VisionUtils {
 
@@ -135,4 +139,102 @@ public class VisionUtils {
         }
         return sorted_rects;
     }
+
+
+
+    public static int findLeftMostContourIndex(List<MatOfPoint> contours){
+        int index = 0;
+        double minX = Integer.MAX_VALUE;
+        for (int i=0; i < contours.size(); i++){
+            MatOfPoint cnt = contours.get(i);
+            double x = boundingRect(cnt).x;
+            if (x < minX) {
+                minX = x;
+                index = i;
+            }
+        }
+        return index;
+    }
+
+    public static List<MatOfPoint> findNLeftMostContours(int n, List<MatOfPoint> contours){
+        List<MatOfPoint> widest_contours = new ArrayList<>();
+        for (int j=0; j < n; j++){
+            int largest_index = findLeftMostContourIndex(contours);
+            widest_contours.add(contours.get(largest_index));
+
+            contours.remove(largest_index);
+            if (contours.size() == 0) break;
+        }
+
+        for (MatOfPoint cnt : contours){
+            cnt.release();
+        }
+
+        return widest_contours;
+    }
+
+    public static int findWidestContourIndex(List<MatOfPoint> contours){
+        int index = 0;
+        double maxWidth = 0;
+        for (int i=0; i < contours.size(); i++){
+            MatOfPoint cnt = contours.get(i);
+            double width = boundingRect(cnt).width;
+            if (width > maxWidth) {
+                maxWidth = width;
+                index = i;
+            }
+        }
+        return index;
+    }
+
+    public static List<MatOfPoint> findNWidestContours(int n, List<MatOfPoint> contours){
+        List<MatOfPoint> widest_contours = new ArrayList<>();
+        for (int j=0; j < n; j++){
+            int largest_index = findWidestContourIndex(contours);
+            widest_contours.add(contours.get(largest_index));
+
+            contours.remove(largest_index);
+            if (contours.size() == 0) break;
+        }
+
+        for (MatOfPoint cnt : contours){
+            cnt.release();
+        }
+
+        return widest_contours;
+    }
+
+    public static int findLargestContourIndex(List<MatOfPoint> contours) {
+        int index = 0;
+        double maxArea = 0;
+        for (int i = 0; i < contours.size(); i++) {
+            MatOfPoint cnt = contours.get(i);
+            double area = contourArea(cnt);
+            if (area > maxArea) {
+                maxArea = area;
+                index = i;
+            }
+        }
+        return index;
+    }
+
+    public static List<MatOfPoint> findNLargestContours(int n, List<MatOfPoint> contours) {
+        List<MatOfPoint> new_contours = new ArrayList<>();
+
+        for (int j = 0; j < n; j++) {
+            int largest_index = findLargestContourIndex(contours);
+            new_contours.add(contours.get(largest_index));
+
+            contours.remove(largest_index);
+            if (contours.size() == 0) break;
+        }
+
+        for (MatOfPoint cnt : contours){
+            cnt.release();
+        }
+
+        return new_contours;
+    }
+
+
 }
