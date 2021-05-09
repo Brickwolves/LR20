@@ -161,8 +161,6 @@ public class Zeta extends LinearOpMode {
 
                                                           */
 
-             robot.update();
-
             // Calculate Angular Velocity
             current_nanoseconds = elapsedTime.nanoseconds();
             current_angle = robot.imu.getAngle();

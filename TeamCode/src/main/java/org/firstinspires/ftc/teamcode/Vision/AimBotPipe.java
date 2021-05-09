@@ -21,24 +21,9 @@ import static java.lang.StrictMath.cos;
 import static java.lang.StrictMath.pow;
 import static java.lang.StrictMath.sin;
 import static java.lang.StrictMath.sqrt;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.MAX_H;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.MAX_S;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.MAX_V;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.MIN_H;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.MIN_S;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.MIN_V;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.blur;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.dilate_const;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.erode_const;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.goalWidth;
-import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.IMG_HEIGHT;
-import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.IMG_WIDTH;
-import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.PS_LEFT_DIST;
-import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.PS_MIDDLE_DIST;
-import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.PS_RIGHT_DIST;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.*;
+import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.*;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.RECT_OPTION.AREA;
-import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.pixels2Degrees;
-import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.sortRectsByMaxOption;
 import static org.opencv.core.Core.inRange;
 import static org.opencv.core.CvType.CV_8U;
 import static org.opencv.imgproc.Imgproc.CHAIN_APPROX_SIMPLE;
@@ -67,6 +52,7 @@ public class AimBotPipe extends OpenCvPipeline {
     private Mat output = new Mat();
     private Mat hierarchy = new Mat();
     private List<MatOfPoint> contours;
+    private List<MatOfPoint> new_contours;
 
     // Thresholding values
     Scalar MIN_HSV, MAX_HSV;
@@ -82,6 +68,11 @@ public class AimBotPipe extends OpenCvPipeline {
         // Get height and width
         IMG_HEIGHT = input.rows();
         IMG_WIDTH = input.cols();
+
+        // Take bottom portion
+        double horizonY = (int) IMG_HEIGHT * horizonLineRatio;
+        Rect upperRect = new Rect(new Point(0, 0), new Point(IMG_WIDTH, horizonY));
+        input = input.submat(upperRect);
 
         // Copy to output
         input.copyTo(output);
@@ -104,54 +95,41 @@ public class AimBotPipe extends OpenCvPipeline {
         // Find contours of goal
         contours = new ArrayList<>();
         findContours(modified, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE);
-
-        // Check if no goal is found
         if (contours.size() == 0) {
             goalFound = false;
-            goalDegreeError = 0;
-            goalDistance = 0;
             return output;
-        }
-        goalFound = true;
+        } else goalFound = true;
 
-        // Retrieve all rects
-        List<Rect> rects = new ArrayList<>();
-        for (int i=0; i < contours.size(); i++){
-            Rect rect = boundingRect(contours.get(i));
-            rects.add(rect);
-        }
+        // Retrieve goal contours
+        new_contours = findNLargestContours(2, contours);
 
-        // Retrieve goal contours and make into one large rectangle
-        List<Rect> largest_rects = sortRectsByMaxOption(2, AREA, rects);
-        goalRect = mergeRects(largest_rects);
+        // Get goalRectangle
+        Rect goalRect = getGoalRect(new_contours);
+        rectangle(output, goalRect, color, thickness);
 
-        // Calculate Center
+        goalDistance = getGoalDistance();
+
+
+        // Calculate error
         int center_x = goalRect.x + (goalRect.width / 2);
         int center_y = goalRect.y + (goalRect.height / 2);
         Point center = new Point(center_x, center_y);
-
-        // Calculate Error
         double pixel_error = (IMG_WIDTH / 2) - center_x;
-        goalDegreeError = pixels2Degrees(pixel_error, VisionUtils.AXES.X) + 4;
-        goalDistance = getGoalDistance();
-
-        // Logging Shapes and Degree & Pixel Data
-        rectangle(output, goalRect, color, thickness);
+        goalDegreeError = pixels2Degrees(pixel_error, AXES.X);
         line(output, center, new Point(center_x + pixel_error, center_y), new Scalar(0, 0, 255), thickness);
+
+
         Point text_center = new Point(5, IMG_HEIGHT - 50);
         putText(output, "Degree Error: " + goalDegreeError, text_center, font, 0.4, new Scalar(255, 255, 0));
         putText(output, "Pixel Error: " + pixel_error, new Point(5, IMG_HEIGHT - 40), font, 0.4, new Scalar(255, 255, 0));
 
 
-        /*
         // Release all captures
         input.release();
         releaseAllCaptures();
-         */
 
         // Return altered image
         return output;
-
     }
 
 
@@ -198,7 +176,7 @@ public class AimBotPipe extends OpenCvPipeline {
     }
 
     public double getGoalDegreeError(){
-        return (isGoalFound()) ? goalDegreeError : 0;
+        return goalDegreeError;
     }
 
     public double getGoalDistance(){
@@ -210,6 +188,51 @@ public class AimBotPipe extends OpenCvPipeline {
 
     public Rect getGoalRect(){
         return  goalRect;
+    }
+
+
+    private Rect getGoalRect(List<MatOfPoint> contours) {
+
+        // Return first contour if there is only one
+        Rect goalRect = boundingRect(contours.get(0));
+
+        // Extrapolate overarching rectangle if there are two
+        if (contours.size() == 2) {
+
+            // Init coords of both rectangles
+            Rect left = new Rect(0, 0, 0, 0);
+            Rect right = new Rect(0, 0, 0, 0);
+
+            // Get bounding rects of second rectangle
+            Rect secondRect = boundingRect(contours.get(1));
+
+            // Check second rect is within goal width
+            int diff = abs(goalRect.x - secondRect.x);
+            if (diff > goalWidth) return goalRect;
+
+            // Check which side rectangles are on, and calculate surrounding box
+            if (goalRect.x < secondRect.x) {
+                left.x = goalRect.x;
+                left.y = goalRect.y;
+                right.x = secondRect.x;
+                right.y = secondRect.y;
+                right.width = secondRect.width;
+                right.height = secondRect.height;
+            } else {
+                left.x = secondRect.x;
+                left.y = secondRect.y;
+                right.x = goalRect.x;
+                right.y = goalRect.y;
+                right.width = goalRect.width;
+                right.height = goalRect.height;
+            }
+            goalRect.x = left.x;
+            goalRect.y = left.y;
+            goalRect.width = abs(right.x - left.x) + right.width;
+            goalRect.height = abs(right.y - left.y) + right.height;
+        }
+
+        return goalRect;
     }
 
     private Rect mergeRects(List<Rect> rects) {
