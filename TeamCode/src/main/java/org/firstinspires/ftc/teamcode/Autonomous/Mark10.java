@@ -24,6 +24,9 @@ import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Bu
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.CROSS;
 import static org.firstinspires.ftc.teamcode.Hardware.Mecanum.findClosestAngle;
 import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.multTelemetry;
+import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.PowerShot.PS_LEFT;
+import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.PowerShot.PS_MIDDLE;
+import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.PowerShot.PS_RIGHT;
 
 @Autonomous(name="Mark 10", group="Autonomous Linear Opmode")
 public class Mark10 extends LinearOpMode
@@ -86,16 +89,10 @@ public class Mark10 extends LinearOpMode
         robot.shooter.setFeederCount(0);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public double getPowerShotAngle(VisionUtils.PowerShot powerShot){
-
-        // Get degree error and correct
-        double rpm = aimBot.calcRPM();
-        double errorToGoal = (abs(robot.imu.getModAngle()) - 180);
-        double goalDegreeError;
-        double powerShotFieldAngle;
-        goalDegreeError = aimBot.getGoalDegreeError();
-        powerShotFieldAngle = aimBot.getPowerShotDegreeError(powerShot, robot.imu.getAngle());
-        return powerShotFieldAngle;
+        double modPowerShotDegree = aimBot.getPowerShotDegreeError(powerShot, robot.imu.getAngle());
+        return findClosestAngle(modPowerShotDegree, robot.imu.getAngle());
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -120,27 +117,24 @@ public class Mark10 extends LinearOpMode
             sleep(200);
 
             // Turn to 1st
-            double psRightAngle = findClosestAngle(getPowerShotAngle(VisionUtils.PowerShot.PS_RIGHT), robot.imu.getAngle()) + 4;
-            System.out.println("PSRIGHT: " + psRightAngle);
+            double psRightAngle = getPowerShotAngle(PS_RIGHT); // +4
             robot.linearTurn(psRightAngle, 2, () -> robot.shooter.setRPM(3200));
-
             sleep(200);
-
-
             shoot(1, 0.2);
 
             // Turn to 2nd
-            double psMiddleAngle = findClosestAngle(getPowerShotAngle(VisionUtils.PowerShot.PS_MIDDLE), robot.imu.getAngle());
-            System.out.println("PSMIDDLE: " + psMiddleAngle);
+            double psMiddleAngle = getPowerShotAngle(PS_MIDDLE);
             robot.linearTurn(psMiddleAngle, 2, () -> robot.shooter.setRPM(3200));
             shoot(1, 0.2);
 
             // Turn to 3rd
-            double psLeftAngle = findClosestAngle(getPowerShotAngle(VisionUtils.PowerShot.PS_LEFT), robot.imu.getAngle()) - 4;
-            System.out.println("PSLEFT: " + psLeftAngle);
+            double psLeftAngle = getPowerShotAngle(PS_LEFT); // -4
             robot.linearTurn(psLeftAngle, 2, () -> robot.shooter.setRPM(3200));
             shoot(1, 0.2);
 
+            System.out.println("PSRIGHT: " + psRightAngle);
+            System.out.println("PSMIDDLE: " + psMiddleAngle);
+            System.out.println("PSLEFT: " + psLeftAngle);
         }
     }
 }
