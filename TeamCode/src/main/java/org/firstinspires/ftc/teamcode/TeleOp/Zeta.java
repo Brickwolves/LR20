@@ -45,9 +45,9 @@ import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.Value.SHIFTED_X;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.Value.X;
 import static org.firstinspires.ftc.teamcode.Hardware.Mecanum.findClosestAngle;
+import static org.firstinspires.ftc.teamcode.TeleOp.Zeta.Target.GOAL;
+import static org.firstinspires.ftc.teamcode.TeleOp.Zeta.Target.POWERSHOTS;
 import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.multTelemetry;
-import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.Target.GOAL;
-import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.Target.POWERSHOTS;
 
 
 @TeleOp(name = "Zeta TeleOp", group="Linear TeleOp")
@@ -60,27 +60,37 @@ public class Zeta extends LinearOpMode {
 
     // Camera stuff
     private AimBotPipe aimBot = new AimBotPipe();
-    private VisionUtils.Target aimTarget = GOAL;
+    private Target aimTarget = GOAL;
     private VisionUtils.PowerShot powerShot = VisionUtils.PowerShot.PS_RIGHT;
+    public enum Target {
+        GOAL, POWERSHOTS
+    }
 
+
+    // Square button
+    private boolean square_pressed = false;
 
     // PID Stuff
     private double  locked_direction;
     private boolean pid_on = false;
     private boolean last_cycle_pid_state = true;
 
+    // Time Variables
+    private double last_nanoseconds = 0.0;
     private double current_nanoseconds = 0.0;
     private ElapsedTime elapsedTime;
 
     // Hardware Positions
     private double current_angle = 0.0;
+    private double last_angle = 0.0;
+
     private double current_intake_position = 0.0;
+    private double last_intake_position = 0.0;
 
     private ElapsedTime intake_time = new ElapsedTime();
 
-    private RingBuffer<Double> angleBuffer          = new RingBuffer<>(5, 0.0);
-    private RingBuffer<Double> timeBuffer           = new RingBuffer<>(5,  0.0);
-    private RingBuffer<Double> intakePositionBuffer = new RingBuffer<>(5, 0.0);
+    private RingBuffer<Double> angle_ring_buffer = new RingBuffer<>(5, 0.0);
+    private RingBuffer<Double> time_ring_buffer = new RingBuffer<>(5,  0.0);
 
 
     public void initialize() {
@@ -90,8 +100,6 @@ public class Zeta extends LinearOpMode {
         BC2 = new ButtonControls(gamepad2);
         JC1 = new JoystickControls(gamepad1);
         startVision();
-
-        robot.intake.armDown();
 
         multTelemetry.addLine("------USER 1----------------------------");
         multTelemetry.addData("Velocity Ranger", "[LB2]");
@@ -121,9 +129,8 @@ public class Zeta extends LinearOpMode {
     public void shutdown(){
         multTelemetry.addData("Status", "Shutting Down");
         multTelemetry.update();
-        robot.intake.shutdown();
+        //robot.intake.shutdown();
         robot.arm.up();
-        robot.wings.up();
     }
 
     public void startVision(){
@@ -164,16 +171,18 @@ public class Zeta extends LinearOpMode {
             // Calculate Angular Velocity
             current_nanoseconds = elapsedTime.nanoseconds();
             current_angle = robot.imu.getAngle();
-            current_intake_position = robot.intake.getIntakePosition();
 
-            double delta_time = current_nanoseconds - timeBuffer.getValue(current_nanoseconds);
-            double delta_angle = current_angle - angleBuffer.getValue(current_angle);
-            double deltaIntakePosition = current_intake_position - intakePositionBuffer.getValue(current_intake_position);
-
-
-            // Calculations based off values
+            double delta_angle = current_angle - angle_ring_buffer.getValue(current_angle);
+            double delta_time = current_nanoseconds - time_ring_buffer.getValue(current_nanoseconds);
             double current_angular_velocity = delta_angle / delta_time;
-            double intakeVelocity = deltaIntakePosition / delta_time;
+
+
+
+
+            last_nanoseconds = current_nanoseconds;
+            last_angle       = current_angle;
+
+
 
             /*
 
@@ -183,6 +192,7 @@ public class Zeta extends LinearOpMode {
 
             ButtonControls.update();
             JoystickControls.update();
+
 
 
             //                  ARM
@@ -197,27 +207,43 @@ public class Zeta extends LinearOpMode {
             if (BC2.get(TRIANGLE, TOGGLE)) robot.claw.close();
             else robot.claw.open();
 
+
+
             //                INTAKE CODE
+            current_intake_position = robot.intake.getIntakePosition();
+            double intake_velocity = (current_intake_position - last_intake_position) / (current_nanoseconds - last_nanoseconds);
+
             if (BC2.get(RB1, TOGGLE)) {
-                if (BC2.get(LB1, TOGGLE)) robot.intake.setIntakePower(-1);
-                else robot.intake.setIntakePower(1);
+                // CHECK INTAKE STALLING
+                if (abs(robot.intake.getIntakePower()) == 1 && abs(intake_velocity) < 0.01 && intake_time.seconds() < 1) {
+                    intake_time.reset();
+                    robot.intake.setIntakePower(-1);
+                }
+                else {
+                    if (BC2.get(LB1, TOGGLE)) robot.intake.setIntakePower(-1);
+                    else robot.intake.setIntakePower(1);
+                }
             }
             else robot.intake.setIntakePower(0);
 
 
             // INTAKE ARM
             if (BC2.get(DPAD_DN, TOGGLE)) robot.intake.armUp();
-            else robot.intake.armDown();
+            else robot.intake.armMid();
 
 
-            //                  WINGS LOGIC
+
+
+
+//                  WINGS LOGIC
+
             boolean nearGoal = false;
             if (abs(180 - abs(robot.imu.getModAngle())) < 30){
                 nearGoal = true;
             }
 
             // Override toggle
-            if (!BC1.get(CROSS, TOGGLE)){
+            if (!BC2.get(CROSS, TOGGLE)){
 
                 // Ultimate condition to check if we can shoot
                 if (robot.shooter.getFeederCount() > 0){
@@ -246,18 +272,17 @@ public class Zeta extends LinearOpMode {
             else                            aimTarget = GOAL;
 
             // Get degree error and correct
-            double rpm;
+            double rpm = aimBot.getRPM();
             double errorToGoal = (abs(robot.imu.getModAngle()) - 180);
             double goalDegreeError;
             double powerShotFieldAngle;
             goalDegreeError = aimBot.getGoalDegreeError();
-            powerShotFieldAngle = aimBot.getPowerShotDegreeError(powerShot, robot.imu.getAngle());
+            //powerShotFieldAngle = aimBot.getPSDegreeError(powerShot, robot.imu.getAngle());
 
-            //              SHOOTER                 //
+            // SHOOTER
             robot.shooter.feederState(BC2.get(RB2, DOWN));
             if (BC2.get(CIRCLE, TOGGLE)) {
-                robot.intake.armDown();
-                current_angular_velocity = 0;
+                //robot.intake.armDown();
 
                 // Check if Goal is found, if not, set RPM to default, and orient nearby goal
                 if (errorToGoal > 30) {
@@ -268,11 +293,11 @@ public class Zeta extends LinearOpMode {
                     // Choose correct target
                     if (aimTarget == GOAL){
                         locked_direction = findClosestAngle(robot.imu.getAngle() + goalDegreeError, robot.imu.getAngle());
-                        rpm = aimBot.calcRPM();
+                        rpm = aimBot.getRPM();
                     }
                     else {
-                        locked_direction = findClosestAngle(powerShotFieldAngle, robot.imu.getAngle());
-                        rpm = aimBot.calcRPM() - 300;
+                        //locked_direction = findClosestAngle(powerShotFieldAngle, robot.imu.getAngle());
+                        rpm = aimBot.getRPM() - 300;
                     }
                 }
 
@@ -307,7 +332,7 @@ public class Zeta extends LinearOpMode {
             double turn = JC1.get(LEFT, X);
 
             //              VELOCITY RANGER             //
-            if (BC1.get(LB2, DOWN))      velocity = Range.clip((1 - gamepad1.left_trigger), 0.5, 1);
+            if (BC1.get(LB2, DOWN)) velocity = Range.clip((1 - gamepad1.left_trigger), 0.5, 1);
             else if (BC1.get(RB2, DOWN)) velocity = Range.clip((1 - gamepad1.right_trigger), 0.2, 1);
 
             //              DPAD AUTO TURN              //
@@ -321,8 +346,8 @@ public class Zeta extends LinearOpMode {
             else if (BC1.get(TRIANGLE, DOWN)) powerShot = VisionUtils.PowerShot.PS_MIDDLE;
             else if (BC1.get(CIRCLE, DOWN)) powerShot = VisionUtils.PowerShot.PS_RIGHT;
 
-            powerShotFieldAngle = aimBot.getPowerShotDegreeError(powerShot, robot.imu.getAngle());
-            if (BC1.get(RB1, TAP) || BC1.get(LB1, TAP)) locked_direction = findClosestAngle(powerShotFieldAngle, robot.imu.getAngle());
+            //powerShotFieldAngle = aimBot.getPSDegreeError(powerShot, robot.imu.getAngle());
+            //if (BC1.get(RB1, TAP) || BC1.get(LB1, TAP)) locked_direction = findClosestAngle(powerShotFieldAngle, robot.imu.getAngle());
 
 
 
@@ -363,22 +388,15 @@ public class Zeta extends LinearOpMode {
                                                 */
 
             multTelemetry.addLine("--DRIVER-------------------------------------");
-            //multTelemetry.addData("RobotVComp", robot.robotVelocityComponent(goalDegreeError + robot.imu.getModAngle() + 180));
-            multTelemetry.addData("Goal Distance", aimBot.getGoalDistance());
-            multTelemetry.addData("Goal Found", aimBot.isGoalFound());
-            multTelemetry.addData("Goal Error", goalDegreeError);
-
-
-
-            //multTelemetry.addData("PowerShot", powerShot);
-            //multTelemetry.addData("Aim Target", aimTarget);
+            multTelemetry.addData("PowerShot", powerShot);
+            multTelemetry.addData("Aim Target", aimTarget);
             multTelemetry.addData("Angle", robot.imu.getAngle());
             multTelemetry.addData("Locked Angle", locked_direction);
             multTelemetry.addData("Rounded Locked Angle", rounded_locked);
 
 
             multTelemetry.addLine("--HARDWARE-------------------------------------");
-            multTelemetry.addData("Intake Forward", (!BC2.get(LB1, TOGGLE)) ? "FORWARD" : "REVERSE");
+            multTelemetry.addData("Intake Forward", (BC2.get(LB1, TOGGLE)) ? "FORWARD" : "REVERSE");
             multTelemetry.addData("Shooter", (BC2.get(CIRCLE, TOGGLE)) ? "ON" : "OFF");
             multTelemetry.addData("RPM", robot.shooter.getRPM());
 

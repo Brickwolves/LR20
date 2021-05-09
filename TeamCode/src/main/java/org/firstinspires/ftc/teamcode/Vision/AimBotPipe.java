@@ -12,18 +12,25 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.lang.Math.atan2;
+import static java.lang.Math.pow;
+import static java.lang.Math.sqrt;
 import static java.lang.Math.tan;
-import static java.lang.Math.toDegrees;
-import static java.lang.Math.toRadians;
 import static java.lang.StrictMath.abs;
-import static java.lang.StrictMath.cos;
-import static java.lang.StrictMath.pow;
-import static java.lang.StrictMath.sin;
-import static java.lang.StrictMath.sqrt;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.*;
-import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.*;
-import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.RECT_OPTION.AREA;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.MAX_H;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.MAX_S;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.MAX_V;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.MIN_H;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.MIN_S;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.MIN_V;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.blur;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.dilate_const;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.erode_const;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.goalWidth;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.horizonLineRatio;
+import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.IMG_HEIGHT;
+import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.IMG_WIDTH;
+import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.findNLargestContours;
+import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.pixels2Degrees;
 import static org.opencv.core.Core.inRange;
 import static org.opencv.core.CvType.CV_8U;
 import static org.opencv.imgproc.Imgproc.CHAIN_APPROX_SIMPLE;
@@ -42,10 +49,11 @@ import static org.opencv.imgproc.Imgproc.rectangle;
 public class AimBotPipe extends OpenCvPipeline {
     private boolean viewportPaused;
 
-    private double goalDistance;
+
     private double goalDegreeError = 0;
     private boolean goalFound = false;
     private Rect goalRect = new Rect(0, 0, 0, 0);
+    private double goalDistance;
 
     // Init mats here so we don't repeat
     private Mat modified = new Mat();
@@ -61,6 +69,11 @@ public class AimBotPipe extends OpenCvPipeline {
     private Scalar color = new Scalar(255, 0, 255);
     private int thickness = 2;
     private int font = FONT_HERSHEY_COMPLEX;
+    private double final_rpm = 0;
+
+    public boolean isGoalFound(){
+        return goalFound;
+    }
 
     @Override
     public Mat processFrame(Mat input) {
@@ -95,10 +108,8 @@ public class AimBotPipe extends OpenCvPipeline {
         // Find contours of goal
         contours = new ArrayList<>();
         findContours(modified, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE);
-        if (contours.size() == 0) {
-            goalFound = false;
-            return output;
-        } else goalFound = true;
+        if (contours.size() == 0) { goalFound = false; return output; }
+        else goalFound = true;
 
         // Retrieve goal contours
         new_contours = findNLargestContours(2, contours);
@@ -107,7 +118,7 @@ public class AimBotPipe extends OpenCvPipeline {
         Rect goalRect = getGoalRect(new_contours);
         rectangle(output, goalRect, color, thickness);
 
-        goalDistance = getGoalDistance();
+        goalDistance = getDistance2Goal();
 
 
         // Calculate error
@@ -115,7 +126,7 @@ public class AimBotPipe extends OpenCvPipeline {
         int center_y = goalRect.y + (goalRect.height / 2);
         Point center = new Point(center_x, center_y);
         double pixel_error = (IMG_WIDTH / 2) - center_x;
-        goalDegreeError = pixels2Degrees(pixel_error, AXES.X);
+        goalDegreeError = pixels2Degrees(pixel_error, VisionUtils.AXES.X);
         line(output, center, new Point(center_x + pixel_error, center_y), new Scalar(0, 0, 255), thickness);
 
 
@@ -130,64 +141,7 @@ public class AimBotPipe extends OpenCvPipeline {
 
         // Return altered image
         return output;
-    }
 
-
-    public double getPowerShotDegreeError(VisionUtils.PowerShot powerShot, double curAngle){
-        if (!isGoalFound()) return 0;
-        double g = goalDistance;
-        double alpha = (curAngle % 360);
-        double angle2Turn2Goal = (alpha + goalDegreeError);
-        double theta = toRadians(angle2Turn2Goal - 180);
-        double x = g * cos(theta);
-        double y = g * sin(theta);
-        double d;
-        switch (powerShot) {
-            case PS_LEFT:
-                d = PS_LEFT_DIST - y;
-                break;
-            case PS_MIDDLE:
-                d = PS_MIDDLE_DIST - y;
-                break;
-            case PS_RIGHT:
-                d = PS_RIGHT_DIST - y;
-                break;
-            default:
-                d = 0;
-        }
-        // Note: gamma < 0 always
-        double gamma = toDegrees(atan2(d, x));
-        double powerShotFieldAngle = 180 - gamma;
-
-        return powerShotFieldAngle;
-    }
-
-    public double calcRPM(){
-        if (isGoalFound() && goalDistance > 1.9){
-            double numerator = 9.8 * pow(goalDistance, 3);
-            double denominator = (0.79 * goalDistance) - 1.185;
-            return (denominator == 0) ? 0 : 250 * sqrt(numerator / denominator);
-        }
-        return 3400;
-    }
-
-    public boolean isGoalFound(){
-        return goalFound;
-    }
-
-    public double getGoalDegreeError(){
-        return goalDegreeError;
-    }
-
-    public double getGoalDistance(){
-        if (!isGoalFound() || goalRect.y == 0) return 0;
-        double opp = 240 - goalRect.y + 10;
-        double thetaRads = opp / 240 * 0.75;
-        return (90 / tan(thetaRads) + 20) / 100;
-    }
-
-    public Rect getGoalRect(){
-        return  goalRect;
     }
 
 
@@ -235,7 +189,21 @@ public class AimBotPipe extends OpenCvPipeline {
         return goalRect;
     }
 
-    private Rect mergeRects(List<Rect> rects) {
+
+    public Rect getGoalRect(){
+        return  goalRect;
+    }
+
+    public double getRPM(){
+        if (isGoalFound() && goalDistance > 1.9){
+            double numerator = 9.8 * pow(goalDistance, 3);
+            double denominator = (0.79 * goalDistance) - 1.185;
+            return (denominator == 0) ? 0 : 250 * sqrt(numerator / denominator);
+        }
+        return 3400;
+    }
+
+    private Rect calcGoalRect(List<Rect> rects) {
 
         // Return first contour if there is only one
         Rect goalRect = rects.get(0);
@@ -279,6 +247,24 @@ public class AimBotPipe extends OpenCvPipeline {
         return goalRect;
     }
 
+    public double getPowerShotDegreeError(VisionUtils.PowerShot powerShot, double angle){
+        return 0;
+    }
+
+    public double getGoalDegreeError(){
+        return goalDegreeError;
+    }
+
+    public double getDistance2Goal(){
+        if (isGoalFound()){
+            if (goalRect.y == 0) return 0;
+            double opp = 240 - goalRect.y + 10;
+            double thetaRads = opp / 240 * 0.75;
+            return (90 / tan(thetaRads) + 20) / 100;
+        }
+        return 0;
+    }
+
     public void releaseAllCaptures(){
         modified.release();
         hierarchy.release();
@@ -291,8 +277,8 @@ public class AimBotPipe extends OpenCvPipeline {
 
     @Override
     public void onViewportTapped() {
-        viewportPaused =        !viewportPaused;
-        if (viewportPaused)     VisionUtils.webcam_front.pauseViewport();
-        else                    VisionUtils.webcam_front.resumeViewport();
+        viewportPaused = !viewportPaused;
+        if (viewportPaused)  VisionUtils.webcam_front.pauseViewport();
+        else                VisionUtils.webcam_front.resumeViewport();
     }
 }

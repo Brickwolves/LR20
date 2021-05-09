@@ -91,7 +91,7 @@ public class Mark10 extends LinearOpMode
     public double getPowerShotAngle(VisionUtils.PowerShot powerShot){
 
         // Get degree error and correct
-        double rpm = aimBot.calcRPM();
+        double rpm = aimBot.getRPM();
         double errorToGoal = (abs(robot.imu.getModAngle()) - 180);
         double goalDegreeError;
         double powerShotFieldAngle;
