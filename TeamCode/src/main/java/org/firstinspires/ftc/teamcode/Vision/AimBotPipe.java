@@ -27,6 +27,9 @@ import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.MAX_V
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.MIN_H;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.MIN_S;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.MIN_V;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.PS_LEFT_OFFSET;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.PS_MIDDLE_OFFSET;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.PS_RIGHT_OFFSET;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.blur;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.dilate_const;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.erode_const;
@@ -155,7 +158,7 @@ public class AimBotPipe extends OpenCvPipeline {
     }
 
 
-    public double getPowerShotDegreeError(VisionUtils.PowerShot powerShot, double curAngle){
+    public double getPowerShotAngle(VisionUtils.PowerShot powerShot, double curAngle){
         if (!isGoalFound()) return 0;
         double g = goalDistance;
         double alpha = (curAngle % 360);
@@ -180,6 +183,19 @@ public class AimBotPipe extends OpenCvPipeline {
         // Note: gamma < 0 always
         double gamma = toDegrees(atan2(d, x));
         double powerShotFieldAngle = 180 - gamma;
+
+        // OFFSETS
+        switch (powerShot) {
+            case PS_LEFT:
+                powerShotFieldAngle += PS_LEFT_OFFSET;
+                break;
+            case PS_MIDDLE:
+                powerShotFieldAngle += PS_MIDDLE_OFFSET;
+                break;
+            case PS_RIGHT:
+                powerShotFieldAngle += PS_RIGHT_OFFSET;
+                break;
+        }
 
         return powerShotFieldAngle;
     }

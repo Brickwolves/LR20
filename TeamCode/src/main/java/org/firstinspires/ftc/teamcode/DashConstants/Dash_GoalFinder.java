@@ -21,4 +21,8 @@ public class Dash_GoalFinder {
     public static int goalWidth = 100;
     public static double horizonLineRatio = 1;
 
+    public static double PS_RIGHT_OFFSET = 0;
+    public static double PS_MIDDLE_OFFSET = 0;
+    public static double PS_LEFT_OFFSET = 0;
+
 }

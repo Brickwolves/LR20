@@ -328,7 +328,7 @@ public class Mecanum implements Robot {
       return x + toRadians(c2) * sin(4 * x - 0.2);
    }
 
-   public void linearStrafe(double angle, double cm, double acceleration, double targetAngle, double waitTime, SyncTask task) {
+   public void linearStrafe(double angle, double cm, double acceleration, double targetAngle, double waitTurnTime, double waitTaskTime, SyncTask task) {
 
       resetMotors();
 
@@ -354,14 +354,14 @@ public class Mecanum implements Robot {
       while (curC < ticks && isActive()){
 
          // Execute task synchronously
-         if (task != null) task.execute();
+         if (task != null && time.seconds() > waitTaskTime) task.execute();
 
          // Power ramping
          power = powerRamp(curC, ticks, acceleration);
 
          // PID CONTROLLER
          pr0 = clip(rotationPID.update(targetAngle - imu.getAngle()) * -1, -1, 1);
-         if (time.seconds() < waitTime) pr0 = 0;
+         if (time.seconds() < waitTurnTime) pr0 = 0;
 
          // SHIFT POWER
          Point shiftedPowers = shift(px0, py0, curO.a % 360);

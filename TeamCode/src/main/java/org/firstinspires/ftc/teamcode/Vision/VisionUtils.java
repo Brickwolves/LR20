@@ -20,7 +20,7 @@ public class VisionUtils {
     public static final double Y_FOV = 43;
     public static double PS_LEFT_DIST = 0.415;
     public static double PS_MIDDLE_DIST = 0.64;
-    public static double PS_RIGHT_DIST = 0.80;
+    public static double PS_RIGHT_DIST = 0.81;
     public static final double CAMERA_HEIGHT = 0.19;
     public static final double BACK_WEBCAM_HEIGHT = 0.19;
     // Note: All measurements in meters

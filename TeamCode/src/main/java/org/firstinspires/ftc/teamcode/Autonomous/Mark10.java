@@ -20,6 +20,10 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import static java.lang.Math.abs;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement.ACCELERATION;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement.D_TICKS;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement.FACE_ANGLE;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement.STRAFE_ANGLE;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.DOWN;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.CROSS;
 import static org.firstinspires.ftc.teamcode.Hardware.Mecanum.findClosestAngle;
@@ -44,6 +48,26 @@ public class Mark10 extends LinearOpMode
         BC = new ButtonControls(gamepad1);
 
         initVision();
+
+        gripperSequence();
+    }
+
+    public void gripperSequence(){
+        time.reset();
+        while (time.seconds() < 1){
+            robot.claw.open();
+            robot.arm.up();
+        }
+        time.reset();
+        while (!BC.get(CROSS, DOWN) && time.seconds() < 2){
+            ButtonControls.update();
+            multTelemetry.addData("Status", "Press X to close gripper.");
+            multTelemetry.update();
+        }
+        time.reset();
+        while (time.seconds() < 1){
+            robot.claw.close();
+        }
     }
 
     public void initVision(){
@@ -91,7 +115,7 @@ public class Mark10 extends LinearOpMode
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public double getPowerShotAngle(VisionUtils.PowerShot powerShot){
-        double modPowerShotDegree = aimBot.getPowerShotDegreeError(powerShot, robot.imu.getAngle());
+        double modPowerShotDegree = aimBot.getPowerShotAngle(powerShot, robot.imu.getAngle());
         return findClosestAngle(modPowerShotDegree, robot.imu.getAngle());
     }
 
@@ -107,34 +131,82 @@ public class Mark10 extends LinearOpMode
         waitForStart();
 
         if (opModeIsActive()){
-
-            robot.linearStrafe(175, 1100, 0.2, 175, 0.1, () -> {
-                robot.shooter.setRPM(3200);
-                robot.wings.mid();
-            });
-            robot.intake.armDown();
-
-            sleep(200);
-
-            // Turn to 1st
-            double psRightAngle = getPowerShotAngle(PS_RIGHT); // +4
-            robot.linearTurn(psRightAngle, 2, () -> robot.shooter.setRPM(3200));
-            sleep(200);
-            shoot(1, 0.2);
-
-            // Turn to 2nd
-            double psMiddleAngle = getPowerShotAngle(PS_MIDDLE);
-            robot.linearTurn(psMiddleAngle, 2, () -> robot.shooter.setRPM(3200));
-            shoot(1, 0.2);
-
-            // Turn to 3rd
-            double psLeftAngle = getPowerShotAngle(PS_LEFT); // -4
-            robot.linearTurn(psLeftAngle, 2, () -> robot.shooter.setRPM(3200));
-            shoot(1, 0.2);
-
-            System.out.println("PSRIGHT: " + psRightAngle);
-            System.out.println("PSMIDDLE: " + psMiddleAngle);
-            System.out.println("PSLEFT: " + psLeftAngle);
+            C();
         }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public void powerShots(){
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public void C(){
+
+        // Shoot PowerShots
+        robot.linearStrafe(180, 1150, 0.3, 175, 0.1, 0, () -> {
+            robot.shooter.setRPM(3200);
+            robot.wings.mid();
+        });
+        robot.intake.armDown();
+
+        robot.linearTurn(175, 2, () -> robot.shooter.setRPM(3200));
+
+        sleep(200);
+
+        // MIDDLE POWERSHOT
+        double psMiddleAngle = getPowerShotAngle(PS_MIDDLE);
+        robot.linearTurn(psMiddleAngle, 2, () -> robot.shooter.setRPM(3200));
+        shoot(1, 0.2);
+
+        // RIGHT POWERSHOT
+        double psRightAngle = getPowerShotAngle(PS_RIGHT)  - 2;
+        robot.linearTurn(psRightAngle, 2, () -> robot.shooter.setRPM(3200));
+        sleep(200);
+        shoot(1, 0.2);
+
+        // LEFT POWERSHOT
+        double psLeftAngle = getPowerShotAngle(PS_LEFT); // -4
+        robot.linearTurn(psLeftAngle, 2, () -> robot.shooter.setRPM(3200));
+        shoot(1, 0.2);
+
+        System.out.println("PSRIGHT: " + psRightAngle);
+        System.out.println("PSMIDDLE: " + psMiddleAngle);
+        System.out.println("PSLEFT: " + psLeftAngle);
+
+        // Shooter off
+        robot.shooter.setPower(0);
+
+
+
+
+
+        // Drop to C
+        time.reset();
+        robot.linearStrafe(200, 1550, 0.4, 20, 0, 0,
+                () -> {
+            if (time.seconds() > 1) robot.arm.out();
+        });
+
+
+        // Return to
+        time.reset();
+        robot.linearStrafe(-12, 1900, 0.3, 180, 0.45, 0,
+                () -> {
+                    robot.wings.up();
+                    robot.intake.armUp();
+                    robot.claw.open();
+                    if (time.seconds() > 0.4 && time.seconds() < 0.7) robot.arm.up();
+                    if (time.seconds() > 0.7) robot.arm.out();
+                });
+
+        robot.linearStrafe(90, 100, 0.05, 180, 0, 0,
+            () -> {
+                robot.claw.close();
+                robot.arm.up();
+            });
+
+        BREAKPOINT();
+
     }
 }

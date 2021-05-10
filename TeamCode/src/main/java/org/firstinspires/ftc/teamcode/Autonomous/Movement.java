@@ -18,7 +18,7 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement.ACCELERATION;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement.ANGLE;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement.FACE_ANGLE;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement.D_TICKS;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement.STRAFE_ANGLE;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.DOWN;
@@ -80,7 +80,7 @@ public class Movement extends LinearOpMode
 
             BREAKPOINT();
 
-            robot.linearStrafe(STRAFE_ANGLE, D_TICKS, ACCELERATION, ANGLE, 0, null);
+            robot.linearStrafe(STRAFE_ANGLE, D_TICKS, ACCELERATION, FACE_ANGLE, 0, 0, null);
             robot.intake.armDown();
             //robot.linearStrafe(new Orientation(X_TICKS, Y_TICKS, ANGLE), ACCELERATION, null);
 

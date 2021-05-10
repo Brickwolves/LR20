@@ -90,7 +90,7 @@ public class Mark9 extends LinearOpMode
         double goalDegreeError;
         double powerShotFieldAngle;
         goalDegreeError = aimBot.getGoalDegreeError();
-        powerShotFieldAngle = aimBot.getPowerShotDegreeError(powerShot, robot.imu.getAngle());
+        powerShotFieldAngle = aimBot.getPowerShotAngle(powerShot, robot.imu.getAngle());
         return powerShotFieldAngle;
     }
 
