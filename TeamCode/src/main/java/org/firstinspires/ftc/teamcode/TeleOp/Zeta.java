@@ -23,6 +23,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import static java.lang.Math.abs;
 import static java.lang.StrictMath.round;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement.INTAKE_POWER;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.DOWN;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.TAP;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.TOGGLE;
@@ -199,8 +200,8 @@ public class Zeta extends LinearOpMode {
 
             //                INTAKE CODE
             if (BC2.get(RB1, TOGGLE)) {
-                if (BC2.get(LB1, TOGGLE)) robot.intake.setIntakePower(-1);
-                else robot.intake.setIntakePower(1);
+                if (BC2.get(LB1, DOWN)) robot.intake.setIntakePower(-1);
+                else robot.intake.setIntakePower(INTAKE_POWER);
             }
             else robot.intake.setIntakePower(0);
 
@@ -216,6 +217,10 @@ public class Zeta extends LinearOpMode {
                 nearGoal = true;
             }
 
+            if (!BC1.get(CROSS, TOGGLE)) robot.wings.mid();
+            else robot.wings.out();
+
+            /*
             // Override toggle
             if (!BC1.get(CROSS, TOGGLE)){
 
@@ -223,22 +228,17 @@ public class Zeta extends LinearOpMode {
                 if (robot.shooter.getFeederCount() > 0){
 
                     // NearGoal : wings out
-                    if (nearGoal){
-                        robot.wings.out();
-                    }
-                    else {
-                        robot.wings.mid();
-                    }
+                    if (nearGoal) robot.wings.out();
+                    else robot.wings.mid();
                 }
-                else {
-                    robot.wings.mid();
-                }
+                else robot.wings.mid();
 
                 if (BC2.get(CIRCLE, TAP)){
                     if (BC2.get(CIRCLE, TOGGLE)) robot.shooter.setFeederCount(0);
                 }
             }
             else robot.wings.mid();
+             */
 
 
             // Square toggles aiming at goal or powershots

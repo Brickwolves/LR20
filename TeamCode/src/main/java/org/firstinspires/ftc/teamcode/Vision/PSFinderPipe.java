@@ -12,9 +12,9 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.blur;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.dilate_const;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.erode_const;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.blur;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.dilate_const;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.erode_const;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_PSFinder.MAX_Cb;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_PSFinder.MAX_Cr;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_PSFinder.MAX_Y;

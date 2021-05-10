@@ -13,4 +13,6 @@ public class Dash_Movement {
     public static double STRAFE_ANGLE = -12;
     public static double FACE_ANGLE = 180;
     public static double ACCELERATION = 0.3;
+
+    public static double INTAKE_POWER = 0.8;
 }

@@ -21,19 +21,22 @@ import static java.lang.StrictMath.cos;
 import static java.lang.StrictMath.pow;
 import static java.lang.StrictMath.sin;
 import static java.lang.StrictMath.sqrt;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.MAX_H;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.MAX_S;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.MAX_V;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.MIN_H;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.MIN_S;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.MIN_V;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.PS_LEFT_OFFSET;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.PS_MIDDLE_OFFSET;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.PS_RIGHT_OFFSET;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.blur;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.dilate_const;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.erode_const;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_GoalFinder.goalWidth;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.DEBUG_MODE_ON;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.GOAL_OFFSET;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.MAX_H;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.MAX_S;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.MAX_V;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.MIN_H;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.MIN_S;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.MIN_V;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.PS_LEFT_OFFSET;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.PS_MIDDLE_OFFSET;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.PS_RIGHT_OFFSET;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.blur;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.dilate_const;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.erode_const;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.goalWidth;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Shooter.SHOOTER_COEFF;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.IMG_HEIGHT;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.IMG_WIDTH;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.PS_LEFT_DIST;
@@ -135,7 +138,7 @@ public class AimBotPipe extends OpenCvPipeline {
 
         // Calculate Error
         double pixel_error = (IMG_WIDTH / 2) - center_x;
-        goalDegreeError = pixels2Degrees(pixel_error, VisionUtils.AXES.X) + 4;
+        goalDegreeError = pixels2Degrees(pixel_error, VisionUtils.AXES.X) + GOAL_OFFSET;
         goalDistance = getGoalDistance();
 
         // Logging Shapes and Degree & Pixel Data
@@ -153,6 +156,7 @@ public class AimBotPipe extends OpenCvPipeline {
          */
 
         // Return altered image
+        if (DEBUG_MODE_ON) return modified;
         return output;
 
     }
@@ -204,7 +208,7 @@ public class AimBotPipe extends OpenCvPipeline {
         if (isGoalFound() && goalDistance > 1.9){
             double numerator = 9.8 * pow(goalDistance, 3);
             double denominator = (0.79 * goalDistance) - 1.185;
-            return (denominator == 0) ? 0 : 250 * sqrt(numerator / denominator);
+            return (denominator == 0) ? 0 : SHOOTER_COEFF * sqrt(numerator / denominator);
         }
         return 3400;
     }

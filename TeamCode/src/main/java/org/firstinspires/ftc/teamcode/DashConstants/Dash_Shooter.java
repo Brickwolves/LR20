@@ -15,11 +15,10 @@ public class Dash_Shooter {
     public static double d = 0.000001;
 
 
-    public static double power = 0.0;
-    public static double shooter_power = 0.0;
-    public static double goal_rpm = 3800;
-    public static double ps_rpm = 3200;
+    public static double SHOOTER_COEFF = 253;
 
-    public static double millis = 400;
-    public static int rings = 1;
+
+
+    public static double power = 0.0;
+    public static double goal_rpm = 3800;
 }
