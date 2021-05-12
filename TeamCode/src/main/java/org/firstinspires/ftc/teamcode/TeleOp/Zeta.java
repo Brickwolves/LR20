@@ -14,8 +14,8 @@ import org.firstinspires.ftc.teamcode.Hardware.Arm;
 import org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls;
 import org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls;
 import org.firstinspires.ftc.teamcode.Hardware.Mecanum;
-import org.firstinspires.ftc.teamcode.Utilities.PID.RingBuffer;
 import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
+import org.firstinspires.ftc.teamcode.Utilities.PID.RingBuffer;
 import org.firstinspires.ftc.teamcode.Vision.AimBotPipe;
 import org.firstinspires.ftc.teamcode.Vision.VisionUtils;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -23,7 +23,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import static java.lang.Math.abs;
 import static java.lang.StrictMath.round;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement.INTAKE_POWER;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Intake.INTAKE_RPM_FORWARDS;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Intake.INTAKE_RPM_REVERSE;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.DOWN;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.TAP;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.TOGGLE;
@@ -201,7 +202,7 @@ public class Zeta extends LinearOpMode {
             //                INTAKE CODE
             if (BC2.get(RB1, TOGGLE)) {
                 if (BC2.get(LB1, DOWN)) robot.intake.setIntakePower(-1);
-                else robot.intake.setIntakePower(INTAKE_POWER);
+                else robot.intake.setRPM(INTAKE_RPM_FORWARDS);
             }
             else robot.intake.setIntakePower(0);
 
@@ -258,6 +259,8 @@ public class Zeta extends LinearOpMode {
             if (BC2.get(CIRCLE, TOGGLE)) {
                 robot.intake.armDown();
                 current_angular_velocity = 0;
+
+                GOAL_OFFSET =
 
                 // Check if Goal is found, if not, set RPM to default, and orient nearby goal
                 if (errorToGoal > 40) {

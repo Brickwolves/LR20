@@ -6,12 +6,12 @@ public class Dash_Servos {
 
     public static double INTAKE_ARM_SERVO_DIFFERENCE = 0.06;
 
-    public static double INTAKE_ARM_LSERVO_HOME     = 0.30;
+    public static double INTAKE_ARM_LSERVO_HOME     = 0.32;
     public static double INTAKE_ARM_LSERVO_MIN      = 0.08;
     public static double INTAKE_ARM_LSERVO_MAX      = 0.4;
     public static double INTAKE_ARM_LSERVO_MID      = INTAKE_ARM_LSERVO_MAX - INTAKE_ARM_SERVO_DIFFERENCE;
 
-    public static double INTAKE_ARM_RSERVO_HOME     = 0.18;
+    public static double INTAKE_ARM_RSERVO_HOME     = 0.16;
     public static double INTAKE_ARM_RSERVO_MIN      = 0.08;
     public static double INTAKE_ARM_RSERVO_MAX      = 0.4;
     public static double INTAKE_ARM_RSERVO_MID      = INTAKE_ARM_RSERVO_MIN + INTAKE_ARM_SERVO_DIFFERENCE;
