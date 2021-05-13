@@ -37,6 +37,9 @@ import static java.lang.StrictMath.pow;
 import static java.lang.StrictMath.sin;
 import static java.lang.StrictMath.sqrt;
 import static java.lang.StrictMath.toRadians;
+import static org.firstinspires.ftc.teamcode.Utilities.MathUtils.findClosestAngle;
+import static org.firstinspires.ftc.teamcode.Utilities.MathUtils.shift;
+import static org.firstinspires.ftc.teamcode.Utilities.MathUtils.unShift;
 import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.hardwareMap;
 import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.isActive;
 import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.multTelemetry;
@@ -58,19 +61,7 @@ public class Mecanum implements Robot {
    public PID rotationPID = new PID(Dash_Movement.p, Dash_Movement.i, Dash_Movement.d, 0, 100, true);
 
    public static ElapsedTime time = new ElapsedTime();
-   public static RingBuffer<Double> angleBuffer          = new RingBuffer<>(5, 0.0);
-   public static RingBuffer<Double> frBuffer             = new RingBuffer<>(5,  0.0);
-   public static RingBuffer<Double> flBuffer             = new RingBuffer<>(5,  0.0);
-   public static RingBuffer<Double> brBuffer             = new RingBuffer<>(5,  0.0);
-   public static RingBuffer<Double> blBuffer             = new RingBuffer<>(5,  0.0);
-   public static RingBuffer<Double> xPosBuffer           = new RingBuffer<>(5,  0.0);
-   public static RingBuffer<Double> yPosBuffer           = new RingBuffer<>(5,  0.0);
 
-   public static RingBuffer<Double> intakeBuffer         = new RingBuffer<>(5,  0.0);
-
-   public static RingBuffer<Double> timeBuffer           = new RingBuffer<>(5,  0.0);
-
-   public static Map<String, Double> motorRPMs = new HashMap<String, Double>();
 
 
    public enum Units {
@@ -82,8 +73,6 @@ public class Mecanum implements Robot {
    }
 
    public void initRobot() {
-      multTelemetry.addData("Status", "Initialized");
-      multTelemetry.update();
 
       // Init Motors
       fr = hardwareMap.get(DcMotor.class, "front_right_motor");
@@ -92,18 +81,16 @@ public class Mecanum implements Robot {
       bl = hardwareMap.get(DcMotor.class, "back_left_motor");
       resetMotors();
 
-      motorRPMs.put("FR", 0.0);
-      motorRPMs.put("FL", 0.0);
-      motorRPMs.put("BR", 0.0);
-      motorRPMs.put("BL", 0.0);
+      imu      = new IMU("imu");
+      odom     = new Odometry(0, 0, imu.getAngle());
+      claw     = new Claw("eservo_2", "eservo_1");
+      arm      = new Arm("eservo_0");
+      intake   = new Intake("intake", "cservo_2", "cservo_4");
+      shooter  = new Shooter("spinny_1", "spinny_2", "cservo_1", "cservo_0");
+      wings    = new Wings("cservo_3", "cservo_5");
 
-      imu = new IMU("imu");
-      odom = new Odometry(0, 0, imu.getAngle());
-      claw = new Claw("eservo_2", "eservo_1");
-      arm = new Arm("eservo_0");
-      intake = new Intake("intake", "cservo_2", "cservo_4");
-      shooter = new Shooter("spinny_1", "spinny_2", "cservo_1", "cservo_0");
-      wings = new Wings("cservo_3", "cservo_5");
+      multTelemetry.addData("Status", "Initialized");
+      multTelemetry.update();
    }
 
 
@@ -151,7 +138,12 @@ public class Mecanum implements Robot {
    }
 
 
-
+   /**
+    * @param position
+    * @param distance
+    * @param acceleration
+    * @return the coefficient [0, 1] of our velocity
+    */
    public static double powerRamp(double position, double distance, double acceleration){
       /*
        *  The piece wise function has domain restriction [0, inf] and range restriction [0, 1]
@@ -170,66 +162,6 @@ public class Mecanum implements Robot {
       return power;
    }
 
-   /**
-    * @param targetAngle
-    * @return
-    */
-   @RequiresApi(api = Build.VERSION_CODES.N)
-   public double closestRelativeAngle(double targetAngle){
-      double simpleTargetDelta = floorMod(Math.round(((360 - targetAngle) + imu.getAngle()) * 1e6), Math.round(360.000 * 1e6)) / 1e6;
-      double alternateTargetDelta = -1 * (360 - simpleTargetDelta);
-      return StrictMath.abs(simpleTargetDelta) >= StrictMath.abs(alternateTargetDelta) ? 0 - simpleTargetDelta : 0 - alternateTargetDelta;
-   }
-
-   /**
-    * @param targetAngle
-    * @param currentAngle
-    * @return
-    */
-   @RequiresApi(api = Build.VERSION_CODES.N)
-   public static double findClosestAngle(double targetAngle, double currentAngle) {
-      double simpleTargetDelta = floorMod(Math.round(((360 - targetAngle) + currentAngle) * 1e6), Math.round(360.000 * 1e6)) / 1e6;
-      double alternateTargetDelta = -1 * (360 - simpleTargetDelta);
-      return StrictMath.abs(simpleTargetDelta) <= StrictMath.abs(alternateTargetDelta) ? currentAngle - simpleTargetDelta : currentAngle - alternateTargetDelta;
-   }
-
-   /**
-    * @param currentAngle
-    * @return
-    */
-   @RequiresApi(api = Build.VERSION_CODES.N)
-   public static double findClosestAngleNearGoal(double currentAngle){
-
-      double MOE = 20;
-      double a1 = 180 - MOE;
-      double a2 = 180 + MOE;
-
-      double simpleTargetDelta1 = floorMod(Math.round(((360 - a1) + currentAngle) * 1e6), Math.round(360.000 * 1e6)) / 1e6;
-      double alternateTargetDelta1 = -1 * (360 - simpleTargetDelta1);
-      double min1 = min(abs(simpleTargetDelta1), abs(alternateTargetDelta1));
-
-      double simpleTargetDelta2 = floorMod(Math.round(((360 - a2) + currentAngle) * 1e6), Math.round(360.000 * 1e6)) / 1e6;
-      double alternateTargetDelta2 = -1 * (360 - simpleTargetDelta2);
-      double min2 = min(abs(simpleTargetDelta2), abs(alternateTargetDelta2));
-
-      double final_angle = (min1 > min2) ? a2 : a1;
-      return findClosestAngle(final_angle, currentAngle);
-   }
-
-
-   public static Point shift(double x, double y, double shiftAngle){
-      double shiftedX = (x * Math.sin(toRadians(shiftAngle))) + (y * cos(toRadians(shiftAngle)));
-      double shiftedY = (x * Math.cos(toRadians(shiftAngle))) - (y * sin(toRadians(shiftAngle)));
-      return new Point(shiftedX, shiftedY);
-   }
-
-   public static Point unShift(double x, double y, double shiftAngle){
-      double r = toRadians(shiftAngle);
-      double unShiftedY = ((x * cos(r)) - (y * sin(r)))   /  (pow(cos(r), 2) + pow(sin(r), 2));
-      double unShiftedX = (x - (unShiftedY * cos(r))) / sin(r);
-      if (sin(r) == 0) unShiftedX = 0;
-      return new Point(unShiftedX, unShiftedY);
-   }
 
    public double getRComp(){
       double r1 = 0.5 * (bl.getCurrentPosition() - fr.getCurrentPosition());
@@ -261,60 +193,6 @@ public class Mecanum implements Robot {
 
    public double getYComp(double fr, double fl, double br, double bl){
       return (fr + fl + br + bl) / 4.0;
-   }
-
-   public void update(){
-
-      // Retrieve Deltas
-      double deltaMillis                  = timeBuffer.getValue(time.milliseconds());
-      double deltaMinutes                 = deltaMillis / 60000.0;
-      double deltaAngle                   = angleBuffer.getValue(imu.getAngle());
-
-      double deltaIntakeRotations         = intakeBuffer.getValue((double) intake.getIntakePosition()) / 537.7;
-
-      double deltaFRRotations             = frBuffer.getValue((double) fr.getCurrentPosition()) / 537.7;
-      double deltaFLRotations             = flBuffer.getValue((double) fl.getCurrentPosition()) / 537.7;
-      double deltaBRRotations             = brBuffer.getValue((double) br.getCurrentPosition()) / 537.7;
-      double deltaBLRotations             = blBuffer.getValue((double) bl.getCurrentPosition()) / 537.7;
-
-      double deltaX                       = xPosBuffer.getValue(getXComp());
-      double deltaY                       = yPosBuffer.getValue(getYComp());
-
-      // Retrieve RPMs
-      double frRPM = deltaFRRotations / deltaMinutes;
-      double flRPM = deltaFLRotations / deltaMinutes;
-      double brRPM = deltaBRRotations / deltaMinutes;
-      double blRPM = deltaBLRotations / deltaMinutes;
-
-      // Retrieve Velocities
-      double angularVelocity  = deltaAngle / deltaMinutes;
-      double xVelocity        = deltaX / deltaMinutes;
-      double yVelocity        = deltaY / deltaMinutes;
-
-
-      // Update HashMaps
-      motorRPMs.put("FR", frRPM);
-      motorRPMs.put("FL", flRPM);
-      motorRPMs.put("BR", brRPM);
-      motorRPMs.put("BL", blRPM);
-   }
-
-
-   public double robotVelocityComponent(double angle){
-      double relYVelocity = getYComp(motorRPMs.get("FR"), motorRPMs.get("FL"), motorRPMs.get("BR"), motorRPMs.get("BL"));
-      double relXVelocity = (motorRPMs.get("FR") - motorRPMs.get("FL") - motorRPMs.get("BR") + motorRPMs.get("BL")) / 4;
-      //double strafe = getXComp(motorRPMs.get("FR"), motorRPMs.get("FL"), motorRPMs.get("BR"), motorRPMs.get("BL"));
-
-
-      double velocityAngle;
-
-      double speed = hypot(relXVelocity, relYVelocity);
-      if (speed == 0) velocityAngle = 0;
-      else velocityAngle = - toDegrees(atan2(relYVelocity, relXVelocity)) + 180;
-
-      angle -= velocityAngle;
-
-      return toDegrees(cos(angle)) * speed;
    }
 
 

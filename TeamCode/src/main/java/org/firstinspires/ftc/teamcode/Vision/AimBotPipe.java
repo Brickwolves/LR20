@@ -63,7 +63,7 @@ import static org.opencv.imgproc.Imgproc.rectangle;
 public class AimBotPipe extends OpenCvPipeline {
     private boolean viewportPaused;
 
-    private double goalDistance;
+    private double goalDistance = 0;
     private double goalDegreeError = 0;
     private boolean goalFound = false;
     private Rect goalRect = new Rect(0, 0, 0, 0);
@@ -138,7 +138,7 @@ public class AimBotPipe extends OpenCvPipeline {
 
         // Calculate Error
         double pixel_error = (IMG_WIDTH / 2) - center_x;
-        goalDegreeError = pixels2Degrees(pixel_error, VisionUtils.AXES.X) + GOAL_OFFSET;
+        goalDegreeError = pixels2Degrees(pixel_error, VisionUtils.AXES.X);
         goalDistance = getGoalDistance();
 
         // Logging Shapes and Degree & Pixel Data
@@ -217,8 +217,18 @@ public class AimBotPipe extends OpenCvPipeline {
         return goalFound;
     }
 
-    public double getGoalDegreeError(){
+    public double getRawGoalDegreeError(){
         return (isGoalFound()) ? goalDegreeError : 0;
+    }
+
+    public double getGoalDegreeError(double currentAngle){
+        return (isGoalFound()) ? goalDegreeError + calcGoalOffset(currentAngle) : 0;
+    }
+
+    public double calcGoalOffset(double currentAngle){
+        double degreesFrom180 = currentAngle - 180;
+        double offset = degreesFrom180 * (1/6) + 3;
+        return offset;
     }
 
     public double getGoalDistance(){
