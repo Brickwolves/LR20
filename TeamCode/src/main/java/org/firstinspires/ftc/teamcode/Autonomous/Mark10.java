@@ -19,14 +19,9 @@ import org.firstinspires.ftc.teamcode.Vision.VisionUtils;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
-import static java.lang.Math.abs;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement.ACCELERATION;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement.D_TICKS;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement.FACE_ANGLE;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement.STRAFE_ANGLE;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.DOWN;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.CROSS;
-import static org.firstinspires.ftc.teamcode.Hardware.Mecanum.findClosestAngle;
+import static org.firstinspires.ftc.teamcode.Utilities.MathUtils.findClosestAngle;
 import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.multTelemetry;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.PowerShot.PS_LEFT;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.PowerShot.PS_MIDDLE;
@@ -144,31 +139,31 @@ public class Mark10 extends LinearOpMode
     public void C(){
 
         // Shoot PowerShots
-        robot.linearStrafe(180, 1150, 0.3, 175, 0.1, 0, () -> {
-            robot.shooter.setRPM(3200);
+        robot.linearStrafe(170, 1200, 0.3, 175, 0.1, 0, () -> {
+            robot.shooter.setRPM(0); //3200
             robot.wings.mid();
         });
         robot.intake.armDown();
 
-        robot.linearTurn(175, 2, () -> robot.shooter.setRPM(3200));
+        robot.linearTurn(175, 2, () -> robot.shooter.setRPM(0)); // 3200
 
         sleep(200);
 
         // MIDDLE POWERSHOT
         double psMiddleAngle = getPowerShotAngle(PS_MIDDLE);
-        robot.linearTurn(psMiddleAngle, 2, () -> robot.shooter.setRPM(3200));
-        shoot(1, 0.2);
+        robot.linearTurn(psMiddleAngle, 2, () -> robot.shooter.setRPM(0)); //3200
+        //shoot(1, 0.2);
 
         // RIGHT POWERSHOT
         double psRightAngle = getPowerShotAngle(PS_RIGHT)  - 2;
-        robot.linearTurn(psRightAngle, 2, () -> robot.shooter.setRPM(3200));
+        robot.linearTurn(psRightAngle, 2, () -> robot.shooter.setRPM(0)); //3200
         sleep(200);
-        shoot(1, 0.2);
+        //shoot(1, 0.2);
 
         // LEFT POWERSHOT
         double psLeftAngle = getPowerShotAngle(PS_LEFT); // -4
-        robot.linearTurn(psLeftAngle, 2, () -> robot.shooter.setRPM(3200));
-        shoot(1, 0.2);
+        robot.linearTurn(psLeftAngle, 2, () -> robot.shooter.setRPM(0)); //3200
+        //shoot(1, 0.2);
 
         System.out.println("PSRIGHT: " + psRightAngle);
         System.out.println("PSMIDDLE: " + psMiddleAngle);
@@ -183,15 +178,22 @@ public class Mark10 extends LinearOpMode
 
         // Drop to C
         time.reset();
-        robot.linearStrafe(200, 1550, 0.4, 20, 0, 0,
+        robot.linearStrafe(210, 1800, 0.4, 20, 0, 0,
                 () -> {
             if (time.seconds() > 1) robot.arm.out();
         });
 
-
-        // Return to
+        /*
         time.reset();
-        robot.linearStrafe(-12, 1900, 0.3, 180, 0.45, 0,
+        while (time.seconds() < 0.5){
+            robot.claw.open();
+            robot.arm.up();
+        }
+         */
+
+        // Return to other wobble goal
+        time.reset();
+        robot.linearStrafe(-10, 2000, 0.3, 180, 0.45, 0,
                 () -> {
                     robot.wings.up();
                     robot.intake.armUp();
@@ -200,13 +202,20 @@ public class Mark10 extends LinearOpMode
                     if (time.seconds() > 0.7) robot.arm.out();
                 });
 
-        robot.linearStrafe(90, 100, 0.05, 180, 0, 0,
+        time.reset();
+        while (time.seconds() > 0.5 && time.seconds() < 1){
+            robot.claw.close();
+        }
+
+        // Prepare to knock down rings
+        time.reset();
+        robot.linearStrafe(90, 700, 0.05, 180, 0, 0,
             () -> {
                 robot.claw.close();
-                robot.arm.up();
+                if (time.seconds() > 0.6) robot.arm.up();
             });
 
-        BREAKPOINT();
+        robot.intake.armDown();
 
     }
 }

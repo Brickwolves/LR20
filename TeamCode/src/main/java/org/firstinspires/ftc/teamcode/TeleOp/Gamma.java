@@ -17,6 +17,7 @@ import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
 
 import static java.lang.Math.abs;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Shooter.goal_rpm;
+import static org.firstinspires.ftc.teamcode.Utilities.MathUtils.findClosestAngle;
 
 @Disabled
 @TeleOp(name = "Gamma TeleOp", group="Linear TeleOp")
@@ -208,13 +209,13 @@ public class Gamma extends LinearOpMode {
 
 
             // DPAD Auto Turn
-            if (controller1.src.dpad_up) locked_direction               = Mecanum.findClosestAngle(0, robot.imu.getAngle());
-            else if (controller1.src.dpad_right) locked_direction       = Mecanum.findClosestAngle(-90, robot.imu.getAngle());
-            else if (controller1.src.dpad_left) locked_direction        = Mecanum.findClosestAngle(90, robot.imu.getAngle());
-            else if (controller1.src.dpad_down) locked_direction        = Mecanum.findClosestAngle(180, robot.imu.getAngle());
+            if (controller1.src.dpad_up) locked_direction               = findClosestAngle(0, robot.imu.getAngle());
+            else if (controller1.src.dpad_right) locked_direction       = findClosestAngle(-90, robot.imu.getAngle());
+            else if (controller1.src.dpad_left) locked_direction        = findClosestAngle(90, robot.imu.getAngle());
+            else if (controller1.src.dpad_down) locked_direction        = findClosestAngle(180, robot.imu.getAngle());
 
 
-            if (controller1.src.circle) locked_direction = Mecanum.findClosestAngle(110, robot.imu.getAngle());
+            if (controller1.src.circle) locked_direction = findClosestAngle(110, robot.imu.getAngle());
 
             // Power Shot increment
             if (controller1.RB1_tap){
@@ -226,9 +227,9 @@ public class Gamma extends LinearOpMode {
                 else ps_increment--;
             }
             if (controller1.RB1_tap || controller1.LB1_tap)
-                if (ps_increment == 0)      locked_direction = Mecanum.findClosestAngle(-ps_delta_angle + 90, robot.imu.getAngle());
-                else if (ps_increment == 1) locked_direction = Mecanum.findClosestAngle(0 + 90, robot.imu.getAngle());
-                else if (ps_increment == 2) locked_direction = Mecanum.findClosestAngle(ps_delta_angle + 90, robot.imu.getAngle());
+                if (ps_increment == 0)      locked_direction = findClosestAngle(-ps_delta_angle + 90, robot.imu.getAngle());
+                else if (ps_increment == 1) locked_direction = findClosestAngle(0 + 90, robot.imu.getAngle());
+                else if (ps_increment == 2) locked_direction = findClosestAngle(ps_delta_angle + 90, robot.imu.getAngle());
 
 
             /*

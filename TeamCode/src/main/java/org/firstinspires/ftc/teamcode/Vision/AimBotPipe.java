@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.Vision;
 
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
@@ -22,7 +26,6 @@ import static java.lang.StrictMath.pow;
 import static java.lang.StrictMath.sin;
 import static java.lang.StrictMath.sqrt;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.DEBUG_MODE_ON;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.GOAL_OFFSET;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.MAX_H;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.MAX_S;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.MAX_V;
@@ -36,7 +39,9 @@ import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.blur;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.dilate_const;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.erode_const;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.goalWidth;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.xVelocityMultiplier;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Shooter.SHOOTER_COEFF;
+import static org.firstinspires.ftc.teamcode.Utilities.MathUtils.findClosestAngle;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.IMG_HEIGHT;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.IMG_WIDTH;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.PS_LEFT_DIST;
@@ -221,14 +226,20 @@ public class AimBotPipe extends OpenCvPipeline {
         return (isGoalFound()) ? goalDegreeError : 0;
     }
 
-    public double getGoalDegreeError(double currentAngle){
-        return (isGoalFound()) ? goalDegreeError + calcGoalOffset(currentAngle) : 0;
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public double getGoalDegreeError(double currentAngle, double currentXVelocity){
+        return (isGoalFound()) ? goalDegreeError + calcGoalOffset(currentAngle) + calcGoalXVelocityOffset(currentXVelocity) : 0;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public double calcGoalOffset(double currentAngle){
-        double degreesFrom180 = currentAngle - 180;
-        double offset = degreesFrom180 * (1/6) + 3;
+        double degreesFrom180 = currentAngle - findClosestAngle(180, currentAngle);
+        double offset = degreesFrom180 * (1.0/7.0) + 3;
         return offset;
+    }
+
+    public double calcGoalXVelocityOffset(double xVelocity){
+        return xVelocity * xVelocityMultiplier;
     }
 
     public double getGoalDistance(){

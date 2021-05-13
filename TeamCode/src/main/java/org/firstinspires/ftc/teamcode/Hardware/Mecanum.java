@@ -54,7 +54,7 @@ public class Mecanum implements Robot {
    public IMU imu;
    public Arm arm;
    public Claw claw;
-   public Intake intake;
+   public Intake2 intake;
    public Shooter shooter;
    public Wings wings;
 
@@ -85,7 +85,7 @@ public class Mecanum implements Robot {
       odom     = new Odometry(0, 0, imu.getAngle());
       claw     = new Claw("eservo_2", "eservo_1");
       arm      = new Arm("eservo_0");
-      intake   = new Intake("intake", "cservo_2", "cservo_4");
+      intake   = new Intake2("intake", "cservo_2", "cservo_4");
       shooter  = new Shooter("spinny_1", "spinny_2", "cservo_1", "cservo_0");
       wings    = new Wings("cservo_3", "cservo_5");
 
@@ -194,7 +194,6 @@ public class Mecanum implements Robot {
    public double getYComp(double fr, double fl, double br, double bl){
       return (fr + fl + br + bl) / 4.0;
    }
-
 
    public double eurekaSub(double x){
       return x - toRadians(10) * sin(4 * x);

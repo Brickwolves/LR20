@@ -24,7 +24,7 @@ public class Dash_AimBot {
     public static double PS_RIGHT_OFFSET    = 0;
     public static double PS_MIDDLE_OFFSET   = 0;
     public static double PS_LEFT_OFFSET     = 0;
-    public static double GOAL_OFFSET        = 6;
+    public static double xVelocityMultiplier  = 1000000;
     public static boolean DEBUG_MODE_ON     = false;
 
 }

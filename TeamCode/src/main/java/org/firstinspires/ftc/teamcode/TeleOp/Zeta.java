@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.DashConstants.Dash_Intake;
 import org.firstinspires.ftc.teamcode.Hardware.Arm;
 import org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls;
 import org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls;
@@ -78,11 +79,10 @@ public class Zeta extends LinearOpMode {
     private double current_angle = 0.0;
     private double current_intake_position = 0.0;
 
-    private ElapsedTime intake_time = new ElapsedTime();
-
     private RingBuffer<Double> angleBuffer          = new RingBuffer<>(5, 0.0);
     private RingBuffer<Double> timeBuffer           = new RingBuffer<>(5,  0.0);
     private RingBuffer<Double> intakePositionBuffer = new RingBuffer<>(5, 0.0);
+    private RingBuffer<Double> xPosBuffer           = new RingBuffer<>(5,  0.0);
 
 
     public void initialize() {
@@ -99,13 +99,14 @@ public class Zeta extends LinearOpMode {
         multTelemetry.addData("Velocity Ranger", "[LB2]");
         multTelemetry.addData("Quick Turn", "[DPAD]");
         multTelemetry.addData("Power Shot", "[RB1 / RB2]");
+        multTelemetry.addData("Wings", "[CROSS]");
 
         multTelemetry.addLine("");
 
         multTelemetry.addLine("------USER 2----------------------------");
         multTelemetry.addData("Claw", "[TRIANGLE]");
         multTelemetry.addData("Intake ON/OFF", "[RB1]");
-        multTelemetry.addData("Intake Direction", "[LB1]");
+        multTelemetry.addData("Intake Reverse", "[LB1]");
         multTelemetry.addData("Bumper Toggle", "[DPAD DOWN]");
         multTelemetry.addData("Arm Out", "[DPAD RIGHT]");
         multTelemetry.addData("Arm Up", "[DPAD UP]");
@@ -167,15 +168,21 @@ public class Zeta extends LinearOpMode {
             current_nanoseconds = elapsedTime.nanoseconds();
             current_angle = robot.imu.getAngle();
             current_intake_position = robot.intake.getIntakePosition();
+            double current_x_position = robot.getXComp();
 
             double delta_time = current_nanoseconds - timeBuffer.getValue(current_nanoseconds);
             double delta_angle = current_angle - angleBuffer.getValue(current_angle);
             double deltaIntakePosition = current_intake_position - intakePositionBuffer.getValue(current_intake_position);
+            double deltaXPosition = current_x_position - xPosBuffer.getValue(current_x_position);
 
 
             // Calculations based off values
             double current_angular_velocity = delta_angle / delta_time;
             double intakeVelocity = deltaIntakePosition / delta_time;
+            double xVelocity = deltaXPosition / delta_time;
+            multTelemetry.addData("XPos", current_x_position);
+            multTelemetry.addData("deltaX", deltaXPosition);
+            multTelemetry.addData("XVelocity", xVelocity);
 
             /*
 
@@ -251,7 +258,8 @@ public class Zeta extends LinearOpMode {
             // Get degree error and correct
             double rpm;
             double errorToGoal          = (abs(robot.imu.getModAngle()) - 180);
-            double goalDegreeError      = aimBot.getGoalDegreeError(current_angle);
+            double goalDegreeError      = aimBot.getGoalDegreeError(current_angle, xVelocity);
+            multTelemetry.addData("calcXVDegrees", aimBot.calcGoalXVelocityOffset(xVelocity));
             double powerShotFieldAngle  = aimBot.getPowerShotAngle(powerShot, robot.imu.getAngle());
 
             //              SHOOTER                 //
@@ -259,8 +267,6 @@ public class Zeta extends LinearOpMode {
             if (BC2.get(CIRCLE, TOGGLE)) {
                 robot.intake.armDown();
                 current_angular_velocity = 0;
-
-                GOAL_OFFSET =
 
                 // Check if Goal is found, if not, set RPM to default, and orient nearby goal
                 if (errorToGoal > 40) {
@@ -280,7 +286,7 @@ public class Zeta extends LinearOpMode {
                 }
 
                 // Set the RPM
-                robot.shooter.setRPM(rpm);
+                robot.shooter.setRPM(0);
             }
             else robot.shooter.setPower(0);
 
@@ -356,6 +362,7 @@ public class Zeta extends LinearOpMode {
             // Turn Powers based on shooter, and PID_ANGLE states
             if (BC2.get(CIRCLE, TOGGLE))            turn *= 0.5;
             if ((round(abs(PID_ANGLE)) % 90) == 0)  turn *= 0.85;
+            multTelemetry.addData("INTAKE POWER", robot.intake.getIntakePower());
 
             robot.setDrivePower(drive, strafe, turn, velocity);
 
@@ -372,6 +379,7 @@ public class Zeta extends LinearOpMode {
             multTelemetry.addData("Goal Distance", aimBot.getGoalDistance());
             multTelemetry.addData("Goal Found", aimBot.isGoalFound());
             multTelemetry.addData("Goal Error", goalDegreeError);
+            multTelemetry.addData("Goal Offset", aimBot.calcGoalOffset(robot.imu.getAngle()));
 
 
 

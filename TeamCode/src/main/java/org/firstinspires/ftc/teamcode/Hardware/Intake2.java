@@ -33,7 +33,7 @@ public class Intake2 {
     private String intake_motor_id;
     private String left_servo_id;
     private String right_servo_id;
-    private PID intakePID = new PID(Dash_Intake.p, Dash_Intake.i, Dash_Intake.d, Dash_Intake.f, 0, false);
+    private PID intakePID = new PID(Dash_Intake.p, Dash_Intake.i, Dash_Intake.d, 0.85, 0, false);
     private RingBuffer<Double> positionBuffer   = new RingBuffer<>(5,  0.0);
     private RingBuffer<Double> timeBuffer       = new RingBuffer<>(5,  0.0);
     private ElapsedTime time = new ElapsedTime();
@@ -127,7 +127,7 @@ public class Intake2 {
     }
 
     public void setRPM(double targetRPM){
-        intakePID.setF(targetRPM / 10000.0);
+        intakePID.setF(targetRPM / 1180);
         intakePower = intakePID.update( targetRPM + updateRPM());
 
         intakePower = clip(intakePower, 0.0, 1.0);
