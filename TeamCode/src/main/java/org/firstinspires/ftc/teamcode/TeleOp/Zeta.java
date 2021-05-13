@@ -46,7 +46,7 @@ import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.Value.INVERT_SHIFTED_Y;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.Value.SHIFTED_X;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.Value.X;
-import static org.firstinspires.ftc.teamcode.Hardware.Mecanum.findClosestAngle;
+import static org.firstinspires.ftc.teamcode.Utilities.MathUtils.findClosestAngle;
 import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.multTelemetry;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.Target.GOAL;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.Target.POWERSHOTS;
@@ -67,8 +67,8 @@ public class Zeta extends LinearOpMode {
 
 
     // PID Stuff
-    private double  locked_direction;
-    private boolean pid_on = false;
+    private double PID_ANGLE;
+    private boolean PID_ON = false;
     private boolean last_cycle_pid_state = true;
 
     private double current_nanoseconds = 0.0;
@@ -187,7 +187,7 @@ public class Zeta extends LinearOpMode {
             JoystickControls.update();
 
 
-            //                  ARM
+            //                  ARM                         //
             if (BC2.get(DPAD_R, DOWN)) robot.arm.out();
             else if (BC2.get(DPAD_L, DOWN)) robot.arm.in();
             else if (BC2.get(DPAD_UP, TAP)) {
@@ -195,11 +195,12 @@ public class Zeta extends LinearOpMode {
                 else robot.arm.up();
             }
 
-            //                  CLAW
+            //                  CLAW                        //
             if (BC2.get(TRIANGLE, TOGGLE)) robot.claw.close();
             else robot.claw.open();
 
-            //                INTAKE CODE
+
+            //                INTAKE CODE                   //
             if (BC2.get(RB1, TOGGLE)) {
                 if (BC2.get(LB1, DOWN)) robot.intake.setIntakePower(-1);
                 else robot.intake.setRPM(INTAKE_RPM_FORWARDS);
@@ -207,21 +208,22 @@ public class Zeta extends LinearOpMode {
             else robot.intake.setIntakePower(0);
 
 
-            // INTAKE ARM
+            //                  INTAKE ARM                  //
             if (BC2.get(DPAD_DN, TOGGLE)) robot.intake.armUp();
             else robot.intake.armDown();
 
 
-            //                  WINGS LOGIC
+            //                  WINGS LOGIC                 //
+            if (!BC1.get(CROSS, TOGGLE)) robot.wings.mid();
+            else robot.wings.out();
+
+
+            /*
             boolean nearGoal = false;
             if (abs(180 - abs(robot.imu.getModAngle())) < 30){
                 nearGoal = true;
             }
 
-            if (!BC1.get(CROSS, TOGGLE)) robot.wings.mid();
-            else robot.wings.out();
-
-            /*
             // Override toggle
             if (!BC1.get(CROSS, TOGGLE)){
 
@@ -248,11 +250,9 @@ public class Zeta extends LinearOpMode {
 
             // Get degree error and correct
             double rpm;
-            double errorToGoal = (abs(robot.imu.getModAngle()) - 180);
-            double goalDegreeError;
-            double powerShotFieldAngle;
-            goalDegreeError = aimBot.getGoalDegreeError();
-            powerShotFieldAngle = aimBot.getPowerShotAngle(powerShot, robot.imu.getAngle());
+            double errorToGoal          = (abs(robot.imu.getModAngle()) - 180);
+            double goalDegreeError      = aimBot.getGoalDegreeError(current_angle);
+            double powerShotFieldAngle  = aimBot.getPowerShotAngle(powerShot, robot.imu.getAngle());
 
             //              SHOOTER                 //
             robot.shooter.feederState(BC2.get(RB2, DOWN));
@@ -264,17 +264,17 @@ public class Zeta extends LinearOpMode {
 
                 // Check if Goal is found, if not, set RPM to default, and orient nearby goal
                 if (errorToGoal > 40) {
-                    locked_direction = findClosestAngle(180, robot.imu.getAngle());
+                    PID_ANGLE = findClosestAngle(180, robot.imu.getAngle());
                     rpm = 3400;
                 }
                 else {
                     // Choose correct target
                     if (aimTarget == GOAL){
-                        locked_direction = findClosestAngle(robot.imu.getAngle() + goalDegreeError, robot.imu.getAngle());
+                        PID_ANGLE = findClosestAngle(robot.imu.getAngle() + goalDegreeError, robot.imu.getAngle());
                         rpm = aimBot.calcRPM();
                     }
                     else {
-                        locked_direction = findClosestAngle(powerShotFieldAngle, robot.imu.getAngle());
+                        PID_ANGLE = findClosestAngle(powerShotFieldAngle, robot.imu.getAngle());
                         rpm = aimBot.calcRPM() - 300;
                     }
                 }
@@ -310,22 +310,22 @@ public class Zeta extends LinearOpMode {
             double turn = JC1.get(LEFT, X);
 
             //              VELOCITY RANGER             //
-            if (BC1.get(LB2, DOWN))      velocity = Range.clip((1 - gamepad1.left_trigger), 0.5, 1);
-            else if (BC1.get(RB2, DOWN)) velocity = Range.clip((1 - gamepad1.right_trigger), 0.2, 1);
+            if (BC1.get(LB2, DOWN))             velocity = Range.clip((1 - gamepad1.left_trigger), 0.5, 1);
+            else if (BC1.get(RB2, DOWN))        velocity = Range.clip((1 - gamepad1.right_trigger), 0.2, 1);
 
             //              DPAD AUTO TURN              //
-            if (BC1.get(DPAD_UP, DOWN)) locked_direction            = findClosestAngle(90, robot.imu.getAngle());
-            else if (BC1.get(DPAD_R, DOWN)) locked_direction        = findClosestAngle(0, robot.imu.getAngle());
-            else if (BC1.get(DPAD_L, DOWN)) locked_direction        = findClosestAngle(180, robot.imu.getAngle());
-            else if (BC1.get(DPAD_DN, DOWN)) locked_direction       = findClosestAngle(270, robot.imu.getAngle());
+            if (BC1.get(DPAD_UP, DOWN))         PID_ANGLE = findClosestAngle(90, robot.imu.getAngle());
+            else if (BC1.get(DPAD_R, DOWN))     PID_ANGLE = findClosestAngle(0, robot.imu.getAngle());
+            else if (BC1.get(DPAD_L, DOWN))     PID_ANGLE = findClosestAngle(180, robot.imu.getAngle());
+            else if (BC1.get(DPAD_DN, DOWN))    PID_ANGLE = findClosestAngle(270, robot.imu.getAngle());
 
             //            POWER SHOT INCREMENT          //
-            if (BC1.get(SQUARE, DOWN)) powerShot = VisionUtils.PowerShot.PS_LEFT;
-            else if (BC1.get(TRIANGLE, DOWN)) powerShot = VisionUtils.PowerShot.PS_MIDDLE;
-            else if (BC1.get(CIRCLE, DOWN)) powerShot = VisionUtils.PowerShot.PS_RIGHT;
+            if (BC1.get(SQUARE, DOWN))          powerShot = VisionUtils.PowerShot.PS_LEFT;
+            else if (BC1.get(TRIANGLE, DOWN))   powerShot = VisionUtils.PowerShot.PS_MIDDLE;
+            else if (BC1.get(CIRCLE, DOWN))     powerShot = VisionUtils.PowerShot.PS_RIGHT;
 
             powerShotFieldAngle = aimBot.getPowerShotAngle(powerShot, robot.imu.getAngle());
-            if (BC1.get(RB1, TAP) || BC1.get(LB1, TAP)) locked_direction = findClosestAngle(powerShotFieldAngle, robot.imu.getAngle());
+            if (BC1.get(RB1, TAP) || BC1.get(LB1, TAP)) PID_ANGLE = findClosestAngle(powerShotFieldAngle, robot.imu.getAngle());
 
 
 
@@ -335,13 +335,15 @@ public class Zeta extends LinearOpMode {
 
                                        */
 
-            if (JC1.get(LEFT, X) != 0) pid_on = false;
-            else if (current_angular_velocity == 0.0) pid_on = true;
+            // Turn off PID if finished manually turning
+            if (JC1.get(LEFT, X) != 0) PID_ON = false;
+            else if (current_angular_velocity == 0.0) PID_ON = true;
 
-            if (pid_on && !last_cycle_pid_state) locked_direction = robot.imu.getAngle();
-            else if (pid_on) turn = robot.rotationPID.update(locked_direction - current_angle) * -1;
+            // Setting the PID_ANGLE
+            if (PID_ON && !last_cycle_pid_state) PID_ANGLE = robot.imu.getAngle();
+            else if (PID_ON) turn = robot.rotationPID.update(PID_ANGLE - current_angle) * -1;
 
-            last_cycle_pid_state = pid_on;
+            last_cycle_pid_state = PID_ON;
 
 
 
@@ -351,10 +353,10 @@ public class Zeta extends LinearOpMode {
 
                                                     */
 
-            // Rounded angle
-            double rounded_locked = round(abs(locked_direction)) % 90;
-            if (rounded_locked == 0) turn *= 0.85;
-            if (BC2.get(CIRCLE, TOGGLE)) turn *= 0.5;
+            // Turn Powers based on shooter, and PID_ANGLE states
+            if (BC2.get(CIRCLE, TOGGLE))            turn *= 0.5;
+            if ((round(abs(PID_ANGLE)) % 90) == 0)  turn *= 0.85;
+
             robot.setDrivePower(drive, strafe, turn, velocity);
 
 
@@ -376,8 +378,7 @@ public class Zeta extends LinearOpMode {
             //multTelemetry.addData("PowerShot", powerShot);
             //multTelemetry.addData("Aim Target", aimTarget);
             multTelemetry.addData("Angle", robot.imu.getAngle());
-            multTelemetry.addData("Locked Angle", locked_direction);
-            multTelemetry.addData("Rounded Locked Angle", rounded_locked);
+            multTelemetry.addData("PID ANGLE", PID_ANGLE);
 
 
             multTelemetry.addLine("--HARDWARE-------------------------------------");

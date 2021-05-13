@@ -40,6 +40,7 @@ public class Intake2 {
 
     private static final double TICKS_PER_ROTATION = 103.8;
 
+    // Uses a 1620RPM DcMotor w/ 28ticks/rotation
     private DcMotor intake_motor;
     private Servo left_arm_servo;
     private Servo right_arm_servo;
