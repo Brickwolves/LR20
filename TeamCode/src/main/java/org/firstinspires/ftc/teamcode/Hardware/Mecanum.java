@@ -192,14 +192,15 @@ public class Mecanum implements Robot {
       return x + toRadians(c2) * sin(4 * x - 0.2);
    }
 
-   public void linearStrafe(double angle, double cm, double acceleration, double targetAngle, double waitTurnTime, double waitTaskTime, Task task) {
+
+   public void linearStrafe(double strafeAngle, double ticks, double acceleration, double targetAngle, double waitTurnTime, double waitTaskTime, Task task) {
 
       resetMotors();
 
       ElapsedTime time = new ElapsedTime(); time.reset();
 
-      double strafeAngle = toRadians(angle);
-      double ticks = cm; //centimeters2Ticks(cm);
+      strafeAngle = toRadians(strafeAngle);
+      //double ticks = ticks; //centimeters2Ticks(cm);
 
       Orientation startO = odom.getOrientation();
       Orientation curO = odom.getOrientation();
