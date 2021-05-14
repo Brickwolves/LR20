@@ -16,8 +16,8 @@ import org.firstinspires.ftc.teamcode.Utilities.PID.RingBuffer;
 import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
 
 import static java.lang.Math.abs;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Shooter.goal_rpm;
-import static org.firstinspires.ftc.teamcode.Utilities.MathUtils.findClosestAngle;
+import static org.firstinspires.ftc.teamcode.DashConstants.Deprecated.Dash_Shooter.goal_rpm;
+import static org.firstinspires.ftc.teamcode.Utilities.MathUtils.closestAngle;
 
 @Disabled
 @TeleOp(name = "Gamma TeleOp", group="Linear TeleOp")
@@ -115,8 +115,8 @@ public class Gamma extends LinearOpMode {
             current_nanoseconds = elapsedTime.nanoseconds();
             current_angle = robot.imu.getAngle();
 
-            double delta_angle = current_angle - angle_ring_buffer.getValue(current_angle);
-            double delta_time = current_nanoseconds - time_ring_buffer.getValue(current_nanoseconds);
+            double delta_angle = current_angle - angle_ring_buffer.updateCurWith(current_angle);
+            double delta_time = current_nanoseconds - time_ring_buffer.updateCurWith(current_nanoseconds);
 
             double current_angular_velocity = delta_angle / delta_time;
 
@@ -166,8 +166,8 @@ public class Gamma extends LinearOpMode {
 
 
             // INTAKE ARM
-            if (controller2.DPADDWN_toggle) robot.intake.armUp();
-            else if (!controller2.DPADDWN_toggle) robot.intake.armDown();
+            if (controller2.DPADDWN_toggle) robot.intake.rollerUp();
+            else if (!controller2.DPADDWN_toggle) robot.intake.rollerMid();
 
 
             // SHOOTER
@@ -209,13 +209,13 @@ public class Gamma extends LinearOpMode {
 
 
             // DPAD Auto Turn
-            if (controller1.src.dpad_up) locked_direction               = findClosestAngle(0, robot.imu.getAngle());
-            else if (controller1.src.dpad_right) locked_direction       = findClosestAngle(-90, robot.imu.getAngle());
-            else if (controller1.src.dpad_left) locked_direction        = findClosestAngle(90, robot.imu.getAngle());
-            else if (controller1.src.dpad_down) locked_direction        = findClosestAngle(180, robot.imu.getAngle());
+            if (controller1.src.dpad_up) locked_direction               = closestAngle(0, robot.imu.getAngle());
+            else if (controller1.src.dpad_right) locked_direction       = closestAngle(-90, robot.imu.getAngle());
+            else if (controller1.src.dpad_left) locked_direction        = closestAngle(90, robot.imu.getAngle());
+            else if (controller1.src.dpad_down) locked_direction        = closestAngle(180, robot.imu.getAngle());
 
 
-            if (controller1.src.circle) locked_direction = findClosestAngle(110, robot.imu.getAngle());
+            if (controller1.src.circle) locked_direction = closestAngle(110, robot.imu.getAngle());
 
             // Power Shot increment
             if (controller1.RB1_tap){
@@ -227,9 +227,9 @@ public class Gamma extends LinearOpMode {
                 else ps_increment--;
             }
             if (controller1.RB1_tap || controller1.LB1_tap)
-                if (ps_increment == 0)      locked_direction = findClosestAngle(-ps_delta_angle + 90, robot.imu.getAngle());
-                else if (ps_increment == 1) locked_direction = findClosestAngle(0 + 90, robot.imu.getAngle());
-                else if (ps_increment == 2) locked_direction = findClosestAngle(ps_delta_angle + 90, robot.imu.getAngle());
+                if (ps_increment == 0)      locked_direction = closestAngle(-ps_delta_angle + 90, robot.imu.getAngle());
+                else if (ps_increment == 1) locked_direction = closestAngle(0 + 90, robot.imu.getAngle());
+                else if (ps_increment == 2) locked_direction = closestAngle(ps_delta_angle + 90, robot.imu.getAngle());
 
 
             /*

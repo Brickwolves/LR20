@@ -40,8 +40,8 @@ import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.dilate_co
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.erode_const;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.goalWidth;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.xVelocityMultiplier;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Shooter.SHOOTER_COEFF;
-import static org.firstinspires.ftc.teamcode.Utilities.MathUtils.findClosestAngle;
+import static org.firstinspires.ftc.teamcode.DashConstants.Deprecated.Dash_Shooter.SHOOTER_COEFF;
+import static org.firstinspires.ftc.teamcode.Utilities.MathUtils.closestAngle;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.IMG_HEIGHT;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.IMG_WIDTH;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.PS_LEFT_DIST;
@@ -167,6 +167,7 @@ public class AimBotPipe extends OpenCvPipeline {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public double getPowerShotAngle(VisionUtils.PowerShot powerShot, double curAngle){
         if (!isGoalFound()) return 0;
         double g = goalDistance;
@@ -206,7 +207,7 @@ public class AimBotPipe extends OpenCvPipeline {
                 break;
         }
 
-        return powerShotFieldAngle;
+        return closestAngle(powerShotFieldAngle, curAngle);
     }
 
     public double calcRPM(){
@@ -232,8 +233,14 @@ public class AimBotPipe extends OpenCvPipeline {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
+    public double getGoalAngle(double currentAngle, double currentXVelocity){
+        double fieldAngle = currentAngle + ((isGoalFound()) ? getGoalDegreeError(currentAngle, currentXVelocity) : 0);
+        return closestAngle(fieldAngle, currentAngle);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public double calcGoalOffset(double currentAngle){
-        double degreesFrom180 = currentAngle - findClosestAngle(180, currentAngle);
+        double degreesFrom180 = currentAngle - closestAngle(180, currentAngle);
         double offset = degreesFrom180 * (1.0/7.0) + 3;
         return offset;
     }

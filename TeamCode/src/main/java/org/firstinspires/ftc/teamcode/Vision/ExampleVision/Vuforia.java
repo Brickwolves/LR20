@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Vision.sampleVIS;
+package org.firstinspires.ftc.teamcode.Vision.ExampleVision;
 
 import android.graphics.Bitmap;
 

@@ -7,6 +7,7 @@ import androidx.annotation.RequiresApi;
 import org.firstinspires.ftc.teamcode.Navigation.Point;
 
 import static java.lang.Math.floorMod;
+import static java.lang.Math.sqrt;
 import static java.lang.Math.toDegrees;
 import static java.lang.StrictMath.abs;
 import static java.lang.StrictMath.cos;
@@ -84,11 +85,42 @@ public class MathUtils {
      * @return the closest relative target angle
      */
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public static double findClosestAngle(double targetAngle, double currentAngle) {
+    public static double closestAngle(double targetAngle, double currentAngle) {
         double simpleTargetDelta = floorMod(Math.round(((360 - targetAngle) + currentAngle) * 1e6), Math.round(360.000 * 1e6)) / 1e6;
         double alternateTargetDelta = -1 * (360 - simpleTargetDelta);
         return abs(simpleTargetDelta) <= abs(alternateTargetDelta) ? currentAngle - simpleTargetDelta : currentAngle - alternateTargetDelta;
     }
 
 
+
+    /*
+                    C O N V E R S I O N S
+                                                    */
+    public static double lessThan1000TicksToCentimeters(double ticks){
+        return (0.0748 * Math.pow(ticks, 2)) + (.677 * ticks) + 87.3;
+    }
+
+
+    public static double centimeters2Ticks(double c){
+        return (0.118 * Math.pow(c, 2)) + (3.66 * c) + 7;
+    }
+
+    public static double ticks2Centimeters(double ticks){
+        double rootTerm = 4 * 0.118 * (7 - ticks);
+        if (rootTerm < 0) return 0;
+
+        double numer = sqrt(Math.pow(3.66, 2) - rootTerm);
+        double denom = 2 * 0.118;
+        double answ1 = (-3.66 + numer) / denom;
+        double answ2 = (-3.66 - numer) / denom;
+        return (answ1 > 0) ? answ1 : answ2;
+    }
+
+    public static double convertInches2Ticks(double ticks){
+        return (ticks - 4.38) / 0.0207; // Calculated using desmos
+    }
+
+    public static double convertTicks2Inches(double inches){
+        return (0.0207 * inches) + 4.38; // Calculated using desmos
+    }
 }

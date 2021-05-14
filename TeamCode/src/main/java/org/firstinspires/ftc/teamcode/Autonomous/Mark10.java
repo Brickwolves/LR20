@@ -21,7 +21,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.DOWN;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.CROSS;
-import static org.firstinspires.ftc.teamcode.Utilities.MathUtils.findClosestAngle;
+import static org.firstinspires.ftc.teamcode.Utilities.MathUtils.closestAngle;
 import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.multTelemetry;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.PowerShot.PS_LEFT;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.PowerShot.PS_MIDDLE;
@@ -111,7 +111,7 @@ public class Mark10 extends LinearOpMode
     @RequiresApi(api = Build.VERSION_CODES.N)
     public double getPowerShotAngle(VisionUtils.PowerShot powerShot){
         double modPowerShotDegree = aimBot.getPowerShotAngle(powerShot, robot.imu.getAngle());
-        return findClosestAngle(modPowerShotDegree, robot.imu.getAngle());
+        return closestAngle(modPowerShotDegree, robot.imu.getAngle());
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -143,7 +143,7 @@ public class Mark10 extends LinearOpMode
             robot.shooter.setRPM(0); //3200
             robot.wings.mid();
         });
-        robot.intake.armDown();
+        robot.intake.rollerMid();
 
         robot.linearTurn(175, 2, () -> robot.shooter.setRPM(0)); // 3200
 
@@ -196,7 +196,7 @@ public class Mark10 extends LinearOpMode
         robot.linearStrafe(-10, 2000, 0.3, 180, 0.45, 0,
                 () -> {
                     robot.wings.up();
-                    robot.intake.armUp();
+                    robot.intake.rollerUp();
                     robot.claw.open();
                     if (time.seconds() > 0.4 && time.seconds() < 0.7) robot.arm.up();
                     if (time.seconds() > 0.7) robot.arm.out();
@@ -215,7 +215,7 @@ public class Mark10 extends LinearOpMode
                 if (time.seconds() > 0.6) robot.arm.up();
             });
 
-        robot.intake.armDown();
+        robot.intake.rollerMid();
 
     }
 }

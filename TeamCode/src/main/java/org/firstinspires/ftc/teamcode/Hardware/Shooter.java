@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.teamcode.DashConstants.Dash_Shooter;
+import org.firstinspires.ftc.teamcode.DashConstants.Deprecated.Dash_Shooter;
 import org.firstinspires.ftc.teamcode.Utilities.PID.PID;
 import org.firstinspires.ftc.teamcode.Utilities.PID.RingBuffer;
 import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
@@ -165,11 +165,11 @@ public class Shooter {
     public double updateRPM(){
 
         long currentTime = System.currentTimeMillis();
-        long deltaMili = currentTime - timeRing.getValue(currentTime);
+        long deltaMili = currentTime - timeRing.updateCurWith(currentTime);
         double deltaMinutes = deltaMili / 60000.0;
 
         long currentPosition = getPosition();
-        long deltaTicks = currentPosition - positionRing.getValue(currentPosition);
+        long deltaTicks = currentPosition - positionRing.updateCurWith(currentPosition);
         double deltaRotations = deltaTicks / TICKS_PER_ROTATION;
 
         shooterRPM = Math.abs(deltaRotations / deltaMinutes);

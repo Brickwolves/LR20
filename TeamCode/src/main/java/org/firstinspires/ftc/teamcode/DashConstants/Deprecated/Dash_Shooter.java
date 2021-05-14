@@ -1,7 +1,6 @@
-package org.firstinspires.ftc.teamcode.DashConstants;
+package org.firstinspires.ftc.teamcode.DashConstants.Deprecated;
 import com.acmerobotics.dashboard.config.Config;
 
-@Config
 public class Dash_Shooter {
 
     /*

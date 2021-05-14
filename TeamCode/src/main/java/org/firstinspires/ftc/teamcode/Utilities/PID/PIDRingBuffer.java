@@ -30,7 +30,7 @@ public class PIDRingBuffer extends RingBuffer<PIDRingBuffer.DataPoint> {
         System.out.println("Index" + index);
         DataPoint previousValue = list.get(previousIndex);
         double derivative = (currentError - previousValue.error) / (currentTime - previousValue.time);
-        sum -= super.getValue(new DataPoint(currentError, currentTime)).error;
+        sum -= super.updateCurWith(new DataPoint(currentError, currentTime)).error;
         System.out.println("sum" + sum);
         sum += currentError;
         System.out.println(sum);
@@ -38,7 +38,7 @@ public class PIDRingBuffer extends RingBuffer<PIDRingBuffer.DataPoint> {
     }
 
     @Override
-    public DataPoint getValue(DataPoint current) {
+    public DataPoint updateCurWith(DataPoint current) {
         return list.get(index);
     }
 

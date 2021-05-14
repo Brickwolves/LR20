@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.DashConstants.Dash_StackDetector;
+import org.firstinspires.ftc.teamcode.DashConstants.Deprecated.Dash_StackDetector;
 import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;

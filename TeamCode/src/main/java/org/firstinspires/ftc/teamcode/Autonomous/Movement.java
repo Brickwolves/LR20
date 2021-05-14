@@ -81,7 +81,7 @@ public class Movement extends LinearOpMode
             BREAKPOINT();
 
             robot.linearStrafe(STRAFE_ANGLE, D_TICKS, ACCELERATION, FACE_ANGLE, 0, 0, null);
-            robot.intake.armDown();
+            robot.intake.rollerMid();
             //robot.linearStrafe(new Orientation(X_TICKS, Y_TICKS, ANGLE), ACCELERATION, null);
 
             BREAKPOINT();

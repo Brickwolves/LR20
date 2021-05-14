@@ -1,22 +1,22 @@
 package org.firstinspires.ftc.teamcode.Diagnostics;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls;
-import org.firstinspires.ftc.teamcode.Hardware.Controls.ControllerCollin;
 import org.firstinspires.ftc.teamcode.Hardware.Mecanum;
 import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
 
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Intake.INTAKE_RPM_FORWARDS;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Intake.INTAKE_RPM_REVERSE;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Shooter.goal_rpm;
+import static org.firstinspires.ftc.teamcode.DashConstants.Deprecated.Dash_Intake.INTAKE_RPM_FORWARDS;
+import static org.firstinspires.ftc.teamcode.DashConstants.Deprecated.Dash_Intake.INTAKE_RPM_REVERSE;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.DOWN;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.TOGGLE;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.LB1;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.RB1;
 import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.multTelemetry;
 
+@Disabled
 @TeleOp(name = "IntakeTest TeleOp", group="Linear TeleOp")
 public class IntakeTest extends LinearOpMode {
 
@@ -38,7 +38,7 @@ public class IntakeTest extends LinearOpMode {
         while (opModeIsActive()) {
             ButtonControls.update();
 
-            robot.intake.armDown();
+            robot.intake.rollerMid();
 
             //                INTAKE CODE
             if (BC.get(RB1, TOGGLE)) {

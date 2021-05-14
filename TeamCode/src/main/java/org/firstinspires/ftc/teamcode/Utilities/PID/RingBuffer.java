@@ -16,12 +16,7 @@ public class RingBuffer <T> {
         }
     }
 
-    public T getValue() {
-        T retVal = list.get(index);
-        return retVal;
-    }
-
-    public T getValue(T current) {
+    public T updateCurWith(T current) {
         T retVal = list.get(index);
 
         list.set(index, current);

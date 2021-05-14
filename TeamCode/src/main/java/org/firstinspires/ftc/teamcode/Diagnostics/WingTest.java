@@ -4,6 +4,7 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -38,7 +39,7 @@ import static org.firstinspires.ftc.teamcode.Hardware.Controls.JoystickControls.
 import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.multTelemetry;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.Target.GOAL;
 
-
+@Disabled
 @TeleOp(name = "WingTest TeleOp", group="Linear TeleOp")
 public class WingTest extends LinearOpMode {
 
@@ -157,8 +158,8 @@ public class WingTest extends LinearOpMode {
             current_nanoseconds = elapsedTime.nanoseconds();
             current_angle = robot.imu.getAngle();
 
-            double delta_angle = current_angle - angle_ring_buffer.getValue(current_angle);
-            double delta_time = current_nanoseconds - time_ring_buffer.getValue(current_nanoseconds);
+            double delta_angle = current_angle - angle_ring_buffer.updateCurWith(current_angle);
+            double delta_time = current_nanoseconds - time_ring_buffer.updateCurWith(current_nanoseconds);
             double current_angular_velocity = delta_angle / delta_time;
 
 

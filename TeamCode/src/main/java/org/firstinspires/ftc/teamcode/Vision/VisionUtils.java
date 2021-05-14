@@ -26,7 +26,7 @@ public class VisionUtils {
     // Note: All measurements in meters
 
     public enum Target {
-        GOAL, POWERSHOTS
+        GOAL, POWERSHOTS, OUT_OF_RANGE
     }
 
     public enum PowerShot {

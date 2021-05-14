@@ -2,8 +2,6 @@ package org.firstinspires.ftc.teamcode.Hardware;
 
 import android.os.Build;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -17,18 +15,10 @@ import org.firstinspires.ftc.teamcode.Navigation.Orientation;
 import org.firstinspires.ftc.teamcode.Navigation.Point;
 import org.firstinspires.ftc.teamcode.Utilities.MathUtils;
 import org.firstinspires.ftc.teamcode.Utilities.PID.PID;
-import org.firstinspires.ftc.teamcode.Utilities.PID.RingBuffer;
-import org.firstinspires.ftc.teamcode.Utilities.SyncTask;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import org.firstinspires.ftc.teamcode.Utilities.Task;
 
 import static com.qualcomm.robotcore.util.Range.clip;
 import static java.lang.Math.floorMod;
-import static java.lang.Math.hypot;
-import static java.lang.Math.toDegrees;
 import static java.lang.StrictMath.abs;
 import static java.lang.StrictMath.atan2;
 import static java.lang.StrictMath.cos;
@@ -37,7 +27,7 @@ import static java.lang.StrictMath.pow;
 import static java.lang.StrictMath.sin;
 import static java.lang.StrictMath.sqrt;
 import static java.lang.StrictMath.toRadians;
-import static org.firstinspires.ftc.teamcode.Utilities.MathUtils.findClosestAngle;
+import static org.firstinspires.ftc.teamcode.Utilities.MathUtils.closestAngle;
 import static org.firstinspires.ftc.teamcode.Utilities.MathUtils.shift;
 import static org.firstinspires.ftc.teamcode.Utilities.MathUtils.unShift;
 import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.hardwareMap;
@@ -54,15 +44,12 @@ public class Mecanum implements Robot {
    public IMU imu;
    public Arm arm;
    public Claw claw;
-   public Intake2 intake;
+   public Intake intake;
    public Shooter shooter;
    public Wings wings;
 
    public PID rotationPID = new PID(Dash_Movement.p, Dash_Movement.i, Dash_Movement.d, 0, 100, true);
-
    public static ElapsedTime time = new ElapsedTime();
-
-
 
    public enum Units {
       TICKS, INCHES, FEET
@@ -85,7 +72,7 @@ public class Mecanum implements Robot {
       odom     = new Odometry(0, 0, imu.getAngle());
       claw     = new Claw("eservo_2", "eservo_1");
       arm      = new Arm("eservo_0");
-      intake   = new Intake2("intake", "cservo_2", "cservo_4");
+      intake   = new Intake("intake", "cservo_2", "cservo_4");
       shooter  = new Shooter("spinny_1", "spinny_2", "cservo_1", "cservo_0");
       wings    = new Wings("cservo_3", "cservo_5");
 
@@ -205,7 +192,7 @@ public class Mecanum implements Robot {
       return x + toRadians(c2) * sin(4 * x - 0.2);
    }
 
-   public void linearStrafe(double angle, double cm, double acceleration, double targetAngle, double waitTurnTime, double waitTaskTime, SyncTask task) {
+   public void linearStrafe(double angle, double cm, double acceleration, double targetAngle, double waitTurnTime, double waitTaskTime, Task task) {
 
       resetMotors();
 
@@ -265,7 +252,7 @@ public class Mecanum implements Robot {
    }
 
 
-   public void linearStrafe(Orientation destination, double acceleration, SyncTask task){
+   public void linearStrafe(Orientation destination, double acceleration, Task task){
 
       // Initialize starter variables
       resetMotors();
@@ -336,7 +323,7 @@ public class Mecanum implements Robot {
    }
 
    @RequiresApi(api = Build.VERSION_CODES.N)
-   public void linearTurn(double target_angle, double MOE, SyncTask task) {
+   public void linearTurn(double target_angle, double MOE, Task task) {
 
       double turn_direction, pid_return, power, powerRampPosition;
 
@@ -344,7 +331,7 @@ public class Mecanum implements Robot {
       //            Calc Power Ramping and PID Values           //
       double current_angle = imu.getAngle();
       double startAngle = current_angle;
-      double actual_target_angle = findClosestAngle(target_angle, current_angle);
+      double actual_target_angle = closestAngle(target_angle, current_angle);
       double startDeltaAngle = Math.abs(actual_target_angle - current_angle);
       double error = actual_target_angle - current_angle;
 
@@ -401,7 +388,7 @@ public class Mecanum implements Robot {
       //            Calc Power Ramping and PID Values           //
       double current_angle = imu.getAngle();
       double startAngle = current_angle;
-      double actual_target_angle = findClosestAngle(target_angle, current_angle);
+      double actual_target_angle = closestAngle(target_angle, current_angle);
       double startDeltaAngle = Math.abs(actual_target_angle - current_angle);
       double error = actual_target_angle - current_angle;
 
@@ -448,7 +435,7 @@ public class Mecanum implements Robot {
 
 
    @RequiresApi(api = Build.VERSION_CODES.N)
-   public void linearTurn(double target_angle, double MOE, double acceleration, SyncTask task) {
+   public void linearTurn(double target_angle, double MOE, double acceleration, Task task) {
 
       double turn_direction, pid_return, power, powerRampPosition;
 
@@ -456,7 +443,7 @@ public class Mecanum implements Robot {
       //            Calc Power Ramping and PID Values           //
       double current_angle = imu.getAngle();
       double startAngle = current_angle;
-      double actual_target_angle = findClosestAngle(target_angle, current_angle);
+      double actual_target_angle = closestAngle(target_angle, current_angle);
       double startDeltaAngle = Math.abs(actual_target_angle - current_angle);
       double error = actual_target_angle - current_angle;
 

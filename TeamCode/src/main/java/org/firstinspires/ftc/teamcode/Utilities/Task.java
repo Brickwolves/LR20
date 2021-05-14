@@ -1,5 +1,5 @@
 package org.firstinspires.ftc.teamcode.Utilities;
 
-public interface SyncTask {
+public interface Task {
     void execute();
 }

@@ -4,17 +4,17 @@ import com.acmerobotics.dashboard.config.Config;
 @Config
 public class Dash_Servos {
 
-    public static double INTAKE_ARM_SERVO_DIFFERENCE = 0.06;
+    //public static double INTAKE_ARM_SERVO_DIFFERENCE = 0.06;
 
-    public static double INTAKE_ARM_LSERVO_HOME     = 0.32;
-    public static double INTAKE_ARM_LSERVO_MIN      = 0.08;
-    public static double INTAKE_ARM_LSERVO_MAX      = 0.4;
-    public static double INTAKE_ARM_LSERVO_MID      = INTAKE_ARM_LSERVO_MAX - INTAKE_ARM_SERVO_DIFFERENCE;
+    public static double INTAKE_ARM_LSERVO_MID     = 0.32; // MID
+    public static double INTAKE_ARM_LSERVO_MIN      = 0.08; // UP
+    public static double INTAKE_ARM_LSERVO_MAX      = 0.4;  // DOWN
+    //public static double INTAKE_ARM_LSERVO_MID      = INTAKE_ARM_LSERVO_MAX - INTAKE_ARM_SERVO_DIFFERENCE;
 
-    public static double INTAKE_ARM_RSERVO_HOME     = 0.16;
-    public static double INTAKE_ARM_RSERVO_MIN      = 0.08;
-    public static double INTAKE_ARM_RSERVO_MAX      = 0.4;
-    public static double INTAKE_ARM_RSERVO_MID      = INTAKE_ARM_RSERVO_MIN + INTAKE_ARM_SERVO_DIFFERENCE;
+    public static double INTAKE_ARM_RSERVO_MID     = 0.16; // MID
+    public static double INTAKE_ARM_RSERVO_MIN      = 0.08; // DOWN
+    public static double INTAKE_ARM_RSERVO_MAX      = 0.4;  // UP
+    //public static double INTAKE_ARM_RSERVO_MID      = INTAKE_ARM_RSERVO_MIN + INTAKE_ARM_SERVO_DIFFERENCE;
 
     public static double SHOOT_SERVO_HOME           = 0.86;
     public static double SHOOT_SERVO_MIN            = 0.65;
