@@ -20,6 +20,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import static com.qualcomm.robotcore.util.Range.clip;
 import static java.lang.Math.abs;
+import static java.lang.StrictMath.pow;
 import static java.lang.StrictMath.round;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.DEBUG_MODE_ON;
 import static org.firstinspires.ftc.teamcode.DashConstants.Deprecated.Dash_Intake.INTAKE_RPM_FORWARDS;
@@ -95,9 +96,14 @@ public class Zeta extends LinearOpMode {
         // Initialize Oracle
         setUpdateTask(() -> {
             setAngle(robot.imu.getAngle());
-            setXPosition(robot.getXComp());
+            setXPosition(robot.getX());
             setYPosition(robot.getYComp());
             setIntakePosition(robot.intake.getIntakePosition());
+            Oracle.frPosition = robot.fr.getCurrentPosition();
+            Oracle.flPosition = robot.fl.getCurrentPosition();
+            Oracle.brPosition = robot.br.getCurrentPosition();
+            Oracle.blPosition = robot.bl.getCurrentPosition();
+
         });
 
         setUpVision();
@@ -208,8 +214,10 @@ public class Zeta extends LinearOpMode {
 
             // Get degree error and correct
             double errorToGoal     = (abs(robot.imu.getModAngle()) - 180);
+            double goalDegreeError = aimBot.getGoalDegreeError(getAngle(), getXVelocity());
             double goalAngle       = aimBot.getGoalAngle(getAngle(), getXVelocity());
             double powerShotAngle  = aimBot.getPowerShotAngle(powerShot, getAngle());
+
 
             //              SHOOTER                 //
             robot.shooter.feederState(BC2.get(RB2, DOWN));
@@ -223,7 +231,7 @@ public class Zeta extends LinearOpMode {
 
                 // Check if Goal is found, if not, set RPM to default, and orient nearby goal
                 double RPM = 3400;
-                if (errorToGoal > 40) aimTarget = OUT_OF_RANGE;
+                if (errorToGoal > 50) aimTarget = OUT_OF_RANGE;
 
                 switch (aimTarget){
                     case GOAL:
@@ -269,7 +277,8 @@ public class Zeta extends LinearOpMode {
             //              DRIVER VALUES               //
             double drive    = JC1.get(RIGHT, INVERT_SHIFTED_Y);
             double strafe   = JC1.get(RIGHT, SHIFTED_X);
-            double turn     = JC1.get(LEFT, X);
+            double regTurn  = JC1.get(LEFT, X);
+            double goalTurn = 0; double powerShotTurn = 0;
 
             //              VELOCITY RANGER             //
             if (BC1.get(LB2, DOWN))             VELOCITY = clip((1 - gamepad1.left_trigger), 0.5, 1);
@@ -290,20 +299,62 @@ public class Zeta extends LinearOpMode {
             if (BC1.get(RB1, TAP) || BC1.get(LB1, TAP)) PID_ANGLE = powerShotAngle;
 
 
-
             /*
             ----------- P I D -----------
                                        */
 
+
+            // Get errors
+            double error = PID_ANGLE - getAngle();
+            double vGoalError = pow(abs(error), 0.7);
+            double vPSError = pow(abs(error), 0.8);
+            if (error < 0)   vGoalError *= -1;
+            if (error < 0)   vPSError *= -1;
+
+
+            // Get shooter mode
+            boolean SHOOT_MODE_ON = BC2.get(CIRCLE, TOGGLE);
+
+            // Get turn values
+            double turn = 0;
+            goalTurn = robot.goalPID.update(vGoalError) * -1;
+
+
             // Turn off PID if finished manually turning
             if (JC1.get(LEFT, X) != 0) PID_ON = false;
-            else if (getAngularVelocity() == 0.0) PID_ON = true;
+            else if (abs(getAngularVelocity()) < 0.5) PID_ON = true;
 
             // Setting the PID_ANGLE
             if (PID_ON && !last_cycle_pid_state) PID_ANGLE = getAngle();
-            else if (PID_ON) turn = robot.rotationPID.update(PID_ANGLE - getAngle()) * -1;
+            else if (PID_ON) {
+
+                regTurn = robot.rotationPID.update(error) * -1;
+                powerShotTurn = robot.powerShotPID.update(vPSError) * -1;
+
+
+                if (SHOOT_MODE_ON){
+                    robot.runWithEncoders();
+                    if (aimTarget == GOAL){
+                        multTelemetry.addData("TARGETING", "goal");
+                        turn = goalTurn;
+                    }
+                    else {
+                        multTelemetry.addData("TARGETING", "powershots");
+                        turn = powerShotTurn;
+                    }
+                    multTelemetry.addData("VISIONPID", "ON");
+                }
+                else{
+                    turn = regTurn;
+                    robot.runWithoutEncoders();
+                    multTelemetry.addData("VISIONPID", "OFF");
+                }
+            }
+            else turn = regTurn;
 
             last_cycle_pid_state = PID_ON;
+
+
 
 
 
@@ -311,11 +362,13 @@ public class Zeta extends LinearOpMode {
             ----------- S E T    P O W E R -----------
                                                     */
 
-            // Turn Powers based on shooter, and PID_ANGLE states
-            if (BC2.get(CIRCLE, TOGGLE))            turn *= 0.5;
-            if ((round(abs(PID_ANGLE)) % 90) == 0)  turn *= 0.85;
 
-            robot.setDrivePower(drive, strafe, turn, VELOCITY);
+            // QUICK TURNS ROUNDING
+            if ((round(abs(PID_ANGLE)) % 90) == 0)  regTurn *= 0.85;
+
+
+            // SET MOTOR POWER
+            robot.setDrivePowerTele(drive, strafe, turn, VELOCITY);
 
 
 
@@ -324,12 +377,15 @@ public class Zeta extends LinearOpMode {
                                                 */
             if (DEBUG_MODE_ON){
                 multTelemetry.addLine("--DEBUG-------------------------------------");
-                multTelemetry.addData("Goal Distance",          aimBot.getGoalDistance());
-                multTelemetry.addData("Goal Found",             aimBot.isGoalFound());
-                multTelemetry.addData("Goal Error",             aimBot.getGoalDegreeError(getAngle(), getXVelocity()));
-                multTelemetry.addData("Goal Angle",             aimBot.getGoalAngle(getAngle(), getXVelocity()));
+                multTelemetry.addData("error", error);
+                multTelemetry.addData("vError", vGoalError);
+                multTelemetry.addData("goalTurn", goalTurn);
+                multTelemetry.addData("powerShotTurn", powerShotTurn);
+                multTelemetry.addData("PowerShotAngle", powerShotAngle);
                 multTelemetry.addData("Goal Position Offset",   aimBot.calcGoalOffset(getAngle()));
                 multTelemetry.addData("Goal X-Velocity Offset", aimBot.calcGoalXVelocityOffset(getXVelocity()));
+                multTelemetry.addData("X-RPM", getXVelocity());
+
             }
 
             multTelemetry.addLine("--DRIVER-------------------------------------");

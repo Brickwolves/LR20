@@ -285,7 +285,7 @@ public class WingTest extends LinearOpMode {
             ----------- S E T    P O W E R -----------
 
                                                     */
-            robot.setDrivePower(drive, strafe, turn, velocity);
+            robot.setDrivePowerTele(drive, strafe, turn, velocity);
 
 
 

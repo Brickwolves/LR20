@@ -3,9 +3,17 @@ import com.acmerobotics.dashboard.config.Config;
 
 @Config
 public class Dash_Movement {
-    public static double p = .025;
-    public static double i = .0;
-    public static double d = .004;
+    public static double TELEOP_P = .025;
+    public static double TELEOP_I = .0;
+    public static double TELEOP_D = .0025;
+
+    public static double GOAL_P = .04;
+    public static double GOAL_I = .0;
+    public static double GOAL_D = .004;
+
+    public static double PS_P = .03;
+    public static double PS_I = 0.0;
+    public static double PS_D = 0.0;
 
     public static double X_TICKS = 0;
     public static double Y_TICKS = 0;
