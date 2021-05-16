@@ -22,5 +22,6 @@ public class Dash_Movement {
     public static double FACE_ANGLE = 180;
     public static double ACCELERATION = 0.3;
     public static double START_ANGLE = 0;
+    public static double SECONDS = 2.5;
 
 }

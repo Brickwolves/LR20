@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Hardware.Sensors.IMU;
 import org.firstinspires.ftc.teamcode.Navigation.Odometry;
+import org.firstinspires.ftc.teamcode.Navigation.Oracle;
 import org.firstinspires.ftc.teamcode.Navigation.Orientation;
 import org.firstinspires.ftc.teamcode.Navigation.Point;
 import org.firstinspires.ftc.teamcode.Utilities.MathUtils;
@@ -58,8 +59,8 @@ public class Mecanum implements Robot {
    public Wings wings;
 
    public PID rotationPID = new PID(TELEOP_P, TELEOP_I, TELEOP_D, 0, 8, false);
-   public PID goalPID = new PID(GOAL_P, GOAL_I, GOAL_D, 0, 10, true);
-   public PID powerShotPID = new PID(PS_P, PS_I, PS_D, 0, 10, true);
+   public PID goalPID = new PID(GOAL_P, GOAL_I, GOAL_D, 0, 10, false);
+   public PID powerShotPID = new PID(PS_P, PS_I, PS_D, 0, 10, false);
 
    public static ElapsedTime time = new ElapsedTime();
 
@@ -243,7 +244,44 @@ public class Mecanum implements Robot {
       return x + toRadians(c2) * sin(4 * x - 0.2);
    }
 
-   public void linearStrafe2Rings(double strafeAngle, double ticks, double minPower, double targetAngle, double waitTurnTime, double waitTaskTime, Task task) {
+   @RequiresApi(api = Build.VERSION_CODES.N)
+   public void linearStrafeTime(double strafeAngle, double seconds, double minPower, double targetAngle, double waitTurnTime, Task task) {
+
+      resetMotors();
+      ElapsedTime time = new ElapsedTime();
+
+      // Retrieve power values
+      strafeAngle = toRadians(strafeAngle);
+      double px0 = cos(strafeAngle);
+      double py0 = -sin(strafeAngle);
+      double pr0 = 0;
+
+
+      time.reset();
+      while (time.seconds() < seconds && isActive()){
+
+
+         // Execute task synchronously
+         if (task != null) task.execute();
+
+
+         // Turn to targetAngle
+         targetAngle = closestAngle(targetAngle, imu.getAngle());
+         pr0 = clip(rotationPID.update(targetAngle - imu.getAngle()) * -1, -1, 1);
+         if (time.seconds() < waitTurnTime) pr0 = 0;
+
+
+         // Shift powers and drive
+         Point shiftedPowers = shift(px0, py0, imu.getAngle() % 360);
+         setDrivePower(shiftedPowers.y * minPower, shiftedPowers.x * minPower, pr0, 1);
+
+      }
+      setAllPower(0);
+   }
+
+
+   @RequiresApi(api = Build.VERSION_CODES.N)
+   public void linearStrafeMinPower(double strafeAngle, double ticks, double minPower, double targetAngle, double waitTurnTime, double waitTaskTime, Task task) {
 
       resetMotors();
 
@@ -275,6 +313,7 @@ public class Mecanum implements Robot {
          power = 1;
 
          // PID CONTROLLER
+         targetAngle = closestAngle(targetAngle, imu.getAngle());
          pr0 = clip(rotationPID.update(targetAngle - imu.getAngle()) * -1, -1, 1);
          if (time.seconds() < waitTurnTime) pr0 = 0;
 

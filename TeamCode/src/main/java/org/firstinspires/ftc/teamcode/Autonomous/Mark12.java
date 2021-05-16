@@ -20,15 +20,12 @@ import org.firstinspires.ftc.teamcode.Vision.VisionUtils;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
-import static java.lang.Math.abs;
-import static java.lang.Math.pow;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.WORKING;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement.SECONDS;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement.START_ANGLE;
 import static org.firstinspires.ftc.teamcode.DashConstants.Deprecated.Dash_Intake.INTAKE_RPM_FORWARDS;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.DOWN;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.CROSS;
 import static org.firstinspires.ftc.teamcode.Navigation.Oracle.getAngle;
-import static org.firstinspires.ftc.teamcode.Navigation.Oracle.getXVelocity;
 import static org.firstinspires.ftc.teamcode.Navigation.Oracle.setAngle;
 import static org.firstinspires.ftc.teamcode.Navigation.Oracle.setIntakePosition;
 import static org.firstinspires.ftc.teamcode.Navigation.Oracle.setUpdateTask;
@@ -40,8 +37,8 @@ import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.PowerShot.PS_LEF
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.PowerShot.PS_MIDDLE;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.PowerShot.PS_RIGHT;
 
-@Autonomous(name="Mark 11", group="Autonomous Linear Opmode")
-public class Mark11 extends LinearOpMode
+@Autonomous(name="Mark 12", group="Autonomous Linear Opmode")
+public class Mark12 extends LinearOpMode
 {
     private SanicPipe ringFinder = new SanicPipe();
     private AimBotPipe aimBot = new AimBotPipe();
@@ -173,6 +170,7 @@ public class Mark11 extends LinearOpMode
             int rings = ringFinder.getRingCount();
 
             powerShotSequence();
+            rings = 4;
 
             if (rings == 0) B();
             else if (rings == 1) B();
@@ -206,7 +204,7 @@ public class Mark11 extends LinearOpMode
 
         // Shoot
         double RPM = aimBot.calcRPM() - 400;
-        if (powerShot == PS_MIDDLE) RPM -= 200;
+        if (powerShot == PS_MIDDLE) RPM -= 100;
         if (powerShot == PS_LEFT) RPM -= 100;
         shootPowerShot(1, 0.2, RPM);
     }
@@ -215,7 +213,8 @@ public class Mark11 extends LinearOpMode
     public void powerShotSequence(){
 
         // Rotating-Strafe to PowerShots
-        robot.linearStrafe(170, 1150, 0.3, 178, 0.1, 0, () -> {
+        time.reset();
+        robot.linearStrafeTime(170, 1.97, 0.6, 178, 0.5, () -> {
             robot.shooter.setRPM(3000); //3200
             robot.wings.mid();
         });
@@ -439,12 +438,10 @@ public class Mark11 extends LinearOpMode
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void C(){
 
-
         // Rotating-Strafe to Wobble-Goal to C
         time.reset();
-        robot.linearStrafe(210, 1600, 0.3, 20, 0, 0,
-                () -> {
-            if (time.seconds() > 2) robot.arm.out();
+        robot.linearStrafeTime(210, 2.8, 0.5, 20, 0, () -> {
+            if (time.seconds() > 2.4) robot.arm.out();
         });
 
 
@@ -455,35 +452,44 @@ public class Mark11 extends LinearOpMode
         }
 
 
-        // Drop Wobble Goal, & return to 2nd Wobble-Goal
+        // Back up a tiny bit
         time.reset();
-        robot.linearStrafe(-10, 2450, 0.1, 180, 0.45, 0,
-                () -> {
-                    robot.wings.up();
-                    robot.intake.rollerUp();
-                    robot.claw.open();
-                    if (time.seconds() > 0.4 && time.seconds() < 0.7) robot.arm.up();
-                    if (time.seconds() > 0.7) robot.arm.out();
-                });
+        robot.linearStrafeTime(20, 0.5, 0.3, 20, 0, () -> {
+            if (time.seconds() > 0.2) robot.arm.up();
+        });
+
+
+        // PART 1: Return to 2nd Wobble-Goal
+        time.reset();
+        robot.linearStrafeTime(-7, 2, 0.7, 180, 0, () -> {
+            robot.wings.up();
+            robot.intake.rollerUp();
+            robot.claw.open();
+            if (time.seconds() > 1.8) robot.arm.out();
+        });
+
+
+        // PART 2: Return to 2nd Wobble-Goal
+        time.reset();
+        robot.linearStrafeTime(-7, 0.8, 0.1, 180, 0, () -> {
+        });
 
 
         // Grab Wobble-Goal
         time.reset();
-        while (time.seconds() > 1 && time.seconds() < 2){
+        while (1 < time.seconds() && time.seconds() < 2){
             robot.claw.close();
         }
 
-
         // Prepare to knock down rings
         time.reset();
-        robot.linearStrafe(65, 1000, 0.2, 180, 0, 0,
+        robot.linearStrafeTime(65, 2, 0.3, 180, 0,
             () -> {
                 robot.claw.close();
                 if (time.seconds() > 0.6) robot.arm.up();
             });
 
         robot.intake.rollerDown();
-
 
 
         // Knock over rings
@@ -572,5 +578,6 @@ public class Mark11 extends LinearOpMode
         // Turn to face goal
         time.reset();
         robot.linearTurn(180, 0.1);
+
     }
 }

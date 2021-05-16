@@ -9,6 +9,7 @@ import org.firstinspires.ftc.teamcode.Hardware.Mecanum;
 import org.firstinspires.ftc.teamcode.Utilities.OpModeUtils;
 
 import static org.firstinspires.ftc.teamcode.DashConstants.Deprecated.Dash_Shooter.goal_rpm;
+import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.multTelemetry;
 
 @Disabled
 @TeleOp(name = "Shooter Diagnostic TeleOp", group="Linear TeleOp")
@@ -43,12 +44,12 @@ public class ShooterDiag extends LinearOpMode {
 
 
 
-            OpModeUtils.multTelemetry.addData("RPM", robot.shooter.getRPM());
-            OpModeUtils.multTelemetry.addData("Power", robot.shooter.getPower());
-            OpModeUtils.multTelemetry.addData("Position", robot.shooter.getPosition());
-            OpModeUtils.multTelemetry.addData("Imu", robot.imu.getAngle());
+            multTelemetry.addData("RPM", robot.shooter.getRPM());
+            multTelemetry.addData("Power", robot.shooter.getPower());
+            multTelemetry.addData("Position", robot.shooter.getPosition());
+            multTelemetry.addData("Imu", robot.imu.getAngle());
 
-            OpModeUtils.multTelemetry.update();
+            multTelemetry.update();
 
         }
     }

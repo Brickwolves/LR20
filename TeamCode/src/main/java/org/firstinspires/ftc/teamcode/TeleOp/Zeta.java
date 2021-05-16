@@ -306,8 +306,12 @@ public class Zeta extends LinearOpMode {
 
             // Get errors
             double error = PID_ANGLE - getAngle();
-            double vGoalError = pow(error, 0.7);
-            double vPSError = pow(error, 0.8);
+            double vGoalError = pow(abs(error), 0.7);
+            double vPSError = pow(abs(error), 0.8);
+            if (error < 0){
+                vGoalError *= -1;
+                vPSError *= -1;
+            }
 
 
             // Get shooter mode
@@ -386,6 +390,9 @@ public class Zeta extends LinearOpMode {
             }
 
             multTelemetry.addLine("--DRIVER-------------------------------------");
+            multTelemetry.addData("Drive", drive);
+            multTelemetry.addData("Strafe", strafe);
+
             multTelemetry.addData("Target", (aimTarget == POWERSHOTS) ? powerShot : aimTarget);
             multTelemetry.addData("Angle", getAngle());
             multTelemetry.addData("PID ANGLE", PID_ANGLE);

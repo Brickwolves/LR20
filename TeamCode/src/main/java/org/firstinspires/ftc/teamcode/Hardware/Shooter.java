@@ -25,7 +25,7 @@ public class Shooter {
     private Servo shoot_servo;
     private Servo lock_servo;
     //public PID shooterPID = new PID(.0002, 0.000008, 0.000009, 0, false);
-    public PID shooterPID = new PID(Dash_Shooter.p, Dash_Shooter.i, Dash_Shooter.d, 0.3, 0, false);
+    public PID shooterPID = new PID(Dash_Shooter.p, Dash_Shooter.i, Dash_Shooter.d, 0.3, 0, true);
 
     private static final double TICKS_PER_ROTATION = 28;
 
