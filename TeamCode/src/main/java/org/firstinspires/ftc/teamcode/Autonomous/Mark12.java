@@ -20,6 +20,7 @@ import org.firstinspires.ftc.teamcode.Vision.VisionUtils;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.PS_MIDDLE_OFFSET;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement.SECONDS;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement.START_ANGLE;
 import static org.firstinspires.ftc.teamcode.DashConstants.Deprecated.Dash_Intake.INTAKE_RPM_FORWARDS;
@@ -170,9 +171,8 @@ public class Mark12 extends LinearOpMode
             int rings = ringFinder.getRingCount();
 
             powerShotSequence();
-            rings = 4;
 
-            if (rings == 0) B();
+            if (rings == 0) A();
             else if (rings == 1) B();
             else C();
         }
@@ -204,7 +204,6 @@ public class Mark12 extends LinearOpMode
 
         // Shoot
         double RPM = aimBot.calcRPM() - 400;
-        if (powerShot == PS_MIDDLE) RPM -= 100;
         if (powerShot == PS_LEFT) RPM -= 100;
         shootPowerShot(1, 0.2, RPM);
     }
@@ -233,12 +232,95 @@ public class Mark12 extends LinearOpMode
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public void A(){
+
+        /*
+
+                WORKS REALLY WELL FOR 13.2 VOLTS
+
+         */
+
+
+        // Place WG @ A
+        time.reset();
+        robot.linearStrafeTime(235, 2.3, 0.3, 50, 0, () -> {
+            robot.intake.rollerUp();
+            if (time.seconds() > 2) robot.arm.out();
+        });
+
+        // Open claw
+        time.reset();
+        while (time.seconds() < 1){
+            robot.claw.open();
+        }
+
+        // Move out a smidge
+        time.reset();
+        robot.linearStrafeTime(50, 0.5, 0.3, 50, 0, () -> {
+            robot.claw.open();
+            robot.arm.up();
+        });
+
+        // PART 1: Strafe to 2nd WG
+        time.reset();
+        robot.linearStrafeTime(-45, 2, 0.4, 180, 0, () -> {
+            if (time.seconds() > 1) robot.arm.out();
+        });
+        // PART 2: Strafe to 2nd WG
+        time.reset();
+        robot.linearStrafeTime(0, 0.5, 0.2, 180, 0, () -> {
+            robot.arm.out();
+        });
+
+
+        // Grab WG
+        time.reset();
+        while (time.seconds() < 1){
+            robot.claw.close();
+        }
+
+
+        // Strafe to A
+        robot.linearStrafeTime(180, 1.6, 0.4, 0, 0, () -> {
+            robot.arm.up();
+            robot.claw.close();
+        });
+
+
+        // Drop WG
+        time.reset();
+        while (time.seconds() < 1){
+            robot.arm.out();
+            if (time.seconds() > 0.5) robot.claw.open();
+        }
+
+
+        // Arm Up WG
+        time.reset();
+        while (time.seconds() < 1){
+            robot.arm.up();
+        }
+
+
+        // Strafe sidways to clear A Zone
+        robot.linearStrafeTime(90, 2, 0.4, 180, 1, null);
+
+
+        // Strafe forward to navigation
+        robot.linearStrafeTime(180, 0.5, 0.4, 180, 0, null);
 
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void B(){
+
+        /*
+
+                13.21 VOLTS
+
+         */
+
 
         // Turn with back facing B
         time.reset();
@@ -296,7 +378,7 @@ public class Mark12 extends LinearOpMode
 
 
         // Move forward, intaking rings
-        robot.linearStrafe(-9, 2300, 0.1, -9, 0, 0, () -> {
+        robot.linearStrafe(-9, 2200, 0.1, -9, 0, 0, () -> {
             robot.intake.rollerMidH();
             robot.intake.setRPM(INTAKE_RPM_FORWARDS);
         });
@@ -310,7 +392,7 @@ public class Mark12 extends LinearOpMode
 
             robot.arm.up();
 
-            double targetAngle = closestAngle(145, getAngle());
+            double targetAngle = closestAngle(135, getAngle());
             double error = targetAngle - getAngle();
             double turn = robot.rotationPID.update(error) * -1;
             robot.setDrivePower(0, 0, turn * 0.85, 1);
