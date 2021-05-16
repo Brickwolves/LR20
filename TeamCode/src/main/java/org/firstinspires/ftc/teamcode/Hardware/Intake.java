@@ -12,9 +12,11 @@ import static com.qualcomm.robotcore.util.Range.clip;
 import static java.lang.Math.abs;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Servos.INTAKE_ARM_LSERVO_MAX;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Servos.INTAKE_ARM_LSERVO_MID;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Servos.INTAKE_ARM_LSERVO_MIDH;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Servos.INTAKE_ARM_LSERVO_MIN;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Servos.INTAKE_ARM_RSERVO_MAX;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Servos.INTAKE_ARM_RSERVO_MID;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Servos.INTAKE_ARM_RSERVO_MIDH;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Servos.INTAKE_ARM_RSERVO_MIN;
 import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.hardwareMap;
 import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.multTelemetry;
@@ -43,6 +45,7 @@ public class Intake {
     public enum STATUS {
         UP,
         MID,
+        MIDH,
         DOWN
     }
 
@@ -86,6 +89,15 @@ public class Intake {
 
         if (left_arm_servo.getPosition() == INTAKE_ARM_LSERVO_MID && right_arm_servo.getPosition() == INTAKE_ARM_RSERVO_MID){
             status = STATUS.MID;
+        }
+    }
+
+    public void rollerMidH(){
+        left_arm_servo.setPosition(INTAKE_ARM_LSERVO_MIDH);
+        right_arm_servo.setPosition(INTAKE_ARM_RSERVO_MIDH);
+
+        if (left_arm_servo.getPosition() == INTAKE_ARM_LSERVO_MIDH && right_arm_servo.getPosition() == INTAKE_ARM_RSERVO_MIDH){
+            status = STATUS.MIDH;
         }
     }
 

@@ -17,9 +17,10 @@ public class Dash_Movement {
 
     public static double X_TICKS = 0;
     public static double Y_TICKS = 0;
-    public static double D_TICKS = 1900;
+    public static double D_TICKS = 1700;
     public static double STRAFE_ANGLE = -12;
     public static double FACE_ANGLE = 180;
     public static double ACCELERATION = 0.3;
+    public static double START_ANGLE = 0;
 
 }

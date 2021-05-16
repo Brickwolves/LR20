@@ -306,10 +306,8 @@ public class Zeta extends LinearOpMode {
 
             // Get errors
             double error = PID_ANGLE - getAngle();
-            double vGoalError = pow(abs(error), 0.7);
-            double vPSError = pow(abs(error), 0.8);
-            if (error < 0)   vGoalError *= -1;
-            if (error < 0)   vPSError *= -1;
+            double vGoalError = pow(error, 0.7);
+            double vPSError = pow(error, 0.8);
 
 
             // Get shooter mode
@@ -317,8 +315,6 @@ public class Zeta extends LinearOpMode {
 
             // Get turn values
             double turn = 0;
-            goalTurn = robot.goalPID.update(vGoalError) * -1;
-
 
             // Turn off PID if finished manually turning
             if (JC1.get(LEFT, X) != 0) PID_ON = false;
@@ -330,6 +326,7 @@ public class Zeta extends LinearOpMode {
 
                 regTurn = robot.rotationPID.update(error) * -1;
                 powerShotTurn = robot.powerShotPID.update(vPSError) * -1;
+                goalTurn = robot.goalPID.update(vGoalError) * -1;
 
 
                 if (SHOOT_MODE_ON){
@@ -368,7 +365,7 @@ public class Zeta extends LinearOpMode {
 
 
             // SET MOTOR POWER
-            robot.setDrivePowerTele(drive, strafe, turn, VELOCITY);
+            robot.setDrivePower(drive, strafe, turn, VELOCITY);
 
 
 

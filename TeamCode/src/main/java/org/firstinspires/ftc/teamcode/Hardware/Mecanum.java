@@ -8,7 +8,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement;
 import org.firstinspires.ftc.teamcode.Hardware.Sensors.IMU;
 import org.firstinspires.ftc.teamcode.Navigation.Odometry;
 import org.firstinspires.ftc.teamcode.Navigation.Orientation;
@@ -19,7 +18,6 @@ import org.firstinspires.ftc.teamcode.Utilities.Task;
 
 import static com.qualcomm.robotcore.util.Range.clip;
 import static java.lang.Math.floorMod;
-import static java.lang.Math.toDegrees;
 import static java.lang.StrictMath.abs;
 import static java.lang.StrictMath.atan2;
 import static java.lang.StrictMath.cos;
@@ -38,7 +36,6 @@ import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement.TELEOP_
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement.TELEOP_I;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement.TELEOP_P;
 import static org.firstinspires.ftc.teamcode.Navigation.Oracle.getAngle;
-import static org.firstinspires.ftc.teamcode.Utilities.MathUtils.angleMode.DEGREES;
 import static org.firstinspires.ftc.teamcode.Utilities.MathUtils.closestAngle;
 import static org.firstinspires.ftc.teamcode.Utilities.MathUtils.shift;
 import static org.firstinspires.ftc.teamcode.Utilities.MathUtils.unShift;
@@ -142,18 +139,32 @@ public class Mecanum implements Robot {
     * @param drive
     * @param strafe
     */
-   public void setDrivePowerTele(double drive, double strafe, double turn, double velocity) {
+   public void setDrivePower(double drive, double strafe, double turn, double velocity) {
       fr.setPower((drive - strafe - turn) * velocity);
       fl.setPower((drive + strafe + turn) * velocity);
       br.setPower((drive + strafe - turn) * velocity);
       bl.setPower((drive - strafe + turn) * velocity);
    }
 
-   public void setDrivePowerVision(double drive, double strafe, double targetAngle, double velocity) {
+   public void setDrivePowerPS(double drive, double strafe, double targetAngle, double velocity) {
       double error = targetAngle - getAngle();
-      double vError = pow(abs(error), 0.7);
-      if (error < 0)   vError *= -1;
-      double turn = goalPID.update(vError) * -1;
+      double vPSError = pow(abs(error), 0.8);
+      if (error < 0) vPSError *= -1;
+      double turn = powerShotPID.update(vPSError) * -1;
+
+      runWithEncoders();
+
+      fr.setPower((drive - strafe - turn) * velocity);
+      fl.setPower((drive + strafe + turn) * velocity);
+      br.setPower((drive + strafe - turn) * velocity);
+      bl.setPower((drive - strafe + turn) * velocity);
+   }
+
+   public void setDrivePowerGoal(double drive, double strafe, double targetAngle, double velocity) {
+      double baseError = targetAngle - getAngle();
+      double error = pow(abs(baseError), 0.7);
+      if (error < 0)   error *= -1;
+      double turn = goalPID.update(error) * -1;
 
       runWithEncoders();
 
@@ -186,21 +197,6 @@ public class Mecanum implements Robot {
       power           = clip(power, 0.2, 1);
 
       return power;
-   }
-
-   public double robotVelocityComponent(double angle){
-      double drive = (fr.getCurrentPosition() + fl.getCurrentPosition() + br.getCurrentPosition() + bl.getCurrentPosition()) / 4;
-      double strafe = (fr.getCurrentPosition() - fl.getCurrentPosition() - br.getCurrentPosition() + bl.getCurrentPosition()) / 4;
-      double velocityAngle;
-
-      double velocity = Math.sqrt(Math.pow(drive, 2) + Math.pow(strafe, 2));
-
-      if (velocity == 0 ) velocityAngle = 0;
-      else velocityAngle = - toDegrees(atan2(drive, strafe)) + 90;
-
-      angle = angle - velocityAngle;
-
-      return MathUtils.cos(angle, DEGREES) * velocity;
    }
 
    public double getRComp(){
@@ -245,6 +241,65 @@ public class Mecanum implements Robot {
       double c1 = 7.8631064977;
       double c2 = 8;
       return x + toRadians(c2) * sin(4 * x - 0.2);
+   }
+
+   public void linearStrafe2Rings(double strafeAngle, double ticks, double minPower, double targetAngle, double waitTurnTime, double waitTaskTime, Task task) {
+
+      resetMotors();
+
+      ElapsedTime time = new ElapsedTime(); time.reset();
+
+      strafeAngle = toRadians(strafeAngle);
+      //double ticks = ticks; //centimeters2Ticks(cm);
+
+      Orientation startO = odom.getOrientation();
+      Orientation curO = odom.getOrientation();
+
+      double power;
+      double px0 = cos(strafeAngle);
+      double py0 = -sin(strafeAngle);
+      double pr0 = 0;
+
+      print("PX: " + px0);
+      print("PY: " + py0);
+      print("StrafeAngle: " + strafeAngle);
+      print("\n");
+
+      double curC = 0;
+      while (curC < ticks && isActive()){
+
+         // Execute task synchronously
+         if (task != null && time.seconds() > waitTaskTime) task.execute();
+
+         // Power ramping
+         power = 1;
+
+         // PID CONTROLLER
+         pr0 = clip(rotationPID.update(targetAngle - imu.getAngle()) * -1, -1, 1);
+         if (time.seconds() < waitTurnTime) pr0 = 0;
+
+         // SHIFT POWER
+         Point shiftedPowers = shift(px0, py0, curO.a % 360);
+
+         // Un-shift X and Y distances traveled
+         Point relPos = unShift(getXComp(), getYComp(), curO.a % 360);
+         curO.x = relPos.x + startO.x;
+         curO.y = relPos.y + startO.y;
+         curO.a = imu.getAngle();
+         curC = sqrt(pow(relPos.x, 2) + pow(relPos.y, 2));
+
+         // SET POWER
+         setDrivePower(shiftedPowers.y * minPower, shiftedPowers.x, pr0, power);
+
+         // LOGGING
+         //System.out.println("atan2(y, x): " + toDegrees(atan2(curO.y, curO.x)));
+         multTelemetry.addData("Power", power);
+         multTelemetry.addData("curC", curC);
+         multTelemetry.addData("Ticks", ticks);
+         multTelemetry.update();
+      }
+      odom.update(curO);
+      setAllPower(0);
    }
 
 
@@ -294,7 +349,7 @@ public class Mecanum implements Robot {
          curC = sqrt(pow(relPos.x, 2) + pow(relPos.y, 2));
 
          // SET POWER
-         setDrivePowerTele(shiftedPowers.y, shiftedPowers.x, pr0, power);
+         setDrivePower(shiftedPowers.y, shiftedPowers.x, pr0, power);
 
          // LOGGING
          //System.out.println("atan2(y, x): " + toDegrees(atan2(curO.y, curO.x)));
@@ -366,7 +421,7 @@ public class Mecanum implements Robot {
          double power = powerRamp(curC, distC, acceleration);
          Point shiftedPowers = shift(px0, py0, curO.a % 360);
          pr = clip(rotationPID.update(destination.a - imu.getAngle()) * -1, -1, 1);
-         setDrivePowerTele(shiftedPowers.y, shiftedPowers.x, pr, power);
+         setDrivePower(shiftedPowers.y, shiftedPowers.x, pr, power);
 
          // LOGGING
          multTelemetry.addData("Power", power);
@@ -418,7 +473,7 @@ public class Mecanum implements Robot {
 
 
          //        Set Power                 //
-         setDrivePowerTele(0, 0, turn_direction, power);
+         setDrivePower(0, 0, turn_direction, power);
          current_angle = imu.getAngle();
 
 
@@ -472,7 +527,7 @@ public class Mecanum implements Robot {
 
 
          //        Set Power                 //
-         setDrivePowerTele(0, 0, turn_direction, power);
+         setDrivePower(0, 0, turn_direction, power);
          current_angle = imu.getAngle();
 
 
@@ -522,7 +577,7 @@ public class Mecanum implements Robot {
 
 
          //        Set Power                 //
-         setDrivePowerTele(0, 0, turn_direction, power);
+         setDrivePower(0, 0, turn_direction, power);
          current_angle = imu.getAngle();
 
 

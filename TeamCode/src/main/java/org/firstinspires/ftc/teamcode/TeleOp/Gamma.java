@@ -255,7 +255,7 @@ public class Gamma extends LinearOpMode {
 
 
             // LAST STEP
-            robot.setDrivePowerTele(drive, strafe, turn, velocity);
+            robot.setDrivePower(drive, strafe, turn, velocity);
 
 
             /*
