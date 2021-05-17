@@ -287,14 +287,14 @@ public class Mecanum implements Robot {
 
 
    @RequiresApi(api = Build.VERSION_CODES.N)
-   public void strafeStaticPower(double strafeAngle, double ticks, double minPower, double targetAngle, double waitTurnTime, double waitTaskTime, Task task) {
+   public void strafeStaticPower(double strafeAngle, double ticks, double staticPower, double targetAngle, double waitTurnTime, Task task) {
 
       resetMotors();
 
       ElapsedTime time = new ElapsedTime(); time.reset();
 
       strafeAngle = toRadians(strafeAngle);
-      //double ticks = ticks; //centimeters2Ticks(cm);
+      targetAngle = closestAngle(targetAngle, imu.getAngle());
 
       Orientation startO = odom.getOrientation();
       Orientation curO = odom.getOrientation();
@@ -313,13 +313,12 @@ public class Mecanum implements Robot {
       while (curC < ticks && isActive()){
 
          // Execute task synchronously
-         if (task != null && time.seconds() > waitTaskTime) task.execute();
+         if (task != null) task.execute();
 
          // Power ramping
          power = 1;
 
          // PID CONTROLLER
-         targetAngle = closestAngle(targetAngle, imu.getAngle());
          pr0 = clip(rotationPID.update(targetAngle - imu.getAngle()) * -1, -1, 1);
          if (time.seconds() < waitTurnTime) pr0 = 0;
 
@@ -334,7 +333,7 @@ public class Mecanum implements Robot {
          curC = sqrt(pow(relPos.x, 2) + pow(relPos.y, 2));
 
          // SET POWER
-         setDrivePower(shiftedPowers.y * minPower, shiftedPowers.x * minPower, pr0, power);
+         setDrivePower(shiftedPowers.y * staticPower, shiftedPowers.x * staticPower, pr0, power);
 
          // LOGGING
          //System.out.println("atan2(y, x): " + toDegrees(atan2(curO.y, curO.x)));
@@ -348,7 +347,9 @@ public class Mecanum implements Robot {
    }
 
 
-   public void strafePowerRamp(double strafeAngle, double ticks, double acceleration, double targetAngle, double waitTurnTime, double waitTaskTime, Task task) {
+
+
+   public void strafePowerRamp(double strafeAngle, double ticks, double acceleration, double targetAngle, double waitTurnTime, Task task) {
 
       resetMotors();
 
@@ -374,7 +375,67 @@ public class Mecanum implements Robot {
       while (curC < ticks && isActive()){
 
          // Execute task synchronously
-         if (task != null && time.seconds() > waitTaskTime) task.execute();
+         if (task != null) task.execute();
+
+         // Power ramping
+         power = powerRamp(curC, ticks, acceleration);
+
+         // PID CONTROLLER
+         pr0 = clip(rotationPID.update(targetAngle - imu.getAngle()) * -1, -1, 1);
+         if (time.seconds() < waitTurnTime) pr0 = 0;
+
+         // SHIFT POWER
+         Point shiftedPowers = shift(px0, py0, curO.a % 360);
+
+         // Un-shift X and Y distances traveled
+         Point relPos = unShift(getXComp(), getYComp(), curO.a % 360);
+         curO.x = relPos.x + startO.x;
+         curO.y = relPos.y + startO.y;
+         curO.a = imu.getAngle();
+         curC = sqrt(pow(relPos.x, 2) + pow(relPos.y, 2));
+
+         // SET POWER
+         setDrivePower(shiftedPowers.y * power, shiftedPowers.x * power, pr0, 1);
+
+         // LOGGING
+         //System.out.println("atan2(y, x): " + toDegrees(atan2(curO.y, curO.x)));
+         multTelemetry.addData("Power", power);
+         multTelemetry.addData("curC", curC);
+         multTelemetry.addData("Ticks", ticks);
+         multTelemetry.update();
+      }
+      odom.update(curO);
+      setAllPower(0);
+   }
+
+
+   public void strafePowerRamp2(double strafeAngle, double ticks, double acceleration, double targetAngle, double waitTurnTime, Task task) {
+
+      resetMotors();
+
+      ElapsedTime time = new ElapsedTime(); time.reset();
+
+      strafeAngle = toRadians(strafeAngle);
+      //double ticks = ticks; //centimeters2Ticks(cm);
+
+      Orientation startO = odom.getOrientation();
+      Orientation curO = odom.getOrientation();
+
+      double power;
+      double px0 = cos(strafeAngle);
+      double py0 = -sin(strafeAngle);
+      double pr0 = 0;
+
+      print("PX: " + px0);
+      print("PY: " + py0);
+      print("StrafeAngle: " + strafeAngle);
+      print("\n");
+
+      double curC = 0;
+      while (curC < ticks && isActive()){
+
+         // Execute task synchronously
+         if (task != null) task.execute();
 
          // Power ramping
          power = powerRamp(curC, ticks, acceleration);

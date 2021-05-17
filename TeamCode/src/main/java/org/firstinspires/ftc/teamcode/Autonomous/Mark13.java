@@ -36,9 +36,6 @@ import static org.firstinspires.ftc.teamcode.Navigation.Oracle.setXPosition;
 import static org.firstinspires.ftc.teamcode.Navigation.Oracle.setYPosition;
 import static org.firstinspires.ftc.teamcode.Utilities.MathUtils.closestAngle;
 import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.multTelemetry;
-import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.PowerShot.PS_LEFT;
-import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.PowerShot.PS_MIDDLE;
-import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.PowerShot.PS_RIGHT;
 
 @Autonomous(name="Mark 13", group="Autonomous Linear Opmode")
 public class Mark13 extends LinearOpMode
@@ -47,7 +44,7 @@ public class Mark13 extends LinearOpMode
     private AimBotPipe aimBot = new AimBotPipe();
     private Mecanum robot;
     private ButtonControls BC;
-    private ElapsedTime time = new ElapsedTime();
+    private ElapsedTime t = new ElapsedTime();
 
     public void initialize(){
         OpModeUtils.setOpMode(this);
@@ -74,19 +71,19 @@ public class Mark13 extends LinearOpMode
 
 
     public void gripperSequence(){
-        time.reset();
-        while (time.seconds() < 1){
+        t.reset();
+        while (t.seconds() < 1){
             robot.claw.open();
             robot.arm.up();
         }
-        time.reset();
-        while (!BC.get(CROSS, DOWN) && time.seconds() < 2){
+        t.reset();
+        while (!BC.get(CROSS, DOWN) && t.seconds() < 2){
             ButtonControls.update();
             multTelemetry.addData("Status", "Press X to close gripper.");
             multTelemetry.update();
         }
-        time.reset();
-        while (time.seconds() < 1){
+        t.reset();
+        while (t.seconds() < 1){
             robot.claw.close();
         }
     }
@@ -105,7 +102,7 @@ public class Mark13 extends LinearOpMode
     public void BREAKPOINT(){
         ButtonControls.update();
         Orientation curO = robot.odom.getOrientation();
-        while (!BC.get(CROSS, DOWN)){
+        while (!BC.get(CROSS, DOWN) && opModeIsActive()){
 
             ButtonControls.update();
             Oracle.update();
@@ -118,13 +115,13 @@ public class Mark13 extends LinearOpMode
         }
     }
 
-    public void shootGoal(int rings, double waitSeconds){
-        time.reset();
+    public void shoot(int rings, double waitSeconds){
+        t.reset();
         robot.wings.mid();
         while (true) {
             robot.shooter.setRPM(aimBot.calcRPM());
 
-            if (time.seconds() > waitSeconds) {
+            if (t.seconds() > waitSeconds) {
                 if (robot.shooter.getFeederCount() < rings) robot.shooter.feederState(true);
                 else break;
             }
@@ -133,28 +130,9 @@ public class Mark13 extends LinearOpMode
             multTelemetry.addData("RPM", robot.shooter.getRPM());
             multTelemetry.update();
         }
-        //robot.shooter.setPower(0);
         robot.shooter.setFeederCount(0);
     }
 
-    public void shootPowerShot(int rings, double waitSeconds, double rpm){
-        time.reset();
-        robot.wings.mid();
-        while (true) {
-            robot.shooter.setRPM(rpm);
-
-            if (time.seconds() > waitSeconds) {
-                if (robot.shooter.getFeederCount() < rings) robot.shooter.feederState(true);
-                else break;
-            }
-
-            multTelemetry.addData("Position", robot.shooter.getPosition());
-            multTelemetry.addData("RPM", robot.shooter.getRPM());
-            multTelemetry.update();
-        }
-        //robot.shooter.setPower(0);
-        robot.shooter.setFeederCount(0);
-    }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -171,7 +149,8 @@ public class Mark13 extends LinearOpMode
 
             int rings = ringFinder.getRingCount();
 
-            powerShotSequence();
+            goalSequence();
+            rings = 0;
 
             if (rings == 0) A();
             else if (rings == 1) B();
@@ -180,126 +159,135 @@ public class Mark13 extends LinearOpMode
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public void doPowerShot(VisionUtils.PowerShot powerShot){
-        time.reset();
+    public void shootGoal(){
+
+        ElapsedTime t = new ElapsedTime();
+        t.reset();
 
         // Should take 1.2 seconds
-        while (time.seconds() < 0.6){
+        while (t.seconds() < 1){
 
             // Update Oracle
             Oracle.update();
 
             // Set the RPM
-            double RPM = aimBot.calcRPM() - 400;
-            if (powerShot == PS_MIDDLE) RPM += 100;
+            double RPM = aimBot.calcRPM();
             robot.shooter.setRPM(RPM);
 
             // Turn to PowerShot
-            double psAngle = aimBot.getPowerShotAngle(powerShot, getAngle());
-            robot.setDrivePowerPS(0, 0, psAngle, 1);
+            double goalAngle = aimBot.getGoalAngle(getAngle(), 0);
+            robot.setDrivePowerGoal(0, 0, goalAngle, 1);
 
         }
-
-        // Stop all movement
-        robot.setDrivePower(0, 0, 0, 0);
-
-        // Shoot
-        double RPM = aimBot.calcRPM() - 400;
-        if (powerShot == PS_LEFT) RPM -= 100;
-        shootPowerShot(1, 0.2, RPM);
+        robot.setAllPower(0);
+        shoot(3, 0.2);
+        robot.shooter.setPower(0);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public void powerShotSequence(){
+    public void goalSequence(){
 
         // Rotating-Strafe to PowerShots
-        time.reset();
-        robot.strafeTime(170, 1.97, 0.6, 178, 0.5, () -> {
+        t.reset();
+        robot.strafeStaticPower(170, 2000, 0.5, 0, 0.5, () -> {
             robot.shooter.setRPM(3000); //3200
             robot.wings.mid();
         });
 
+        // Turn near goal
+        robot.turnTime(178, 1, () -> {
+            robot.shooter.setRPM(3000); //3200
+            robot.intake.rollerMid();
+        });
 
-        // Roller Down for Camera
-        robot.intake.rollerMid();
-        sleep(200);
 
+        // Top Goal
+        shootGoal();
 
-        // PowerShots
-        doPowerShot(PS_MIDDLE);
-        doPowerShot(PS_RIGHT);
-        doPowerShot(PS_LEFT);
-        robot.shooter.setPower(0);
     }
 
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void A(){
 
-        /*
-
-                WORKS REALLY WELL FOR 13.2 VOLTS
-
-         */
-
+        robot.turnTime(50, 1, null);
 
         // Place WG @ A
-        time.reset();
-        robot.strafeTime(235, 2.3, 0.3, 50, 0, () -> {
+        t.reset();
+        robot.strafeStaticPower(235, 1100, 0.4, 50, 0, () -> {
             robot.intake.rollerUp();
-            if (time.seconds() > 2) robot.arm.out();
+            if (t.seconds() > 1) robot.arm.out();
         });
 
+
         // Open claw
-        time.reset();
-        while (time.seconds() < 1){
+        t.reset();
+        while (t.seconds() < 1){
             robot.claw.open();
         }
 
+
         // Move out a smidge
-        time.reset();
-        robot.strafeTime(50, 0.5, 0.3, 50, 0, () -> {
+        robot.strafeStaticPower(50, 50, 0.3, 50, 0, () -> {
             robot.claw.open();
             robot.arm.up();
         });
 
+        // Turn to face back wall
+        robot.turnTime(180, 1, null);
+
+
         // PART 1: Strafe to 2nd WG
-        time.reset();
-        robot.strafeTime(-45, 2, 0.4, 180, 0, () -> {
-            if (time.seconds() > 1) robot.arm.out();
-        });
+        t.reset();
+        robot.strafeStaticPower(-45, 900, 0.5, 180, 0, () -> robot.arm.out());
         // PART 2: Strafe to 2nd WG
-        time.reset();
-        robot.strafeTime(0, 0.5, 0.2, 180, 0, () -> {
-            robot.arm.out();
-        });
+        robot.strafeStaticPower(0, 900, 0.3, 180, 0, () -> robot.arm.out());
 
 
         // Grab WG
-        time.reset();
-        while (time.seconds() < 1){
+        t.reset();
+        while (t.seconds() < 1){
             robot.claw.close();
         }
 
 
+        // Raise WG
+        t.reset();
+        while (t.seconds() < 1){
+            robot.arm.up();
+            robot.claw.close();
+        }
+
+
+        // Turn to A
+        robot.turnTime(0, 1, () -> {
+            robot.arm.up();
+            robot.claw.close();
+        });
+
+
         // Strafe to A
-        robot.strafeTime(180, 1.6, 0.4, 0, 0, () -> {
+        robot.strafeStaticPower(170, 700, 0.5, 0, 0, () -> {
             robot.arm.up();
             robot.claw.close();
         });
 
 
         // Drop WG
-        time.reset();
-        while (time.seconds() < 1){
+        t.reset();
+        while (t.seconds() < 1){
             robot.arm.out();
-            if (time.seconds() > 0.5) robot.claw.open();
+            if (t.seconds() > 0.5) robot.claw.open();
         }
 
 
+        // Move away from WG
+        robot.strafeStaticPower(0, 100, 0.3, 0, 0, null);
+
+
         // Arm Up WG
-        time.reset();
-        while (time.seconds() < 1){
+        t.reset();
+        while (t.seconds() < 1){
             robot.arm.up();
         }
 
@@ -309,9 +297,11 @@ public class Mark13 extends LinearOpMode
 
 
         // Strafe forward to navigation
-        robot.strafeTime(180, 0.5, 0.4, 180, 0, null);
+        robot.strafeTime(180, 1, 0.4, 180, 0, null);
 
     }
+
+
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void B(){
@@ -324,8 +314,8 @@ public class Mark13 extends LinearOpMode
 
 
         // Turn with back facing B
-        time.reset();
-        while (time.seconds() < 1.5){
+        t.reset();
+        while (t.seconds() < 1.5){
 
             Oracle.update();
 
@@ -338,33 +328,33 @@ public class Mark13 extends LinearOpMode
 
 
         // Strafe backwards to B
-        time.reset();
-        while (time.seconds() < 0.8){
+        t.reset();
+        while (t.seconds() < 0.8){
             robot.setDrivePower(-0.7, 0, 0, 1);
         }
         robot.setAllPower(0);
 
 
         // Drop Wobble-Goal to B
-        time.reset();
-        while (time.seconds() < 1.5){
+        t.reset();
+        while (t.seconds() < 1.5){
 
             robot.arm.out();
-            if (time.seconds() > 1) robot.claw.open();
+            if (t.seconds() > 1) robot.claw.open();
         }
 
 
         // Strafe Forwards a teensy bit
-        time.reset();
-        while (time.seconds() < 0.2){
+        t.reset();
+        while (t.seconds() < 0.2){
             robot.setDrivePower(0.7, 0, 0, 1);
         }
         robot.setAllPower(0);
 
 
         // Turn to face rings
-        time.reset();
-        while (time.seconds() < 1.5){
+        t.reset();
+        while (t.seconds() < 1.5){
 
             Oracle.update();
 
@@ -379,15 +369,15 @@ public class Mark13 extends LinearOpMode
 
 
         // Move forward, intaking rings
-        robot.strafePowerRamp(-9, 2200, 0.1, -9, 0, 0, () -> {
+        robot.strafePowerRamp2(-9, 2200, 0.1, -9, 0, () -> {
             robot.intake.rollerMidH();
             robot.intake.setRPM(INTAKE_RPM_FORWARDS);
         });
 
 
         // Turn 140 with back facing wobble goal
-        time.reset();
-        while (time.seconds() < 1.5){
+        t.reset();
+        while (t.seconds() < 1.5){
 
             Oracle.update();
 
@@ -406,16 +396,16 @@ public class Mark13 extends LinearOpMode
 
 
         // Start to put out arm
-        time.reset();
-        while (time.seconds() < 0.2){
+        t.reset();
+        while (t.seconds() < 0.2){
             robot.arm.out();
 
         }
 
 
         // Strafe backwards to wobble goal
-        time.reset();
-        while (time.seconds() < 0.3){
+        t.reset();
+        while (t.seconds() < 0.3){
             robot.arm.out();
             robot.setDrivePower(-0.3, 0, 0, 1);
         }
@@ -423,20 +413,20 @@ public class Mark13 extends LinearOpMode
 
 
         // Grab second Wobble-Goal
-        time.reset();
-        while (time.seconds() < 2){
+        t.reset();
+        while (t.seconds() < 2){
 
             robot.shooter.setRPM(aimBot.calcRPM());
 
-            if (time.seconds() < 0.8) robot.arm.out();
-            if (0.8 < time.seconds()) robot.claw.close();
-            if (time.seconds() > 1.2) robot.arm.up();
+            if (t.seconds() < 0.8) robot.arm.out();
+            if (0.8 < t.seconds()) robot.claw.close();
+            if (t.seconds() > 1.2) robot.arm.up();
         }
 
 
         // Turn to 180 for one sec and then orient to goal
-        time.reset();
-        while (time.seconds() < 1){
+        t.reset();
+        while (t.seconds() < 1){
 
             Oracle.update();
 
@@ -444,7 +434,7 @@ public class Mark13 extends LinearOpMode
             robot.shooter.setRPM(aimBot.calcRPM());
 
             double turn;
-            if (time.seconds() < 1){
+            if (t.seconds() < 1){
                 double targetAngle = closestAngle(185, getAngle());
                 double error = targetAngle - getAngle();
                 turn = robot.rotationPID.update(error) * -1;
@@ -462,8 +452,8 @@ public class Mark13 extends LinearOpMode
 
 
         // Shoot top goal
-        time.reset();
-        while (time.seconds() < 1){
+        t.reset();
+        while (t.seconds() < 1){
             robot.shooter.setRPM(aimBot.calcRPM());
             robot.shooter.feederState(true);
         }
@@ -471,14 +461,14 @@ public class Mark13 extends LinearOpMode
 
 
         // Strafe to B
-        time.reset();
-        robot.strafePowerRamp(165, 1200, 0.1, 0, 0, 0, () -> {
+        t.reset();
+        robot.strafePowerRamp2(165, 1200, 0.1, 0, 0, () -> {
 
         });
 
         // Strafe Forwards to get out of wobble-range
-        time.reset();
-        while (time.seconds() < 0.4){
+        t.reset();
+        while (t.seconds() < 0.4){
             robot.arm.out();
             robot.setDrivePower(0.5, 0, 0, 1);
         }
@@ -486,22 +476,22 @@ public class Mark13 extends LinearOpMode
 
 
         // Drop 2nd Wobble-Goal to B
-        time.reset();
-        while (time.seconds() < 1.2){
+        t.reset();
+        while (t.seconds() < 1.2){
 
             robot.arm.out();
-            if (time.seconds() > 1) robot.claw.open();
+            if (t.seconds() > 1) robot.claw.open();
         }
 
 
         // Strafe to Navigation
-        robot.strafeStaticPower(0, 500, 0.3, 0, 0, 0, () -> {
+        robot.strafeStaticPower(0, 500, 0.3, 0, 0, () -> {
         });
 
 
         // Turn to 180
-        time.reset();
-        while (time.seconds() < 1){
+        t.reset();
+        while (t.seconds() < 1){
 
             Oracle.update();
 
@@ -517,67 +507,66 @@ public class Mark13 extends LinearOpMode
 
     }
 
-
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void C(){
 
         // Rotating-Strafe to Wobble-Goal to C
-        time.reset();
+        t.reset();
         robot.strafeTime(210, 2.8, 0.5, 20, 0, () -> {
-            if (time.seconds() > 2.4) robot.arm.out();
+            if (t.seconds() > 2.4) robot.arm.out();
         });
 
 
         // Open Claw
-        time.reset();
-        while (time.seconds() < 0.2){
+        t.reset();
+        while (t.seconds() < 0.2){
             robot.claw.open();
         }
 
 
         // Back up a tiny bit
-        time.reset();
+        t.reset();
         robot.strafeTime(20, 0.5, 0.3, 20, 0, () -> {
-            if (time.seconds() > 0.2) robot.arm.up();
+            if (t.seconds() > 0.2) robot.arm.up();
         });
 
 
         // PART 1: Return to 2nd Wobble-Goal
-        time.reset();
+        t.reset();
         robot.strafeTime(-7, 2, 0.7, 180, 0, () -> {
             robot.wings.up();
             robot.intake.rollerUp();
             robot.claw.open();
-            if (time.seconds() > 1.8) robot.arm.out();
+            if (t.seconds() > 1.8) robot.arm.out();
         });
 
 
         // PART 2: Return to 2nd Wobble-Goal
-        time.reset();
+        t.reset();
         robot.strafeTime(-7, 0.8, 0.1, 180, 0, () -> {
         });
 
 
         // Grab Wobble-Goal
-        time.reset();
-        while (1 < time.seconds() && time.seconds() < 2){
+        t.reset();
+        while (1 < t.seconds() && t.seconds() < 2){
             robot.claw.close();
         }
 
         // Prepare to knock down rings
-        time.reset();
+        t.reset();
         robot.strafeTime(65, 2, 0.3, 180, 0,
             () -> {
                 robot.claw.close();
-                if (time.seconds() > 0.6) robot.arm.up();
+                if (t.seconds() > 0.6) robot.arm.up();
             });
 
         robot.intake.rollerDown();
 
 
         // Knock over rings
-        time.reset();
-        robot.strafePowerRamp(180, 600, 0.1, 180, 0, 0, () -> {
+        t.reset();
+        robot.strafePowerRamp2(180, 600, 0.1, 180, 0, () -> {
             robot.intake.rollerDown();
             robot.wings.mid();
 
@@ -587,8 +576,8 @@ public class Mark13 extends LinearOpMode
 
 
         // Backtrack
-        time.reset();
-        while (time.seconds() < 0.4){
+        t.reset();
+        while (t.seconds() < 0.4){
             robot.setDrivePower(-0.4, 0, 0, 1);
         }
         robot.setAllPower(0);
@@ -596,7 +585,7 @@ public class Mark13 extends LinearOpMode
 
 
         // Move fast a bit and intake
-        robot.strafeStaticPower(180, 100, 0.3, 185, 0, 0, () -> {
+        robot.strafeStaticPower(180, 100, 0.3, 185, 0, () -> {
             robot.intake.rollerMidH();
             robot.intake.setRPM(INTAKE_RPM_FORWARDS);
 
@@ -607,7 +596,7 @@ public class Mark13 extends LinearOpMode
 
 
         // Move slow a bit and intake
-        robot.strafeStaticPower(180, 400, 0.1, 185, 0, 0, () -> {
+        robot.strafeStaticPower(180, 400, 0.1, 185, 0, () -> {
             robot.intake.rollerMidH();
             robot.intake.setRPM(INTAKE_RPM_FORWARDS);
 
@@ -618,7 +607,7 @@ public class Mark13 extends LinearOpMode
 
 
         // Move fast a bit and intake
-        robot.strafeStaticPower(180, 200, 0.3, 185, 0, 0, () -> {
+        robot.strafeStaticPower(180, 200, 0.3, 185, 0, () -> {
             robot.intake.rollerMidH();
             robot.intake.setRPM(INTAKE_RPM_FORWARDS);
 
@@ -628,8 +617,8 @@ public class Mark13 extends LinearOpMode
         });
 
         // Just intake and shoot
-        time.reset();
-        while (time.seconds() < 2){
+        t.reset();
+        while (t.seconds() < 2){
             robot.intake.rollerMidH();
             robot.intake.setRPM(INTAKE_RPM_FORWARDS);
 
@@ -642,24 +631,24 @@ public class Mark13 extends LinearOpMode
 
 
         // Strafe to C to drop off Wobble-Goal-2
-        time.reset();
-        robot.strafePowerRamp(185, 1600, 0.6, 40, 0, 0,
+        t.reset();
+        robot.strafePowerRamp2(185, 1600, 0.6, 40, 0,
             () -> {
-                if (time.seconds() > 2) robot.arm.out();
+                if (t.seconds() > 2) robot.arm.out();
                 robot.intake.setIntakePower(0);
                 robot.intake.rollerUp();
             });
 
 
         // Strafe to navigation
-        time.reset();
-        robot.strafePowerRamp(40, 1500, 0.6, 40, 0,0, () -> {
+        t.reset();
+        robot.strafePowerRamp2(40, 1500, 0.6, 40, 0,() -> {
             robot.claw.open();
         });
 
 
         // Turn to face goal
-        time.reset();
+        t.reset();
         robot.linearTurn(180, 0.1);
 
     }

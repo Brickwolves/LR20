@@ -376,7 +376,7 @@ public class Mark12 extends LinearOpMode
 
 
         // Move forward, intaking rings
-        robot.strafePowerRamp(-9, 2200, 0.1, -9, 0, 0, () -> {
+        robot.strafePowerRamp2(-9, 2200, 0.1, -9, 0, () -> {
             robot.intake.rollerMidH();
             robot.intake.setRPM(INTAKE_RPM_FORWARDS);
         });
@@ -469,7 +469,7 @@ public class Mark12 extends LinearOpMode
 
         // Strafe to B
         time.reset();
-        robot.strafePowerRamp(165, 1200, 0.1, 0, 0, 0, () -> {
+        robot.strafePowerRamp2(165, 1200, 0.1, 0, 0, () -> {
 
         });
 
@@ -492,7 +492,7 @@ public class Mark12 extends LinearOpMode
 
 
         // Strafe to Navigation
-        robot.strafeStaticPower(0, 500, 0.3, 0, 0, 0, () -> {
+        robot.strafeStaticPower(0, 500, 0.3, 0, 0, () -> {
         });
 
 
@@ -574,7 +574,7 @@ public class Mark12 extends LinearOpMode
 
         // Knock over rings
         time.reset();
-        robot.strafePowerRamp(180, 600, 0.1, 180, 0, 0, () -> {
+        robot.strafePowerRamp2(180, 600, 0.1, 180, 0, () -> {
             robot.intake.rollerDown();
             robot.wings.mid();
 
@@ -593,7 +593,7 @@ public class Mark12 extends LinearOpMode
 
 
         // Move fast a bit and intake
-        robot.strafeStaticPower(180, 100, 0.3, 185, 0, 0, () -> {
+        robot.strafeStaticPower(180, 100, 0.3, 185, 0, () -> {
             robot.intake.rollerMidH();
             robot.intake.setRPM(INTAKE_RPM_FORWARDS);
 
@@ -604,7 +604,7 @@ public class Mark12 extends LinearOpMode
 
 
         // Move slow a bit and intake
-        robot.strafeStaticPower(180, 400, 0.1, 185, 0, 0, () -> {
+        robot.strafeStaticPower(180, 400, 0.1, 185, 0, () -> {
             robot.intake.rollerMidH();
             robot.intake.setRPM(INTAKE_RPM_FORWARDS);
 
@@ -615,7 +615,7 @@ public class Mark12 extends LinearOpMode
 
 
         // Move fast a bit and intake
-        robot.strafeStaticPower(180, 200, 0.3, 185, 0, 0, () -> {
+        robot.strafeStaticPower(180, 200, 0.3, 185, 0, () -> {
             robot.intake.rollerMidH();
             robot.intake.setRPM(INTAKE_RPM_FORWARDS);
 
@@ -640,7 +640,7 @@ public class Mark12 extends LinearOpMode
 
         // Strafe to C to drop off Wobble-Goal-2
         time.reset();
-        robot.strafePowerRamp(185, 1600, 0.6, 40, 0, 0,
+        robot.strafePowerRamp2(185, 1600, 0.6, 40, 0,
             () -> {
                 if (time.seconds() > 2) robot.arm.out();
                 robot.intake.setIntakePower(0);
@@ -650,7 +650,7 @@ public class Mark12 extends LinearOpMode
 
         // Strafe to navigation
         time.reset();
-        robot.strafePowerRamp(40, 1500, 0.6, 40, 0,0, () -> {
+        robot.strafePowerRamp2(40, 1500, 0.6, 40, 0,() -> {
             robot.claw.open();
         });
 

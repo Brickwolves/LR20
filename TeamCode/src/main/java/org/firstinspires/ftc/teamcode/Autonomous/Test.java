@@ -107,7 +107,7 @@ public class Test extends LinearOpMode
         if (opModeIsActive()){
 
 
-            robot.strafeTime(180, 3, 0.3, 210, 0, () -> {
+            robot.strafeStaticPower(180, 100, 0.3, 210, 0, () -> {
 
             });
 
