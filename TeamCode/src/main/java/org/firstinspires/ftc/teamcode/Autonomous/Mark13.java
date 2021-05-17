@@ -150,7 +150,6 @@ public class Mark13 extends LinearOpMode
             int rings = ringFinder.getRingCount();
 
             goalSequence();
-            rings = 0;
 
             if (rings == 0) A();
             else if (rings == 1) B();
@@ -300,8 +299,6 @@ public class Mark13 extends LinearOpMode
         robot.strafeTime(180, 1, 0.4, 180, 0, null);
 
     }
-
-
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void B(){
@@ -632,17 +629,18 @@ public class Mark13 extends LinearOpMode
 
         // Strafe to C to drop off Wobble-Goal-2
         t.reset();
-        robot.strafePowerRamp2(185, 1600, 0.6, 40, 0,
+        robot.strafePowerRamp2(185, 1700, 0.6, 40, 0,
             () -> {
                 if (t.seconds() > 2) robot.arm.out();
                 robot.intake.setIntakePower(0);
                 robot.intake.rollerUp();
             });
 
+       sleep(1000);
 
         // Strafe to navigation
         t.reset();
-        robot.strafePowerRamp2(40, 1500, 0.6, 40, 0,() -> {
+        robot.strafePowerRamp2(40, 1400, 0.6, 40, 0, () -> {
             robot.claw.open();
         });
 
