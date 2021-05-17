@@ -26,6 +26,10 @@ import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Bu
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.CROSS;
 import static org.firstinspires.ftc.teamcode.Navigation.Oracle.getAngle;
 import static org.firstinspires.ftc.teamcode.Navigation.Oracle.setAngle;
+import static org.firstinspires.ftc.teamcode.Navigation.Oracle.setBLPosition;
+import static org.firstinspires.ftc.teamcode.Navigation.Oracle.setBRPosition;
+import static org.firstinspires.ftc.teamcode.Navigation.Oracle.setFLPosition;
+import static org.firstinspires.ftc.teamcode.Navigation.Oracle.setFRPosition;
 import static org.firstinspires.ftc.teamcode.Navigation.Oracle.setIntakePosition;
 import static org.firstinspires.ftc.teamcode.Navigation.Oracle.setUpdateTask;
 import static org.firstinspires.ftc.teamcode.Navigation.Oracle.setXPosition;
@@ -36,8 +40,8 @@ import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.PowerShot.PS_LEF
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.PowerShot.PS_MIDDLE;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.PowerShot.PS_RIGHT;
 
-@Autonomous(name="Mark 12", group="Autonomous Linear Opmode")
-public class Mark12 extends LinearOpMode
+@Autonomous(name="Mark 13", group="Autonomous Linear Opmode")
+public class Mark13 extends LinearOpMode
 {
     private SanicPipe ringFinder = new SanicPipe();
     private AimBotPipe aimBot = new AimBotPipe();
@@ -57,11 +61,10 @@ public class Mark12 extends LinearOpMode
             setXPosition(robot.getX());
             setYPosition(robot.getYComp());
             setIntakePosition(robot.intake.getIntakePosition());
-            Oracle.frPosition = robot.fr.getCurrentPosition();
-            Oracle.flPosition = robot.fl.getCurrentPosition();
-            Oracle.brPosition = robot.br.getCurrentPosition();
-            Oracle.blPosition = robot.bl.getCurrentPosition();
-
+            setFRPosition(robot.fr.getCurrentPosition());
+            setFLPosition(robot.fl.getCurrentPosition());
+            setBRPosition(robot.br.getCurrentPosition());
+            setBLPosition(robot.bl.getCurrentPosition());
         });
 
         setUpVision();

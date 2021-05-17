@@ -38,6 +38,10 @@ public class Oracle {
     public static void setXPosition(double currentXPosition) { Oracle.currentXPosition = currentXPosition; }
     public static void setYPosition(double currentYPosition) { Oracle.currentYPosition = currentYPosition; }
     public static void setIntakePosition(double currentIntakePosition) { Oracle.currentIntakePosition = currentIntakePosition; }
+    public static void setFRPosition(double frPosition) { Oracle.frPosition = frPosition; }
+    public static void setFLPosition(double flPosition) { Oracle.flPosition = flPosition; }
+    public static void setBRPosition(double brPosition) { Oracle.brPosition = brPosition; }
+    public static void setBLPosition(double blPosition) { Oracle.blPosition = blPosition; }
 
 
     public static void setAVelocity(double aVelocity) { Oracle.aVelocity = aVelocity; }

@@ -22,14 +22,11 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import static java.lang.Math.abs;
-import static java.lang.Math.pow;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.WORKING;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement.START_ANGLE;
 import static org.firstinspires.ftc.teamcode.DashConstants.Deprecated.Dash_Intake.INTAKE_RPM_FORWARDS;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.DOWN;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.CROSS;
 import static org.firstinspires.ftc.teamcode.Navigation.Oracle.getAngle;
-import static org.firstinspires.ftc.teamcode.Navigation.Oracle.getXVelocity;
 import static org.firstinspires.ftc.teamcode.Navigation.Oracle.setAngle;
 import static org.firstinspires.ftc.teamcode.Navigation.Oracle.setIntakePosition;
 import static org.firstinspires.ftc.teamcode.Navigation.Oracle.setUpdateTask;
@@ -217,7 +214,7 @@ public class Mark11 extends LinearOpMode
     public void powerShotSequence(){
 
         // Rotating-Strafe to PowerShots
-        robot.linearStrafe(170, 1150, 0.3, 178, 0.1, 0, () -> {
+        robot.strafePowerRamp(170, 1150, 0.3, 178, 0.1, 0, () -> {
             robot.shooter.setRPM(3000); //3200
             robot.wings.mid();
         });
@@ -299,7 +296,7 @@ public class Mark11 extends LinearOpMode
 
 
         // Move forward, intaking rings
-        robot.linearStrafe(-9, 2300, 0.1, -9, 0, 0, () -> {
+        robot.strafePowerRamp(-9, 2300, 0.1, -9, 0, 0, () -> {
             robot.intake.rollerMidH();
             robot.intake.setRPM(INTAKE_RPM_FORWARDS);
         });
@@ -392,7 +389,7 @@ public class Mark11 extends LinearOpMode
 
         // Strafe to B
         time.reset();
-        robot.linearStrafe(165, 1200, 0.1, 0, 0, 0, () -> {
+        robot.strafePowerRamp(165, 1200, 0.1, 0, 0, 0, () -> {
 
         });
 
@@ -415,7 +412,7 @@ public class Mark11 extends LinearOpMode
 
 
         // Strafe to Navigation
-        robot.linearStrafeMinPower(0, 500, 0.3, 0, 0, 0, () -> {
+        robot.strafeStaticPower(0, 500, 0.3, 0, 0, 0, () -> {
         });
 
 
@@ -444,7 +441,7 @@ public class Mark11 extends LinearOpMode
 
         // Rotating-Strafe to Wobble-Goal to C
         time.reset();
-        robot.linearStrafe(210, 1600, 0.3, 20, 0, 0,
+        robot.strafePowerRamp(210, 1600, 0.3, 20, 0, 0,
                 () -> {
             if (time.seconds() > 2) robot.arm.out();
         });
@@ -459,7 +456,7 @@ public class Mark11 extends LinearOpMode
 
         // Drop Wobble Goal, & return to 2nd Wobble-Goal
         time.reset();
-        robot.linearStrafe(-10, 2450, 0.1, 180, 0.45, 0,
+        robot.strafePowerRamp(-10, 2450, 0.1, 180, 0.45, 0,
                 () -> {
                     robot.wings.up();
                     robot.intake.rollerUp();
@@ -478,7 +475,7 @@ public class Mark11 extends LinearOpMode
 
         // Prepare to knock down rings
         time.reset();
-        robot.linearStrafe(65, 1000, 0.2, 180, 0, 0,
+        robot.strafePowerRamp(65, 1000, 0.2, 180, 0, 0,
             () -> {
                 robot.claw.close();
                 if (time.seconds() > 0.6) robot.arm.up();
@@ -490,7 +487,7 @@ public class Mark11 extends LinearOpMode
 
         // Knock over rings
         time.reset();
-        robot.linearStrafe(180, 600, 0.1, 180, 0, 0, () -> {
+        robot.strafePowerRamp(180, 600, 0.1, 180, 0, 0, () -> {
             robot.intake.rollerDown();
             robot.wings.mid();
 
@@ -509,7 +506,7 @@ public class Mark11 extends LinearOpMode
 
 
         // Move fast a bit and intake
-        robot.linearStrafeMinPower(180, 100, 0.3, 185, 0, 0, () -> {
+        robot.strafeStaticPower(180, 100, 0.3, 185, 0, 0, () -> {
             robot.intake.rollerMidH();
             robot.intake.setRPM(INTAKE_RPM_FORWARDS);
 
@@ -520,7 +517,7 @@ public class Mark11 extends LinearOpMode
 
 
         // Move slow a bit and intake
-        robot.linearStrafeMinPower(180, 400, 0.1, 185, 0, 0, () -> {
+        robot.strafeStaticPower(180, 400, 0.1, 185, 0, 0, () -> {
             robot.intake.rollerMidH();
             robot.intake.setRPM(INTAKE_RPM_FORWARDS);
 
@@ -531,7 +528,7 @@ public class Mark11 extends LinearOpMode
 
 
         // Move fast a bit and intake
-        robot.linearStrafeMinPower(180, 200, 0.3, 185, 0, 0, () -> {
+        robot.strafeStaticPower(180, 200, 0.3, 185, 0, 0, () -> {
             robot.intake.rollerMidH();
             robot.intake.setRPM(INTAKE_RPM_FORWARDS);
 
@@ -556,7 +553,7 @@ public class Mark11 extends LinearOpMode
 
         // Strafe to C to drop off Wobble-Goal-2
         time.reset();
-        robot.linearStrafe(185, 1600, 0.6, 40, 0, 0,
+        robot.strafePowerRamp(185, 1600, 0.6, 40, 0, 0,
             () -> {
                 if (time.seconds() > 2) robot.arm.out();
                 robot.intake.setIntakePower(0);
@@ -566,7 +563,7 @@ public class Mark11 extends LinearOpMode
 
         // Strafe to navigation
         time.reset();
-        robot.linearStrafe(40, 1500, 0.6, 40, 0,0, () -> {
+        robot.strafePowerRamp(40, 1500, 0.6, 40, 0,0, () -> {
             robot.claw.open();
         });
 

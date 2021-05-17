@@ -22,7 +22,6 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement.START_ANGLE;
-import static org.firstinspires.ftc.teamcode.DashConstants.Deprecated.Dash_Intake.INTAKE_RPM_FORWARDS;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.DOWN;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.CROSS;
 import static org.firstinspires.ftc.teamcode.Navigation.Oracle.getAngle;
@@ -31,11 +30,7 @@ import static org.firstinspires.ftc.teamcode.Navigation.Oracle.setIntakePosition
 import static org.firstinspires.ftc.teamcode.Navigation.Oracle.setUpdateTask;
 import static org.firstinspires.ftc.teamcode.Navigation.Oracle.setXPosition;
 import static org.firstinspires.ftc.teamcode.Navigation.Oracle.setYPosition;
-import static org.firstinspires.ftc.teamcode.Utilities.MathUtils.closestAngle;
 import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.multTelemetry;
-import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.PowerShot.PS_LEFT;
-import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.PowerShot.PS_MIDDLE;
-import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.PowerShot.PS_RIGHT;
 
 @Disabled
 @Autonomous(name="Test", group="Autonomous Linear Opmode")
@@ -112,7 +107,7 @@ public class Test extends LinearOpMode
         if (opModeIsActive()){
 
 
-            robot.linearStrafeTime(180, 3, 0.3, 210, 0, () -> {
+            robot.strafeTime(180, 3, 0.3, 210, 0, () -> {
 
             });
 

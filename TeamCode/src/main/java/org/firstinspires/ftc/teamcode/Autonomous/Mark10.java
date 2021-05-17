@@ -140,7 +140,7 @@ public class Mark10 extends LinearOpMode
     public void C(){
 
         // Strafe to PowerShots
-        robot.linearStrafe(170, 1200, 0.3, 175, 0.1, 0, () -> {
+        robot.strafePowerRamp(170, 1200, 0.3, 175, 0.1, 0, () -> {
             robot.shooter.setRPM(3200); //3200
             robot.wings.mid();
         });
@@ -166,7 +166,7 @@ public class Mark10 extends LinearOpMode
 
         // Drop to C
         time.reset();
-        robot.linearStrafe(210, 1800, 0.4, 20, 0, 0,
+        robot.strafePowerRamp(210, 1800, 0.4, 20, 0, 0,
                 () -> {
             if (time.seconds() > 1) robot.arm.out();
         });
@@ -181,7 +181,7 @@ public class Mark10 extends LinearOpMode
 
         // Return to other wobble goal
         time.reset();
-        robot.linearStrafe(-10, 2000, 0.3, 180, 0.45, 0,
+        robot.strafePowerRamp(-10, 2000, 0.3, 180, 0.45, 0,
                 () -> {
                     robot.wings.up();
                     robot.intake.rollerUp();
@@ -197,7 +197,7 @@ public class Mark10 extends LinearOpMode
 
         // Prepare to knock down rings
         time.reset();
-        robot.linearStrafe(90, 700, 0.05, 180, 0, 0,
+        robot.strafePowerRamp(90, 700, 0.05, 180, 0, 0,
             () -> {
                 robot.claw.close();
                 if (time.seconds() > 0.6) robot.arm.up();

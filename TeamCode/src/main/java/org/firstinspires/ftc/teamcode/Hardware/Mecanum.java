@@ -245,7 +245,13 @@ public class Mecanum implements Robot {
    }
 
    @RequiresApi(api = Build.VERSION_CODES.N)
-   public void linearStrafeTime(double strafeAngle, double seconds, double minPower, double targetAngle, double waitTurnTime, Task task) {
+   public void strafeTime(double strafeAngle, double seconds, double minPower, double targetAngle, double waitTurnTime, Task task) {
+
+      /*
+
+         ISSUE, IF BATTERY VOLTAGE IS HIGHER, THE POWER SET IS MUCH DIFFERENT, MEANING WE GO FARTHER OR SHORTER IN THE SAME AMOUNT OF TIME
+
+       */
 
       resetMotors();
       ElapsedTime time = new ElapsedTime();
@@ -281,7 +287,7 @@ public class Mecanum implements Robot {
 
 
    @RequiresApi(api = Build.VERSION_CODES.N)
-   public void linearStrafeMinPower(double strafeAngle, double ticks, double minPower, double targetAngle, double waitTurnTime, double waitTaskTime, Task task) {
+   public void strafeStaticPower(double strafeAngle, double ticks, double minPower, double targetAngle, double waitTurnTime, double waitTaskTime, Task task) {
 
       resetMotors();
 
@@ -328,7 +334,7 @@ public class Mecanum implements Robot {
          curC = sqrt(pow(relPos.x, 2) + pow(relPos.y, 2));
 
          // SET POWER
-         setDrivePower(shiftedPowers.y * minPower, shiftedPowers.x, pr0, power);
+         setDrivePower(shiftedPowers.y * minPower, shiftedPowers.x * minPower, pr0, power);
 
          // LOGGING
          //System.out.println("atan2(y, x): " + toDegrees(atan2(curO.y, curO.x)));
@@ -342,7 +348,7 @@ public class Mecanum implements Robot {
    }
 
 
-   public void linearStrafe(double strafeAngle, double ticks, double acceleration, double targetAngle, double waitTurnTime, double waitTaskTime, Task task) {
+   public void strafePowerRamp(double strafeAngle, double ticks, double acceleration, double targetAngle, double waitTurnTime, double waitTaskTime, Task task) {
 
       resetMotors();
 
@@ -402,7 +408,61 @@ public class Mecanum implements Robot {
    }
 
 
-   public void linearStrafe(Orientation destination, double acceleration, Task task){
+   @RequiresApi(api = Build.VERSION_CODES.N)
+   public void turnTime(double targetAngle, double seconds, Task task){
+      ElapsedTime t = new ElapsedTime();
+      targetAngle = closestAngle(targetAngle, imu.getAngle());
+      while (t.seconds() < seconds){
+         Oracle.update();
+
+         // Execute Task
+         if (task != null) task.execute();
+
+         // Update error & turn
+         double error = targetAngle - imu.getAngle();
+         double turn = rotationPID.update(error) * -1;
+         setDrivePower(0, 0, turn, 0.85);
+      }
+      setAllPower(0);
+   }
+
+   @RequiresApi(api = Build.VERSION_CODES.N)
+   public void turnMOE(double targetAngle, double MOE, Task task){
+      ElapsedTime t = new ElapsedTime();
+      targetAngle = closestAngle(targetAngle, getAngle());
+      double error = targetAngle - imu.getAngle();
+      while (abs(error) > MOE){
+          Oracle.update();
+
+          // Execute Task
+         if (task != null) task.execute();
+
+         // Update error & turn
+         error = targetAngle - imu.getAngle();
+         double turn = rotationPID.update(error) * -1;
+         setDrivePower(0, 0, turn, 0.85);
+      }
+      setAllPower(0);
+   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   public void strafePoint(Orientation destination, double acceleration, Task task){
 
       // Initialize starter variables
       resetMotors();
@@ -471,6 +531,7 @@ public class Mecanum implements Robot {
       odom.update(curO);
       setAllPower(0);
    }
+
 
    @RequiresApi(api = Build.VERSION_CODES.N)
    public void linearTurn(double target_angle, double MOE, Task task) {
