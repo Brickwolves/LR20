@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.Math.atan2;
+import static java.lang.Math.round;
 import static java.lang.Math.tan;
 import static java.lang.Math.toDegrees;
 import static java.lang.Math.toRadians;
@@ -26,6 +27,7 @@ import static java.lang.StrictMath.pow;
 import static java.lang.StrictMath.sin;
 import static java.lang.StrictMath.sqrt;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.DEBUG_MODE_ON;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.MARGINS;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.MAX_H;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.MAX_S;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.MAX_V;
@@ -51,6 +53,7 @@ import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.RECT_OPTION.AREA
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.pixels2Degrees;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.sortRectsByMaxOption;
 import static org.opencv.core.Core.inRange;
+import static org.opencv.core.Core.mean;
 import static org.opencv.core.CvType.CV_8U;
 import static org.opencv.imgproc.Imgproc.CHAIN_APPROX_SIMPLE;
 import static org.opencv.imgproc.Imgproc.FONT_HERSHEY_COMPLEX;
@@ -79,16 +82,71 @@ public class AimBotPipe extends OpenCvPipeline {
     private Mat hierarchy = new Mat();
     private List<MatOfPoint> contours;
 
-    // Thresholding values
-    Scalar MIN_HSV, MAX_HSV;
-
     // Rectangle settings
     private Scalar color = new Scalar(255, 0, 255);
     private int thickness = 2;
     private int font = FONT_HERSHEY_COMPLEX;
 
+    Scalar MAX_HSV, MIN_HSV;
+
+    // Init sequence
+    private ElapsedTime time = new ElapsedTime();
+
     @Override
     public Mat processFrame(Mat input) {
+
+        output = (time.seconds() < 5) ? initPipe(input) : regPipe(input);
+        return output;
+    }
+
+    public void updateHSV(Mat img, Rect crop){
+
+        img.submat(crop);
+        Scalar meanHSV = mean(img);
+        for (int i=0; i < 3; i++){
+            MAX_HSV.val[i] = meanHSV.val[i] + MARGINS[i];
+            MIN_HSV.val[i] = meanHSV.val[i] - MARGINS[i];
+        }
+
+    }
+
+    public Mat initPipe(Mat input){
+
+        // Get height and width
+        IMG_HEIGHT = input.rows();
+        IMG_WIDTH = input.cols();
+
+        // Copy to output
+        input.copyTo(output);
+
+        // Convert & Copy to outPut image
+        cvtColor(input, modified, Imgproc.COLOR_RGB2HSV);
+
+        // Blurring
+        GaussianBlur(modified, modified, new Size(blur, blur), 0);
+
+        // Retrieve initRect
+        int sideLength = 50;
+        int x = (int) (round(IMG_WIDTH / 2) - round(sideLength/2));
+        int y = (int) (round(IMG_HEIGHT / 2) - round(sideLength/2));
+        Rect initRect = new Rect(x, y, x+sideLength, y+sideLength);
+
+        // Calc aveHSV w/i initRect
+        updateHSV(modified, initRect);
+
+        // Log the rect for driver-placement
+        rectangle(output, initRect, color, thickness);
+
+        // Log time left
+        String timeStr = time.seconds().toString();
+        double mx = IMG_WIDTH - 100;
+        double my = IMG_HEIGHT - 100;
+        putText(output, timeStr, new Point(mx, my), font, 0.4, color);
+
+        return output;
+    }
+
+    public Mat regPipe(Mat input){
 
         // Get height and width
         IMG_HEIGHT = input.rows();
@@ -163,7 +221,6 @@ public class AimBotPipe extends OpenCvPipeline {
         // Return altered image
         if (DEBUG_MODE_ON) return modified;
         return output;
-
     }
 
 

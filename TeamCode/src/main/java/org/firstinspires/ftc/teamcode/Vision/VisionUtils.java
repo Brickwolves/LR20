@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Vision;
 
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Rect;
+import org.opencv.core.Scalar;
 import org.openftc.easyopencv.OpenCvCamera;
 
 import java.util.ArrayList;
