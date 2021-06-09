@@ -4,6 +4,8 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
+import com.qualcomm.robotcore.util.ElapsedTime;
+
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
@@ -27,6 +29,8 @@ import static java.lang.StrictMath.pow;
 import static java.lang.StrictMath.sin;
 import static java.lang.StrictMath.sqrt;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.DEBUG_MODE_ON;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.INIT_COMPLETED;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.INIT_RECT_SIDELENGTH;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.MARGINS;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.MAX_H;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.MAX_S;
@@ -44,6 +48,7 @@ import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.goalWidth
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.xVelocityMultiplier;
 import static org.firstinspires.ftc.teamcode.DashConstants.Deprecated.Dash_Shooter.SHOOTER_COEFF;
 import static org.firstinspires.ftc.teamcode.Utilities.MathUtils.closestAngle;
+import static org.firstinspires.ftc.teamcode.Utilities.OpModeUtils.multTelemetry;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.IMG_HEIGHT;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.IMG_WIDTH;
 import static org.firstinspires.ftc.teamcode.Vision.VisionUtils.PS_LEFT_DIST;
@@ -87,15 +92,16 @@ public class AimBotPipe extends OpenCvPipeline {
     private int thickness = 2;
     private int font = FONT_HERSHEY_COMPLEX;
 
-    Scalar MAX_HSV, MIN_HSV;
+    private Scalar MAX_HSV = new Scalar(0, 0, 0);
+    private Scalar MIN_HSV = new Scalar(0, 0, 0);
 
-    // Init sequence
     private ElapsedTime time = new ElapsedTime();
+
 
     @Override
     public Mat processFrame(Mat input) {
 
-        output = (time.seconds() < 5) ? initPipe(input) : regPipe(input);
+        output = (!INIT_COMPLETED) ? initPipe(input) : regPipe(input);
         return output;
     }
 
@@ -107,6 +113,7 @@ public class AimBotPipe extends OpenCvPipeline {
             MAX_HSV.val[i] = meanHSV.val[i] + MARGINS[i];
             MIN_HSV.val[i] = meanHSV.val[i] - MARGINS[i];
         }
+        multTelemetry.addData("HSV", meanHSV.toString());
 
     }
 
@@ -126,10 +133,10 @@ public class AimBotPipe extends OpenCvPipeline {
         GaussianBlur(modified, modified, new Size(blur, blur), 0);
 
         // Retrieve initRect
-        int sideLength = 50;
-        int x = (int) (round(IMG_WIDTH / 2) - round(sideLength/2));
-        int y = (int) (round(IMG_HEIGHT / 2) - round(sideLength/2));
-        Rect initRect = new Rect(x, y, x+sideLength, y+sideLength);
+        int sideLength = INIT_RECT_SIDELENGTH;
+        int x = (int) (round(IMG_WIDTH / 2) - round(sideLength/2.0));
+        int y = (int) (round(IMG_HEIGHT / 2) - round(sideLength/2.0));
+        Rect initRect = new Rect(x, y, sideLength, sideLength);
 
         // Calc aveHSV w/i initRect
         updateHSV(modified, initRect);
@@ -138,9 +145,9 @@ public class AimBotPipe extends OpenCvPipeline {
         rectangle(output, initRect, color, thickness);
 
         // Log time left
-        String timeStr = time.seconds().toString();
-        double mx = IMG_WIDTH - 100;
-        double my = IMG_HEIGHT - 100;
+        String timeStr = "" + time.seconds();
+        double mx = IMG_WIDTH - 50;
+        double my = IMG_HEIGHT - 50;
         putText(output, timeStr, new Point(mx, my), font, 0.4, color);
 
         return output;

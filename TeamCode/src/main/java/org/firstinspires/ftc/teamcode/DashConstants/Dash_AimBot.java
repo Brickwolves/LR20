@@ -29,7 +29,10 @@ public class Dash_AimBot {
     public static double PS_MIDDLE_OFFSET   = 4;
     public static double PS_LEFT_OFFSET     = 3;
     public static double xVelocityMultiplier  = 0.07; // 0.15
+
+    // Debugging tools
     public static boolean DEBUG_MODE_ON     = true;
-    public static boolean WORKING = true;
+    public static boolean INIT_COMPLETED = true;
+    public static int INIT_RECT_SIDELENGTH = 10;
 
 }

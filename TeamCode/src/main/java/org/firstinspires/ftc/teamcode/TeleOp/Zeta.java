@@ -23,6 +23,7 @@ import static java.lang.Math.abs;
 import static java.lang.StrictMath.pow;
 import static java.lang.StrictMath.round;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.DEBUG_MODE_ON;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.INIT_COMPLETED;
 import static org.firstinspires.ftc.teamcode.DashConstants.Deprecated.Dash_Intake.INTAKE_RPM_FORWARDS;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.DOWN;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.TAP;
@@ -152,6 +153,7 @@ public class Zeta extends LinearOpMode {
 
         VisionUtils.webcam_front.setPipeline(aimBot);
         VisionUtils.webcam_front.openCameraDeviceAsync(() -> VisionUtils.webcam_front.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT));
+
     }
 
 
@@ -223,6 +225,8 @@ public class Zeta extends LinearOpMode {
             robot.shooter.feederState(BC2.get(RB2, DOWN));
             if (BC2.get(CIRCLE, TOGGLE)) {
 
+
+
                 // Move arm out of way of shooter
                 robot.intake.rollerMid();
 
@@ -231,28 +235,33 @@ public class Zeta extends LinearOpMode {
 
                 // Check if Goal is found, if not, set RPM to default, and orient nearby goal
                 double RPM = 3400;
-                if (errorToGoal > 50) aimTarget = OUT_OF_RANGE;
 
-                switch (aimTarget){
-                    case GOAL:
-                        PID_ANGLE = goalAngle;
-                        RPM = aimBot.calcRPM();
-                        break;
+                if (!BC1.get(RB1, TOGGLE)) {
 
-                    case POWERSHOTS:
-                        PID_ANGLE = powerShotAngle;
-                        RPM = aimBot.calcRPM() - 300;
-                        break;
+                    if (errorToGoal > 50) aimTarget = OUT_OF_RANGE;
 
-                    case OUT_OF_RANGE:
-                        PID_ANGLE = closestAngle(180, getAngle());
-                        break;
+                    switch (aimTarget) {
+                        case GOAL:
+                            PID_ANGLE = goalAngle;
+                            RPM = aimBot.calcRPM();
+                            break;
+
+                        case POWERSHOTS:
+                            PID_ANGLE = powerShotAngle;
+                            RPM = aimBot.calcRPM() - 300;
+                            break;
+
+                        case OUT_OF_RANGE:
+                            PID_ANGLE = closestAngle(180, getAngle());
+                            break;
+                    }
                 }
 
                 // Set the RPM
                 robot.shooter.setRPM(RPM);
             }
             else robot.shooter.setPower(0);
+
 
 
 
@@ -315,7 +324,7 @@ public class Zeta extends LinearOpMode {
 
 
             // Get shooter mode
-            boolean SHOOT_MODE_ON = BC2.get(CIRCLE, TOGGLE);
+            boolean SHOOT_MODE_ON = BC2.get(CIRCLE, TOGGLE) && !BC1.get(RB1, TOGGLE);
 
             // Get turn values
             double turn = 0;
