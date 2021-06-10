@@ -28,19 +28,17 @@ import static java.lang.StrictMath.cos;
 import static java.lang.StrictMath.pow;
 import static java.lang.StrictMath.sin;
 import static java.lang.StrictMath.sqrt;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.BLUE_ALLIANCE;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.DEBUG_MODE_ON;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.INIT_COMPLETED;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.INIT_RECT_SIDELENGTH;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.MARGINS;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.MAX_H;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.MAX_S;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.MAX_V;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.MIN_H;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.MIN_S;
-import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.MIN_V;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.BLUE_MARGINS;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.MAX_COLORSET;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.MIN_COLORSET;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.PS_LEFT_OFFSET;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.PS_MIDDLE_OFFSET;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.PS_RIGHT_OFFSET;
+import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.RED_MARGINS;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.blur;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.dilate_const;
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.erode_const;
@@ -92,9 +90,6 @@ public class AimBotPipe extends OpenCvPipeline {
     private int thickness = 2;
     private int font = FONT_HERSHEY_COMPLEX;
 
-    private Scalar MAX_HSV = new Scalar(0, 0, 0);
-    private Scalar MIN_HSV = new Scalar(0, 0, 0);
-
     private ElapsedTime time = new ElapsedTime();
 
 
@@ -105,16 +100,24 @@ public class AimBotPipe extends OpenCvPipeline {
         return output;
     }
 
+    public static String getMAXHSV(){
+        return MAX_COLORSET.toString();
+    }
+
+    public static String getMINHSV(){
+        return MIN_COLORSET.toString();
+    }
+
     public void updateHSV(Mat img, Rect crop){
 
         img.submat(crop);
         Scalar meanHSV = mean(img);
+        int[] MARGINS = (BLUE_ALLIANCE) ? BLUE_MARGINS : RED_MARGINS;
         for (int i=0; i < 3; i++){
-            MAX_HSV.val[i] = meanHSV.val[i] + MARGINS[i];
-            MIN_HSV.val[i] = meanHSV.val[i] - MARGINS[i];
+            MAX_COLORSET.val[i] = meanHSV.val[i] + MARGINS[i];
+            MIN_COLORSET.val[i] = meanHSV.val[i] - MARGINS[i];
         }
         multTelemetry.addData("HSV", meanHSV.toString());
-
     }
 
     public Mat initPipe(Mat input){
@@ -127,7 +130,8 @@ public class AimBotPipe extends OpenCvPipeline {
         input.copyTo(output);
 
         // Convert & Copy to outPut image
-        cvtColor(input, modified, Imgproc.COLOR_RGB2HSV);
+        if (BLUE_ALLIANCE) cvtColor(input, modified, Imgproc.COLOR_RGB2HSV);
+        else cvtColor(input, modified, Imgproc.COLOR_RGB2YCrCb);
 
         // Blurring
         GaussianBlur(modified, modified, new Size(blur, blur), 0);
@@ -163,15 +167,16 @@ public class AimBotPipe extends OpenCvPipeline {
         input.copyTo(output);
 
         // Convert & Copy to outPut image
-        cvtColor(input, modified, Imgproc.COLOR_RGB2HSV);
+        if (BLUE_ALLIANCE) cvtColor(input, modified, Imgproc.COLOR_RGB2HSV);
+        else cvtColor(input, modified, Imgproc.COLOR_RGB2YCrCb);
 
         // Blurring
         GaussianBlur(modified, modified, new Size(blur, blur), 0);
 
         // Thresholding
-        MIN_HSV = new Scalar(MIN_H, MIN_S, MIN_V);
-        MAX_HSV = new Scalar(MAX_H, MAX_S, MAX_V);
-        inRange(modified, MIN_HSV, MAX_HSV, modified);
+        //MIN_HSV = new Scalar(MIN_H, MIN_S, MIN_V);
+        //MAX_HSV = new Scalar(MAX_H, MAX_S, MAX_V);
+        inRange(modified, MIN_COLORSET, MAX_COLORSET, modified);
 
         // Erosion and Dilation
         erode(modified, modified, new Mat(erode_const, erode_const, CV_8U));

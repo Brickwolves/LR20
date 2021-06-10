@@ -24,6 +24,7 @@ import static org.firstinspires.ftc.teamcode.DashConstants.Dash_AimBot.INIT_COMP
 import static org.firstinspires.ftc.teamcode.DashConstants.Dash_Movement.START_ANGLE;
 import static org.firstinspires.ftc.teamcode.DashConstants.Deprecated.Dash_Intake.INTAKE_RPM_FORWARDS;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.ButtonState.DOWN;
+import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.CIRCLE;
 import static org.firstinspires.ftc.teamcode.Hardware.Controls.ButtonControls.Input.CROSS;
 import static org.firstinspires.ftc.teamcode.Navigation.Oracle.getAngle;
 import static org.firstinspires.ftc.teamcode.Navigation.Oracle.setAngle;
@@ -73,26 +74,6 @@ public class AutoCalibrate extends LinearOpMode
         // Move it back up
         robot.intake.rollerUp();
 
-        gripperSequence();
-    }
-
-
-    public void gripperSequence(){
-        t.reset();
-        while (t.seconds() < 1){
-            robot.claw.open();
-            robot.arm.up();
-        }
-        t.reset();
-        while (!BC.get(CROSS, DOWN) && t.seconds() < 2){
-            ButtonControls.update();
-            multTelemetry.addData("Status", "Press X to close gripper.");
-            multTelemetry.update();
-        }
-        t.reset();
-        while (t.seconds() < 1){
-            robot.claw.close();
-        }
     }
 
     public void setUpVision(){
@@ -109,16 +90,25 @@ public class AutoCalibrate extends LinearOpMode
 
 
 
-
-
-        while (!BC.get(CROSS, DOWN) && t.seconds() < 2){
+        while (!BC.get(CROSS, DOWN)){
             ButtonControls.update();
             INIT_COMPLETED = false;
 
             multTelemetry.addData("Status", "Press X to Stop Camera Calibration.");
+            multTelemetry.addData("Max HSV", aimBot.getMAXHSV());
+            multTelemetry.addData("Min HSV", aimBot.getMINHSV());
             multTelemetry.update();
         }
         INIT_COMPLETED = true;
+
+        while (!BC.get(CIRCLE, DOWN)){
+            ButtonControls.update();
+
+            multTelemetry.addData("Status", "Press CIRCLE to Stop Camera");
+            multTelemetry.addData("Max HSV", aimBot.getMAXHSV());
+            multTelemetry.addData("Min HSV", aimBot.getMINHSV());
+            multTelemetry.update();
+        }
 
     }
 
@@ -136,7 +126,7 @@ public class AutoCalibrate extends LinearOpMode
 
         while (opModeIsActive()){
 
-            multTelemetry.addData("Status", "Running auto");
+            multTelemetry.addData("Status", "Calibrated");
             multTelemetry.update();
 
         }

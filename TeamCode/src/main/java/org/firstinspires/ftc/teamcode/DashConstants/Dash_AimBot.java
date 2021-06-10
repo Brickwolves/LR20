@@ -2,22 +2,17 @@ package org.firstinspires.ftc.teamcode.DashConstants;
 
 import com.acmerobotics.dashboard.config.Config;
 
+import org.opencv.core.Scalar;
+
 @Config
 public class Dash_AimBot {
 
     // GOAL FINDER
-    public static int MIN_H = 100;
-    public static int MAX_H = 120;
-
-    public static int MIN_S = 110;
-    public static int MAX_S = 255;
-
-    public static int MIN_V = 90;
-    public static int MAX_V = 220;
-
-    public static int[] MAX_HSV = {0, 0, 0};
-    public static int[] MIN_HSV = {0, 0, 0};
-    public static int[] MARGINS = {25, 90, 50};
+    public static boolean BLUE_ALLIANCE = false;
+    public static Scalar MAX_COLORSET = new Scalar(0, 0, 0);
+    public static Scalar MIN_COLORSET = new Scalar(0, 0, 0);
+    public static int[] BLUE_MARGINS = {25, 90, 50};
+    public static int[] RED_MARGINS = {25, 25, 25};
 
     public static int blur = 5;
     public static int erode_const = 5;
